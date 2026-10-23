@@ -6,9 +6,13 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.lianxu.data.api.*
 import com.example.lianxu.data.db.AppDatabase
+import com.example.lianxu.data.model.CardAction
 import com.example.lianxu.data.model.CardSpan
 import com.example.lianxu.data.model.DashboardCard
 import com.example.lianxu.data.prefs.SettingsManager
+import com.example.lianxu.data.repository.NutritionBoardRepository
+import com.example.lianxu.data.repository.ComponentResolver
+import com.example.lianxu.data.repository.ResolvedComponent
 import com.example.lianxu.data.repository.AppRepository
 import com.example.lianxu.data.repository.AttachmentStore
 import com.example.lianxu.data.repository.BoardStore
@@ -20,6 +24,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -39,10 +44,18 @@ class TodayViewModel(application: Application) : AndroidViewModel(application) {
     private val attachments = AttachmentStore(application, db)
     private val writes = Mutex()
     private var boardId: String? = null
+    private var nutrition: NutritionBoardRepository? = null
+    private val _resolved = MutableStateFlow<Map<String, List<ResolvedComponent>>>(emptyMap())
+    val resolved = _resolved.asStateFlow()
+    private val _sourceDetails = MutableStateFlow<String?>(null)
+    val sourceDetails = _sourceDetails.asStateFlow()
+    fun dismissSource() { _sourceDetails.value = null }
     private val _cards = MutableStateFlow<List<DashboardCard>>(emptyList())
     val cards = _cards.asStateFlow()
     private val _isProcessing = MutableStateFlow(false)
     val isProcessing = _isProcessing.asStateFlow()
+    private val _isPlanning = MutableStateFlow(false)
+    val isPlanning = _isPlanning.asStateFlow()
     private val _notice = MutableStateFlow<String?>(null)
     val notice = _notice.asStateFlow()
     private val _isImporting = MutableStateFlow(false)
@@ -65,9 +78,25 @@ class TodayViewModel(application: Application) : AndroidViewModel(application) {
                 val id = store.open(listOf(
                     DashboardCard(id = "training-input", title = "训练记录", value = "长按补充今天的训练", span = CardSpan.MEDIUM),
                     DashboardCard(id = "intake-input", title = "饮食补充", value = "可选：补充实际摄入", span = CardSpan.MEDIUM),
-                    DashboardCard(id = "assistant-input", title = "当日建议", value = "营养与餐食看板正在接入", span = CardSpan.LARGE)), LocalDate.now(zone), zone)
+                    DashboardCard(id = "assistant-input", title = "当日建议", value = "正在整理今日信息", span = CardSpan.LARGE)), LocalDate.now(zone), zone)
                 boardId = id
-                store.watchCards(id).collect { _cards.value = it }
+                val repository = NutritionBoardRepository.create(application, db)
+                nutrition = repository
+                launch {
+                    val records = AppRepository(db)
+                    combine(records.archiveFlow, records.trainings, records.intakes) { _, _, _ -> Unit }.collect {
+                        _isPlanning.value = true
+                        try { writes.withLock { repository.refresh(id) } }
+                        catch (error: CancellationException) { throw error }
+                        catch (error: Exception) { _notice.value = "今日规划未完成，原方案保留为上次结果：${error.message}" }
+                        finally { _isPlanning.value = false }
+                    }
+                }
+                store.watchCards(id).collect { cards ->
+                    val resolver = ComponentResolver(db)
+                    _resolved.value = cards.associate { it.id to resolver.resolve(it) }
+                    _cards.value = cards
+                }
             } catch (error: CancellationException) { throw error
             } catch (error: Exception) { _notice.value = "载入失败，原数据保留：${error.message}" }
         }
@@ -143,6 +172,7 @@ class TodayViewModel(application: Application) : AndroidViewModel(application) {
                     _notice.value = "本地演示：补充已保存，尚未进行AI分析"
                     frozen.cards // No random health values and no fabricated analysis.
                 } else {
+                    check(frozen.cards.none { (!it.annotationText.isNullOrBlank() || it.attachmentId != null) && it.blocks.isNotEmpty() }) { "这项智能分析尚未启用，补充已保存；餐食可先用卡片按钮调整" }
                     check(frozen.cards.none { it.attachmentId != null }) { "图片已保存；本阶段尚未接通视觉请求，请保留批注稍后发送" }
                     legacyTextUpdate(key, frozen.cards)
                 }
@@ -154,6 +184,46 @@ class TodayViewModel(application: Application) : AndroidViewModel(application) {
                 submission?.let { runCatching { store.fail(it, message) } }
                 _notice.value = message
             } finally { _isProcessing.value = false }
+        }
+    }
+
+    fun performAction(action: CardAction, value: String? = null) {
+        val id = boardId ?: return
+        val repository = nutrition ?: return
+        viewModelScope.launch {
+            try {
+                if (action.kind == "open_source") {
+                    if (action.targetRef.type == "calculation") {
+                        val calc = db.collaborationDao().calculation(action.targetRef.id) ?: return@launch
+                        val snapshot = JSONObject(calc.inputSnapshot)
+                        val profile = snapshot.optJSONObject("profile")
+                        val weight = snapshot.optJSONObject("weight")
+                        val goal = snapshot.optJSONObject("goal")
+                        val result = com.example.lianxu.engine.DomainJson.decode<com.example.lianxu.engine.NutritionResult>(calc.result)
+                        _sourceDetails.value = buildString {
+                            append("计算日期：${snapshot.optString("date")}\n")
+                            if (result.status == "manual") append("采用你的手动目标，保留与4/4/9换算的差额。") else {
+                                append("体重：${weight?.optDouble("value")}kg\n身高：${profile?.optDouble("heightCm")}cm\n")
+                                append("阶段：${when(goal?.optString("kind")) { "gain" -> "增肌"; "cut" -> "减脂"; else -> "维持" }}\n")
+                                append("活动系数：${profile?.optDouble("activityFactor", 1.6)}\n")
+                                result.restingKcal?.let { append("静息能量估计：约${ComponentResolver.displayNumber(it, "kcal")}kcal\n") }
+                                result.maintenanceKcal?.let { append("维持能量估计：约${ComponentResolver.displayNumber(it, "kcal")}kcal\n") }
+                                append("公式：Mifflin–St Jeor；当前策略：${result.policyVersion}\nhttps://pubmed.ncbi.nlm.nih.gov/2305711/")
+                            }
+                        }
+                        return@launch
+                    }
+                    val plan = db.collaborationDao().plan(action.targetRef.id) ?: return@launch
+                    val meals = com.example.lianxu.engine.DomainJson.decode<com.example.lianxu.engine.MealsDocument>(plan.meals).meals
+                    val meal = meals.firstOrNull { it.mealId == action.mealId } ?: return@launch
+                    _sourceDetails.value = meal.items.joinToString("\n\n") { "${it.name} · ${it.grams}g\nUSDA ${it.sourceId} · ${it.sourceVersion}\n${it.sourceUrl}" }
+                } else writes.withLock {
+                    repository.act(action, value)
+                    repository.refresh(id)
+                    _notice.value = if (action.kind == "mark_eaten") "已保存实际摄入，规划调整不会改写这条记录" else "已更新餐食与合计"
+                }
+            } catch (error: CancellationException) { throw error
+            } catch (error: Exception) { _notice.value = error.message ?: "未完成操作，请重试" }
         }
     }
 

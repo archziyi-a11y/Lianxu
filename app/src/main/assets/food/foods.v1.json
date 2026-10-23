@@ -1,0 +1,4957 @@
+{
+  "schemaVersion": 1,
+  "foods": [
+    {
+      "id": "usda-sr-168878",
+      "sourceName": "USDA FoodData Central / SR Legacy",
+      "sourceId": "168878",
+      "sourceVersion": "SR Legacy final 2018-04",
+      "sourceUrl": "https://fdc.nal.usda.gov/food-details/168878/nutrients",
+      "retrievedAt": "2026-10-23",
+      "nameZh": "熟长粒白米饭（强化）",
+      "nameOriginal": "Rice, white, long-grain, regular, enriched, cooked",
+      "aliases": [
+        "熟长粒白米饭"
+      ],
+      "state": "cooked",
+      "category": "grain",
+      "ingredients": [
+        "熟长粒白米饭"
+      ],
+      "allergens": [],
+      "allergenStatus": "known",
+      "allergenNote": "按食物身份标注，不代表具体商品交叉接触或完整配料认证。",
+      "basisG": 100,
+      "nutrients": {
+        "energyKcal": 130.0,
+        "proteinG": 2.69,
+        "carbohydrateG": 28.17,
+        "fatG": 0.28,
+        "fiberG": 0.4
+      },
+      "carbohydrateBasis": "total_including_fiber",
+      "portions": [
+        {
+          "label": "100克可食部",
+          "grams": 100,
+          "origin": "database",
+          "sourceRef": "USDA FDC 168878; 100g nutrient basis"
+        }
+      ],
+      "origin": "database",
+      "sourceSnapshot": {
+        "food": {
+          "fdc_id": "168878",
+          "data_type": "sr_legacy_food",
+          "description": "Rice, white, long-grain, regular, enriched, cooked",
+          "food_category_id": "20",
+          "publication_date": "2019-04-01"
+        },
+        "nutrients": [
+          {
+            "id": "1395793",
+            "fdc_id": "168878",
+            "nutrient_id": "1079",
+            "amount": "0.4",
+            "data_points": "0",
+            "derivation_id": "",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1395817",
+            "fdc_id": "168878",
+            "nutrient_id": "1003",
+            "amount": "2.69",
+            "data_points": "20",
+            "derivation_id": "",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1395841",
+            "fdc_id": "168878",
+            "nutrient_id": "1004",
+            "amount": "0.28",
+            "data_points": "6",
+            "derivation_id": "",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1395842",
+            "fdc_id": "168878",
+            "nutrient_id": "1005",
+            "amount": "28.17",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1395843",
+            "fdc_id": "168878",
+            "nutrient_id": "1008",
+            "amount": "130",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ],
+        "portions": [
+          {
+            "id": "83928",
+            "fdc_id": "168878",
+            "seq_num": "1",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "cup",
+            "gram_weight": "158",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "usda-sr-169756",
+      "sourceName": "USDA FoodData Central / SR Legacy",
+      "sourceId": "169756",
+      "sourceVersion": "SR Legacy final 2018-04",
+      "sourceUrl": "https://fdc.nal.usda.gov/food-details/169756/nutrients",
+      "retrievedAt": "2026-10-23",
+      "nameZh": "生长粒白米（未强化）",
+      "nameOriginal": "Rice, white, long-grain, regular, raw, unenriched",
+      "aliases": [
+        "生长粒白米"
+      ],
+      "state": "raw",
+      "category": "grain",
+      "ingredients": [
+        "生长粒白米"
+      ],
+      "allergens": [],
+      "allergenStatus": "known",
+      "allergenNote": "按食物身份标注，不代表具体商品交叉接触或完整配料认证。",
+      "basisG": 100,
+      "nutrients": {
+        "energyKcal": 365.0,
+        "proteinG": 7.13,
+        "carbohydrateG": 79.95,
+        "fatG": 0.66,
+        "fiberG": 1.3
+      },
+      "carbohydrateBasis": "total_including_fiber",
+      "portions": [
+        {
+          "label": "100克可食部",
+          "grams": 100,
+          "origin": "database",
+          "sourceRef": "USDA FDC 169756; 100g nutrient basis"
+        }
+      ],
+      "origin": "database",
+      "sourceSnapshot": {
+        "food": {
+          "fdc_id": "169756",
+          "data_type": "sr_legacy_food",
+          "description": "Rice, white, long-grain, regular, raw, unenriched",
+          "food_category_id": "20",
+          "publication_date": "2019-04-01"
+        },
+        "nutrients": [
+          {
+            "id": "1467237",
+            "fdc_id": "169756",
+            "nutrient_id": "1003",
+            "amount": "7.13",
+            "data_points": "70",
+            "derivation_id": "",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1467239",
+            "fdc_id": "169756",
+            "nutrient_id": "1079",
+            "amount": "1.3",
+            "data_points": "0",
+            "derivation_id": "",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1467260",
+            "fdc_id": "169756",
+            "nutrient_id": "1004",
+            "amount": "0.66",
+            "data_points": "23",
+            "derivation_id": "",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1467261",
+            "fdc_id": "169756",
+            "nutrient_id": "1005",
+            "amount": "79.95",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1467262",
+            "fdc_id": "169756",
+            "nutrient_id": "1008",
+            "amount": "365",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ],
+        "portions": [
+          {
+            "id": "85461",
+            "fdc_id": "169756",
+            "seq_num": "1",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "cup",
+            "gram_weight": "185",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "usda-sr-173904",
+      "sourceName": "USDA FoodData Central / SR Legacy",
+      "sourceId": "173904",
+      "sourceVersion": "SR Legacy final 2018-04",
+      "sourceUrl": "https://fdc.nal.usda.gov/food-details/173904/nutrients",
+      "retrievedAt": "2026-10-23",
+      "nameZh": "干燕麦片（未强化）",
+      "nameOriginal": "Cereals, oats, regular and quick, not fortified, dry",
+      "aliases": [
+        "干燕麦片"
+      ],
+      "state": "raw",
+      "category": "grain",
+      "ingredients": [
+        "干燕麦片"
+      ],
+      "allergens": [
+        "oats"
+      ],
+      "allergenStatus": "known",
+      "allergenNote": "按食物身份标注，不代表具体商品交叉接触或完整配料认证。",
+      "basisG": 100,
+      "nutrients": {
+        "energyKcal": 379.0,
+        "proteinG": 13.15,
+        "carbohydrateG": 67.7,
+        "fatG": 6.52,
+        "fiberG": 10.1
+      },
+      "carbohydrateBasis": "total_including_fiber",
+      "portions": [
+        {
+          "label": "100克可食部",
+          "grams": 100,
+          "origin": "database",
+          "sourceRef": "USDA FDC 173904; 100g nutrient basis"
+        }
+      ],
+      "origin": "database",
+      "sourceSnapshot": {
+        "food": {
+          "fdc_id": "173904",
+          "data_type": "sr_legacy_food",
+          "description": "Cereals, oats, regular and quick, not fortified, dry",
+          "food_category_id": "8",
+          "publication_date": "2019-04-01"
+        },
+        "nutrients": [
+          {
+            "id": "1814987",
+            "fdc_id": "173904",
+            "nutrient_id": "1079",
+            "amount": "10.1",
+            "data_points": "4",
+            "derivation_id": "1",
+            "min": "8.8",
+            "max": "11",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1815027",
+            "fdc_id": "173904",
+            "nutrient_id": "1004",
+            "amount": "6.52",
+            "data_points": "4",
+            "derivation_id": "1",
+            "min": "6.2",
+            "max": "6.92",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1815028",
+            "fdc_id": "173904",
+            "nutrient_id": "1005",
+            "amount": "67.7",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1815029",
+            "fdc_id": "173904",
+            "nutrient_id": "1008",
+            "amount": "379",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1815039",
+            "fdc_id": "173904",
+            "nutrient_id": "1003",
+            "amount": "13.15",
+            "data_points": "4",
+            "derivation_id": "1",
+            "min": "13",
+            "max": "13.24",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ],
+        "portions": [
+          {
+            "id": "93454",
+            "fdc_id": "173904",
+            "seq_num": "1",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "cup",
+            "gram_weight": "81",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "93455",
+            "fdc_id": "173904",
+            "seq_num": "2",
+            "amount": "0.33",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "cup",
+            "gram_weight": "27",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "usda-sr-173905",
+      "sourceName": "USDA FoodData Central / SR Legacy",
+      "sourceId": "173905",
+      "sourceVersion": "SR Legacy final 2018-04",
+      "sourceUrl": "https://fdc.nal.usda.gov/food-details/173905/nutrients",
+      "retrievedAt": "2026-10-23",
+      "nameZh": "水煮燕麦粥（无盐）",
+      "nameOriginal": "Cereals, oats, regular and quick, unenriched, cooked with water (includes boiling and microwaving), without salt",
+      "aliases": [
+        "水煮燕麦粥"
+      ],
+      "state": "cooked",
+      "category": "grain",
+      "ingredients": [
+        "水煮燕麦粥"
+      ],
+      "allergens": [
+        "oats"
+      ],
+      "allergenStatus": "known",
+      "allergenNote": "按食物身份标注，不代表具体商品交叉接触或完整配料认证。",
+      "basisG": 100,
+      "nutrients": {
+        "energyKcal": 71.0,
+        "proteinG": 2.54,
+        "carbohydrateG": 12.0,
+        "fatG": 1.52,
+        "fiberG": 1.7
+      },
+      "carbohydrateBasis": "total_including_fiber",
+      "portions": [
+        {
+          "label": "100克可食部",
+          "grams": 100,
+          "origin": "database",
+          "sourceRef": "USDA FDC 173905; 100g nutrient basis"
+        }
+      ],
+      "origin": "database",
+      "sourceSnapshot": {
+        "food": {
+          "fdc_id": "173905",
+          "data_type": "sr_legacy_food",
+          "description": "Cereals, oats, regular and quick, unenriched, cooked with water (includes boiling and microwaving), without salt",
+          "food_category_id": "8",
+          "publication_date": "2019-04-01"
+        },
+        "nutrients": [
+          {
+            "id": "1815072",
+            "fdc_id": "173905",
+            "nutrient_id": "1003",
+            "amount": "2.54",
+            "data_points": "8",
+            "derivation_id": "1",
+            "min": "2.29",
+            "max": "2.98",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1815079",
+            "fdc_id": "173905",
+            "nutrient_id": "1079",
+            "amount": "1.7",
+            "data_points": "7",
+            "derivation_id": "1",
+            "min": "1.4",
+            "max": "2",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1815105",
+            "fdc_id": "173905",
+            "nutrient_id": "1004",
+            "amount": "1.52",
+            "data_points": "8",
+            "derivation_id": "1",
+            "min": "1.28",
+            "max": "1.65",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1815106",
+            "fdc_id": "173905",
+            "nutrient_id": "1005",
+            "amount": "12",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1815107",
+            "fdc_id": "173905",
+            "nutrient_id": "1008",
+            "amount": "71",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ],
+        "portions": [
+          {
+            "id": "93456",
+            "fdc_id": "173905",
+            "seq_num": "1",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "cup",
+            "gram_weight": "234",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "93457",
+            "fdc_id": "173905",
+            "seq_num": "2",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "tbsp",
+            "gram_weight": "14.6",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "93458",
+            "fdc_id": "173905",
+            "seq_num": "3",
+            "amount": "0.75",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "cup",
+            "gram_weight": "175",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "usda-sr-172688",
+      "sourceName": "USDA FoodData Central / SR Legacy",
+      "sourceId": "172688",
+      "sourceVersion": "SR Legacy final 2018-04",
+      "sourceUrl": "https://fdc.nal.usda.gov/food-details/172688/nutrients",
+      "retrievedAt": "2026-10-23",
+      "nameZh": "全麦面包（商业配方）",
+      "nameOriginal": "Bread, whole-wheat, commercially prepared",
+      "aliases": [
+        "全麦面包"
+      ],
+      "state": "as_sold",
+      "category": "grain",
+      "ingredients": [
+        "全麦面包"
+      ],
+      "allergens": [
+        "wheat"
+      ],
+      "allergenStatus": "unknown",
+      "allergenNote": "按食物身份标注，不代表具体商品交叉接触或完整配料认证。",
+      "basisG": 100,
+      "nutrients": {
+        "energyKcal": 252.0,
+        "proteinG": 12.45,
+        "carbohydrateG": 42.71,
+        "fatG": 3.5,
+        "fiberG": 6.0
+      },
+      "carbohydrateBasis": "total_including_fiber",
+      "portions": [
+        {
+          "label": "100克可食部",
+          "grams": 100,
+          "origin": "database",
+          "sourceRef": "USDA FDC 172688; 100g nutrient basis"
+        }
+      ],
+      "origin": "database",
+      "sourceSnapshot": {
+        "food": {
+          "fdc_id": "172688",
+          "data_type": "sr_legacy_food",
+          "description": "Bread, whole-wheat, commercially prepared",
+          "food_category_id": "18",
+          "publication_date": "2019-04-01"
+        },
+        "nutrients": [
+          {
+            "id": "1715444",
+            "fdc_id": "172688",
+            "nutrient_id": "1004",
+            "amount": "3.5",
+            "data_points": "10",
+            "derivation_id": "1",
+            "min": "3.15",
+            "max": "4",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1715445",
+            "fdc_id": "172688",
+            "nutrient_id": "1005",
+            "amount": "42.71",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1715446",
+            "fdc_id": "172688",
+            "nutrient_id": "1008",
+            "amount": "252",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1715490",
+            "fdc_id": "172688",
+            "nutrient_id": "1003",
+            "amount": "12.45",
+            "data_points": "10",
+            "derivation_id": "1",
+            "min": "11.31",
+            "max": "13.56",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1715498",
+            "fdc_id": "172688",
+            "nutrient_id": "1079",
+            "amount": "6",
+            "data_points": "7",
+            "derivation_id": "1",
+            "min": "5.2",
+            "max": "8.3",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ],
+        "portions": [
+          {
+            "id": "91108",
+            "fdc_id": "172688",
+            "seq_num": "1",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "slice",
+            "gram_weight": "32",
+            "data_points": "19",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "91109",
+            "fdc_id": "172688",
+            "seq_num": "2",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "oz",
+            "gram_weight": "28.35",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "usda-sr-171477",
+      "sourceName": "USDA FoodData Central / SR Legacy",
+      "sourceId": "171477",
+      "sourceVersion": "SR Legacy final 2018-04",
+      "sourceUrl": "https://fdc.nal.usda.gov/food-details/171477/nutrients",
+      "retrievedAt": "2026-10-23",
+      "nameZh": "烤鸡胸肉（仅肉）",
+      "nameOriginal": "Chicken, broilers or fryers, breast, meat only, cooked, roasted",
+      "aliases": [
+        "烤鸡胸肉"
+      ],
+      "state": "cooked",
+      "category": "protein",
+      "ingredients": [
+        "烤鸡胸肉"
+      ],
+      "allergens": [],
+      "allergenStatus": "known",
+      "allergenNote": "按食物身份标注，不代表具体商品交叉接触或完整配料认证。",
+      "basisG": 100,
+      "nutrients": {
+        "energyKcal": 165.0,
+        "proteinG": 31.02,
+        "carbohydrateG": 0.0,
+        "fatG": 3.57,
+        "fiberG": 0.0
+      },
+      "carbohydrateBasis": "total_including_fiber",
+      "portions": [
+        {
+          "label": "100克可食部",
+          "grams": 100,
+          "origin": "database",
+          "sourceRef": "USDA FDC 171477; 100g nutrient basis"
+        }
+      ],
+      "origin": "database",
+      "sourceSnapshot": {
+        "food": {
+          "fdc_id": "171477",
+          "data_type": "sr_legacy_food",
+          "description": "Chicken, broilers or fryers, breast, meat only, cooked, roasted",
+          "food_category_id": "5",
+          "publication_date": "2019-04-01"
+        },
+        "nutrients": [
+          {
+            "id": "1613018",
+            "fdc_id": "171477",
+            "nutrient_id": "1004",
+            "amount": "3.57",
+            "data_points": "16",
+            "derivation_id": "",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1613019",
+            "fdc_id": "171477",
+            "nutrient_id": "1005",
+            "amount": "0",
+            "data_points": "0",
+            "derivation_id": "68",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1613020",
+            "fdc_id": "171477",
+            "nutrient_id": "1008",
+            "amount": "165",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1613048",
+            "fdc_id": "171477",
+            "nutrient_id": "1003",
+            "amount": "31.02",
+            "data_points": "16",
+            "derivation_id": "",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1613050",
+            "fdc_id": "171477",
+            "nutrient_id": "1079",
+            "amount": "0",
+            "data_points": "0",
+            "derivation_id": "68",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ],
+        "portions": [
+          {
+            "id": "88817",
+            "fdc_id": "171477",
+            "seq_num": "1",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "cup, chopped or diced",
+            "gram_weight": "140",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "88818",
+            "fdc_id": "171477",
+            "seq_num": "2",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "unit (yield from 1 lb ready-to-cook chicken)",
+            "gram_weight": "52",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "88819",
+            "fdc_id": "171477",
+            "seq_num": "3",
+            "amount": "0.5",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "breast, bone and skin removed",
+            "gram_weight": "86",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "usda-sr-173424",
+      "sourceName": "USDA FoodData Central / SR Legacy",
+      "sourceId": "173424",
+      "sourceVersion": "SR Legacy final 2018-04",
+      "sourceUrl": "https://fdc.nal.usda.gov/food-details/173424/nutrients",
+      "retrievedAt": "2026-10-23",
+      "nameZh": "水煮全蛋",
+      "nameOriginal": "Egg, whole, cooked, hard-boiled",
+      "aliases": [
+        "水煮全蛋"
+      ],
+      "state": "cooked",
+      "category": "protein",
+      "ingredients": [
+        "水煮全蛋"
+      ],
+      "allergens": [
+        "egg"
+      ],
+      "allergenStatus": "known",
+      "allergenNote": "按食物身份标注，不代表具体商品交叉接触或完整配料认证。",
+      "basisG": 100,
+      "nutrients": {
+        "energyKcal": 155.0,
+        "proteinG": 12.58,
+        "carbohydrateG": 1.12,
+        "fatG": 10.61,
+        "fiberG": 0.0
+      },
+      "carbohydrateBasis": "total_including_fiber",
+      "portions": [
+        {
+          "label": "100克可食部",
+          "grams": 100,
+          "origin": "database",
+          "sourceRef": "USDA FDC 173424; 100g nutrient basis"
+        }
+      ],
+      "origin": "database",
+      "sourceSnapshot": {
+        "food": {
+          "fdc_id": "173424",
+          "data_type": "sr_legacy_food",
+          "description": "Egg, whole, cooked, hard-boiled",
+          "food_category_id": "1",
+          "publication_date": "2019-04-01"
+        },
+        "nutrients": [
+          {
+            "id": "1777845",
+            "fdc_id": "173424",
+            "nutrient_id": "1079",
+            "amount": "0",
+            "data_points": "0",
+            "derivation_id": "68",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1777847",
+            "fdc_id": "173424",
+            "nutrient_id": "1008",
+            "amount": "155",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1777860",
+            "fdc_id": "173424",
+            "nutrient_id": "1003",
+            "amount": "12.58",
+            "data_points": "14",
+            "derivation_id": "",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1777904",
+            "fdc_id": "173424",
+            "nutrient_id": "1004",
+            "amount": "10.61",
+            "data_points": "7",
+            "derivation_id": "",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1777905",
+            "fdc_id": "173424",
+            "nutrient_id": "1005",
+            "amount": "1.12",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ],
+        "portions": [
+          {
+            "id": "92498",
+            "fdc_id": "173424",
+            "seq_num": "1",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "cup, chopped",
+            "gram_weight": "136",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "92499",
+            "fdc_id": "173424",
+            "seq_num": "2",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "tbsp",
+            "gram_weight": "8.5",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "92500",
+            "fdc_id": "173424",
+            "seq_num": "3",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "large",
+            "gram_weight": "50",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "usda-sr-172475",
+      "sourceName": "USDA FoodData Central / SR Legacy",
+      "sourceId": "172475",
+      "sourceVersion": "SR Legacy final 2018-04",
+      "sourceUrl": "https://fdc.nal.usda.gov/food-details/172475/nutrients",
+      "retrievedAt": "2026-10-23",
+      "nameZh": "硬豆腐（硫酸钙凝固）",
+      "nameOriginal": "Tofu, raw, firm, prepared with calcium sulfate",
+      "aliases": [
+        "硬豆腐"
+      ],
+      "state": "raw",
+      "category": "protein",
+      "ingredients": [
+        "硬豆腐"
+      ],
+      "allergens": [
+        "soy"
+      ],
+      "allergenStatus": "known",
+      "allergenNote": "按食物身份标注，不代表具体商品交叉接触或完整配料认证。",
+      "basisG": 100,
+      "nutrients": {
+        "energyKcal": 144.0,
+        "proteinG": 17.27,
+        "carbohydrateG": 2.78,
+        "fatG": 8.72,
+        "fiberG": 2.3
+      },
+      "carbohydrateBasis": "total_including_fiber",
+      "portions": [
+        {
+          "label": "100克可食部",
+          "grams": 100,
+          "origin": "database",
+          "sourceRef": "USDA FDC 172475; 100g nutrient basis"
+        }
+      ],
+      "origin": "database",
+      "sourceSnapshot": {
+        "food": {
+          "fdc_id": "172475",
+          "data_type": "sr_legacy_food",
+          "description": "Tofu, raw, firm, prepared with calcium sulfate",
+          "food_category_id": "16",
+          "publication_date": "2019-04-01"
+        },
+        "nutrients": [
+          {
+            "id": "1698046",
+            "fdc_id": "172475",
+            "nutrient_id": "1079",
+            "amount": "2.3",
+            "data_points": "0",
+            "derivation_id": "20",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1698050",
+            "fdc_id": "172475",
+            "nutrient_id": "1005",
+            "amount": "2.78",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1698051",
+            "fdc_id": "172475",
+            "nutrient_id": "1008",
+            "amount": "144",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1698062",
+            "fdc_id": "172475",
+            "nutrient_id": "1003",
+            "amount": "17.27",
+            "data_points": "6",
+            "derivation_id": "",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1698091",
+            "fdc_id": "172475",
+            "nutrient_id": "1004",
+            "amount": "8.72",
+            "data_points": "6",
+            "derivation_id": "",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ],
+        "portions": [
+          {
+            "id": "90683",
+            "fdc_id": "172475",
+            "seq_num": "1",
+            "amount": "0.5",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "cup",
+            "gram_weight": "126",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "90684",
+            "fdc_id": "172475",
+            "seq_num": "2",
+            "amount": "0.25",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "block",
+            "gram_weight": "81",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "usda-sr-171267",
+      "sourceName": "USDA FoodData Central / SR Legacy",
+      "sourceId": "171267",
+      "sourceVersion": "SR Legacy final 2018-04",
+      "sourceUrl": "https://fdc.nal.usda.gov/food-details/171267/nutrients",
+      "retrievedAt": "2026-10-23",
+      "nameZh": "2%脂肪牛奶（强化维生素）",
+      "nameOriginal": "Milk, reduced fat, fluid, 2% milkfat, with added vitamin A and vitamin D",
+      "aliases": [
+        "2%脂肪牛奶"
+      ],
+      "state": "as_sold",
+      "category": "dairy",
+      "ingredients": [
+        "2%脂肪牛奶"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "allergenStatus": "known",
+      "allergenNote": "按食物身份标注，不代表具体商品交叉接触或完整配料认证。",
+      "basisG": 100,
+      "nutrients": {
+        "energyKcal": 50.0,
+        "proteinG": 3.3,
+        "carbohydrateG": 4.8,
+        "fatG": 1.98,
+        "fiberG": 0.0
+      },
+      "carbohydrateBasis": "total_including_fiber",
+      "portions": [
+        {
+          "label": "100克可食部",
+          "grams": 100,
+          "origin": "database",
+          "sourceRef": "USDA FDC 171267; 100g nutrient basis"
+        }
+      ],
+      "origin": "database",
+      "sourceSnapshot": {
+        "food": {
+          "fdc_id": "171267",
+          "data_type": "sr_legacy_food",
+          "description": "Milk, reduced fat, fluid, 2% milkfat, with added vitamin A and vitamin D",
+          "food_category_id": "1",
+          "publication_date": "2019-04-01"
+        },
+        "nutrients": [
+          {
+            "id": "1595856",
+            "fdc_id": "171267",
+            "nutrient_id": "1003",
+            "amount": "3.3",
+            "data_points": "13",
+            "derivation_id": "1",
+            "min": "3.18",
+            "max": "3.61",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1595892",
+            "fdc_id": "171267",
+            "nutrient_id": "1079",
+            "amount": "0",
+            "data_points": "0",
+            "derivation_id": "",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1595920",
+            "fdc_id": "171267",
+            "nutrient_id": "1005",
+            "amount": "4.8",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1595921",
+            "fdc_id": "171267",
+            "nutrient_id": "1008",
+            "amount": "50",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1595969",
+            "fdc_id": "171267",
+            "nutrient_id": "1004",
+            "amount": "1.98",
+            "data_points": "14",
+            "derivation_id": "43",
+            "min": "1.9",
+            "max": "2.06",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ],
+        "portions": [
+          {
+            "id": "88320",
+            "fdc_id": "171267",
+            "seq_num": "1",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "cup",
+            "gram_weight": "244",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "88321",
+            "fdc_id": "171267",
+            "seq_num": "2",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "fl oz",
+            "gram_weight": "30.5",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "88322",
+            "fdc_id": "171267",
+            "seq_num": "3",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "quart",
+            "gram_weight": "976",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "usda-sr-170894",
+      "sourceName": "USDA FoodData Central / SR Legacy",
+      "sourceId": "170894",
+      "sourceVersion": "SR Legacy final 2018-04",
+      "sourceUrl": "https://fdc.nal.usda.gov/food-details/170894/nutrients",
+      "retrievedAt": "2026-10-23",
+      "nameZh": "原味脱脂希腊酸奶",
+      "nameOriginal": "Yogurt, Greek, plain, nonfat (Includes foods for USDA's Food Distribution Program)",
+      "aliases": [
+        "原味脱脂希腊酸奶"
+      ],
+      "state": "as_sold",
+      "category": "dairy",
+      "ingredients": [
+        "原味脱脂希腊酸奶"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "allergenStatus": "known",
+      "allergenNote": "按食物身份标注，不代表具体商品交叉接触或完整配料认证。",
+      "basisG": 100,
+      "nutrients": {
+        "energyKcal": 59.0,
+        "proteinG": 10.19,
+        "carbohydrateG": 3.6,
+        "fatG": 0.39,
+        "fiberG": 0.0
+      },
+      "carbohydrateBasis": "total_including_fiber",
+      "portions": [
+        {
+          "label": "100克可食部",
+          "grams": 100,
+          "origin": "database",
+          "sourceRef": "USDA FDC 170894; 100g nutrient basis"
+        }
+      ],
+      "origin": "database",
+      "sourceSnapshot": {
+        "food": {
+          "fdc_id": "170894",
+          "data_type": "sr_legacy_food",
+          "description": "Yogurt, Greek, plain, nonfat (Includes foods for USDA's Food Distribution Program)",
+          "food_category_id": "1",
+          "publication_date": "2019-04-01"
+        },
+        "nutrients": [
+          {
+            "id": "1563278",
+            "fdc_id": "170894",
+            "nutrient_id": "1079",
+            "amount": "0",
+            "data_points": "1",
+            "derivation_id": "44",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1563290",
+            "fdc_id": "170894",
+            "nutrient_id": "1003",
+            "amount": "10.19",
+            "data_points": "16",
+            "derivation_id": "1",
+            "min": "8.87",
+            "max": "11.74",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1563369",
+            "fdc_id": "170894",
+            "nutrient_id": "1004",
+            "amount": "0.39",
+            "data_points": "18",
+            "derivation_id": "1",
+            "min": "0.23",
+            "max": "0.61",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1563370",
+            "fdc_id": "170894",
+            "nutrient_id": "1005",
+            "amount": "3.6",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1563371",
+            "fdc_id": "170894",
+            "nutrient_id": "1008",
+            "amount": "59",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ],
+        "portions": [
+          {
+            "id": "87513",
+            "fdc_id": "170894",
+            "seq_num": "1",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "container",
+            "gram_weight": "170",
+            "data_points": "1",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "usda-sr-170903",
+      "sourceName": "USDA FoodData Central / SR Legacy",
+      "sourceId": "170903",
+      "sourceVersion": "SR Legacy final 2018-04",
+      "sourceUrl": "https://fdc.nal.usda.gov/food-details/170903/nutrients",
+      "retrievedAt": "2026-10-23",
+      "nameZh": "原味低脂希腊酸奶",
+      "nameOriginal": "Yogurt, Greek, plain, lowfat",
+      "aliases": [
+        "原味低脂希腊酸奶"
+      ],
+      "state": "as_sold",
+      "category": "dairy",
+      "ingredients": [
+        "原味低脂希腊酸奶"
+      ],
+      "allergens": [
+        "milk"
+      ],
+      "allergenStatus": "known",
+      "allergenNote": "按食物身份标注，不代表具体商品交叉接触或完整配料认证。",
+      "basisG": 100,
+      "nutrients": {
+        "energyKcal": 73.0,
+        "proteinG": 9.95,
+        "carbohydrateG": 3.94,
+        "fatG": 1.92,
+        "fiberG": 0.0
+      },
+      "carbohydrateBasis": "total_including_fiber",
+      "portions": [
+        {
+          "label": "100克可食部",
+          "grams": 100,
+          "origin": "database",
+          "sourceRef": "USDA FDC 170903; 100g nutrient basis"
+        }
+      ],
+      "origin": "database",
+      "sourceSnapshot": {
+        "food": {
+          "fdc_id": "170903",
+          "data_type": "sr_legacy_food",
+          "description": "Yogurt, Greek, plain, lowfat",
+          "food_category_id": "1",
+          "publication_date": "2019-04-01"
+        },
+        "nutrients": [
+          {
+            "id": "1564272",
+            "fdc_id": "170903",
+            "nutrient_id": "1004",
+            "amount": "1.92",
+            "data_points": "5",
+            "derivation_id": "1",
+            "min": "1.8",
+            "max": "2",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1564273",
+            "fdc_id": "170903",
+            "nutrient_id": "1005",
+            "amount": "3.94",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1564274",
+            "fdc_id": "170903",
+            "nutrient_id": "1008",
+            "amount": "73",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1564331",
+            "fdc_id": "170903",
+            "nutrient_id": "1003",
+            "amount": "9.95",
+            "data_points": "5",
+            "derivation_id": "1",
+            "min": "9.54",
+            "max": "10.4",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1564339",
+            "fdc_id": "170903",
+            "nutrient_id": "1079",
+            "amount": "0",
+            "data_points": "0",
+            "derivation_id": "68",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ],
+        "portions": [
+          {
+            "id": "87526",
+            "fdc_id": "170903",
+            "seq_num": "1",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "container (7 oz)",
+            "gram_weight": "200",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "usda-sr-173944",
+      "sourceName": "USDA FoodData Central / SR Legacy",
+      "sourceId": "173944",
+      "sourceVersion": "SR Legacy final 2018-04",
+      "sourceUrl": "https://fdc.nal.usda.gov/food-details/173944/nutrients",
+      "retrievedAt": "2026-10-23",
+      "nameZh": "香蕉（生，可食部）",
+      "nameOriginal": "Bananas, raw",
+      "aliases": [
+        "香蕉"
+      ],
+      "state": "raw",
+      "category": "fruit",
+      "ingredients": [
+        "香蕉"
+      ],
+      "allergens": [],
+      "allergenStatus": "known",
+      "allergenNote": "按食物身份标注，不代表具体商品交叉接触或完整配料认证。",
+      "basisG": 100,
+      "nutrients": {
+        "energyKcal": 89.0,
+        "proteinG": 1.09,
+        "carbohydrateG": 22.84,
+        "fatG": 0.33,
+        "fiberG": 2.6
+      },
+      "carbohydrateBasis": "total_including_fiber",
+      "portions": [
+        {
+          "label": "100克可食部",
+          "grams": 100,
+          "origin": "database",
+          "sourceRef": "USDA FDC 173944; 100g nutrient basis"
+        }
+      ],
+      "origin": "database",
+      "sourceSnapshot": {
+        "food": {
+          "fdc_id": "173944",
+          "data_type": "sr_legacy_food",
+          "description": "Bananas, raw",
+          "food_category_id": "9",
+          "publication_date": "2019-04-01"
+        },
+        "nutrients": [
+          {
+            "id": "1817899",
+            "fdc_id": "173944",
+            "nutrient_id": "1005",
+            "amount": "22.84",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1817900",
+            "fdc_id": "173944",
+            "nutrient_id": "1008",
+            "amount": "89",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1817936",
+            "fdc_id": "173944",
+            "nutrient_id": "1079",
+            "amount": "2.6",
+            "data_points": "13",
+            "derivation_id": "1",
+            "min": "1.7",
+            "max": "3.7",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1817943",
+            "fdc_id": "173944",
+            "nutrient_id": "1003",
+            "amount": "1.09",
+            "data_points": "12",
+            "derivation_id": "1",
+            "min": "0.75",
+            "max": "1.31",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1817956",
+            "fdc_id": "173944",
+            "nutrient_id": "1004",
+            "amount": "0.33",
+            "data_points": "19",
+            "derivation_id": "1",
+            "min": "0.07",
+            "max": "0.7",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ],
+        "portions": [
+          {
+            "id": "93511",
+            "fdc_id": "173944",
+            "seq_num": "1",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "cup, mashed",
+            "gram_weight": "225",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "93512",
+            "fdc_id": "173944",
+            "seq_num": "2",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "cup, sliced",
+            "gram_weight": "150",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "93513",
+            "fdc_id": "173944",
+            "seq_num": "3",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "extra small (less than 6\" long)",
+            "gram_weight": "81",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "93514",
+            "fdc_id": "173944",
+            "seq_num": "4",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "small (6\" to 6-7/8\" long)",
+            "gram_weight": "101",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "93515",
+            "fdc_id": "173944",
+            "seq_num": "5",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "medium (7\" to 7-7/8\" long)",
+            "gram_weight": "118",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "93516",
+            "fdc_id": "173944",
+            "seq_num": "6",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "large (8\" to 8-7/8\" long)",
+            "gram_weight": "136",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "93517",
+            "fdc_id": "173944",
+            "seq_num": "7",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "extra large (9\" or longer)",
+            "gram_weight": "152",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "93518",
+            "fdc_id": "173944",
+            "seq_num": "8",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "NLEA serving",
+            "gram_weight": "126",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "usda-sr-171688",
+      "sourceName": "USDA FoodData Central / SR Legacy",
+      "sourceId": "171688",
+      "sourceVersion": "SR Legacy final 2018-04",
+      "sourceUrl": "https://fdc.nal.usda.gov/food-details/171688/nutrients",
+      "retrievedAt": "2026-10-23",
+      "nameZh": "带皮苹果（生，可食部）",
+      "nameOriginal": "Apples, raw, with skin (Includes foods for USDA's Food Distribution Program)",
+      "aliases": [
+        "带皮苹果"
+      ],
+      "state": "raw",
+      "category": "fruit",
+      "ingredients": [
+        "带皮苹果"
+      ],
+      "allergens": [],
+      "allergenStatus": "known",
+      "allergenNote": "按食物身份标注，不代表具体商品交叉接触或完整配料认证。",
+      "basisG": 100,
+      "nutrients": {
+        "energyKcal": 52.0,
+        "proteinG": 0.26,
+        "carbohydrateG": 13.81,
+        "fatG": 0.17,
+        "fiberG": 2.4
+      },
+      "carbohydrateBasis": "total_including_fiber",
+      "portions": [
+        {
+          "label": "100克可食部",
+          "grams": 100,
+          "origin": "database",
+          "sourceRef": "USDA FDC 171688; 100g nutrient basis"
+        }
+      ],
+      "origin": "database",
+      "sourceSnapshot": {
+        "food": {
+          "fdc_id": "171688",
+          "data_type": "sr_legacy_food",
+          "description": "Apples, raw, with skin (Includes foods for USDA's Food Distribution Program)",
+          "food_category_id": "9",
+          "publication_date": "2019-04-01"
+        },
+        "nutrients": [
+          {
+            "id": "1631309",
+            "fdc_id": "171688",
+            "nutrient_id": "1005",
+            "amount": "13.81",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1631310",
+            "fdc_id": "171688",
+            "nutrient_id": "1008",
+            "amount": "52",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1631338",
+            "fdc_id": "171688",
+            "nutrient_id": "1004",
+            "amount": "0.17",
+            "data_points": "35",
+            "derivation_id": "1",
+            "min": "0.05",
+            "max": "0.31",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1631357",
+            "fdc_id": "171688",
+            "nutrient_id": "1079",
+            "amount": "2.4",
+            "data_points": "29",
+            "derivation_id": "1",
+            "min": "1.4",
+            "max": "3.5",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1631368",
+            "fdc_id": "171688",
+            "nutrient_id": "1003",
+            "amount": "0.26",
+            "data_points": "29",
+            "derivation_id": "1",
+            "min": "0.17",
+            "max": "0.57",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ],
+        "portions": [
+          {
+            "id": "89190",
+            "fdc_id": "171688",
+            "seq_num": "1",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "cup, quartered or chopped",
+            "gram_weight": "125",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "89191",
+            "fdc_id": "171688",
+            "seq_num": "2",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "cup slices",
+            "gram_weight": "109",
+            "data_points": "60",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "89192",
+            "fdc_id": "171688",
+            "seq_num": "3",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "large (3-1/4\" dia)",
+            "gram_weight": "223",
+            "data_points": "113",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "89193",
+            "fdc_id": "171688",
+            "seq_num": "4",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "medium (3\" dia)",
+            "gram_weight": "182",
+            "data_points": "113",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "89194",
+            "fdc_id": "171688",
+            "seq_num": "5",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "small (2-3/4\" dia)",
+            "gram_weight": "149",
+            "data_points": "113",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "89195",
+            "fdc_id": "171688",
+            "seq_num": "6",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "extra small (2-1/2\" dia)",
+            "gram_weight": "101",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "89196",
+            "fdc_id": "171688",
+            "seq_num": "7",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "NLEA serving",
+            "gram_weight": "242",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "usda-sr-169967",
+      "sourceName": "USDA FoodData Central / SR Legacy",
+      "sourceId": "169967",
+      "sourceVersion": "SR Legacy final 2018-04",
+      "sourceUrl": "https://fdc.nal.usda.gov/food-details/169967/nutrients",
+      "retrievedAt": "2026-10-23",
+      "nameZh": "水煮西兰花（沥干，无盐）",
+      "nameOriginal": "Broccoli, cooked, boiled, drained, without salt",
+      "aliases": [
+        "水煮西兰花"
+      ],
+      "state": "cooked",
+      "category": "vegetable",
+      "ingredients": [
+        "水煮西兰花"
+      ],
+      "allergens": [],
+      "allergenStatus": "known",
+      "allergenNote": "按食物身份标注，不代表具体商品交叉接触或完整配料认证。",
+      "basisG": 100,
+      "nutrients": {
+        "energyKcal": 35.0,
+        "proteinG": 2.38,
+        "carbohydrateG": 7.18,
+        "fatG": 0.41,
+        "fiberG": 3.3
+      },
+      "carbohydrateBasis": "total_including_fiber",
+      "portions": [
+        {
+          "label": "100克可食部",
+          "grams": 100,
+          "origin": "database",
+          "sourceRef": "USDA FDC 169967; 100g nutrient basis"
+        }
+      ],
+      "origin": "database",
+      "sourceSnapshot": {
+        "food": {
+          "fdc_id": "169967",
+          "data_type": "sr_legacy_food",
+          "description": "Broccoli, cooked, boiled, drained, without salt",
+          "food_category_id": "11",
+          "publication_date": "2019-04-01"
+        },
+        "nutrients": [
+          {
+            "id": "1483734",
+            "fdc_id": "169967",
+            "nutrient_id": "1004",
+            "amount": "0.41",
+            "data_points": "4",
+            "derivation_id": "1",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1483766",
+            "fdc_id": "169967",
+            "nutrient_id": "1079",
+            "amount": "3.3",
+            "data_points": "4",
+            "derivation_id": "42",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1483773",
+            "fdc_id": "169967",
+            "nutrient_id": "1003",
+            "amount": "2.38",
+            "data_points": "4",
+            "derivation_id": "1",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1483809",
+            "fdc_id": "169967",
+            "nutrient_id": "1005",
+            "amount": "7.18",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1483810",
+            "fdc_id": "169967",
+            "nutrient_id": "1008",
+            "amount": "35",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ],
+        "portions": [
+          {
+            "id": "85772",
+            "fdc_id": "169967",
+            "seq_num": "1",
+            "amount": "0.5",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "cup, chopped",
+            "gram_weight": "78",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "85773",
+            "fdc_id": "169967",
+            "seq_num": "2",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "stalk, large (11\"-12\" long)",
+            "gram_weight": "280",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "85774",
+            "fdc_id": "169967",
+            "seq_num": "3",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "stalk, medium (7-1/2\" - 8\" long)",
+            "gram_weight": "180",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "85775",
+            "fdc_id": "169967",
+            "seq_num": "4",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "stalk, small (5\" long)",
+            "gram_weight": "140",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "85776",
+            "fdc_id": "169967",
+            "seq_num": "5",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "spear (about 5\" long)",
+            "gram_weight": "37",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "usda-sr-168463",
+      "sourceName": "USDA FoodData Central / SR Legacy",
+      "sourceId": "168463",
+      "sourceVersion": "SR Legacy final 2018-04",
+      "sourceUrl": "https://fdc.nal.usda.gov/food-details/168463/nutrients",
+      "retrievedAt": "2026-10-23",
+      "nameZh": "水煮菠菜（沥干，无盐）",
+      "nameOriginal": "Spinach, cooked, boiled, drained, without salt",
+      "aliases": [
+        "水煮菠菜"
+      ],
+      "state": "cooked",
+      "category": "vegetable",
+      "ingredients": [
+        "水煮菠菜"
+      ],
+      "allergens": [],
+      "allergenStatus": "known",
+      "allergenNote": "按食物身份标注，不代表具体商品交叉接触或完整配料认证。",
+      "basisG": 100,
+      "nutrients": {
+        "energyKcal": 23.0,
+        "proteinG": 2.97,
+        "carbohydrateG": 3.75,
+        "fatG": 0.26,
+        "fiberG": 2.4
+      },
+      "carbohydrateBasis": "total_including_fiber",
+      "portions": [
+        {
+          "label": "100克可食部",
+          "grams": 100,
+          "origin": "database",
+          "sourceRef": "USDA FDC 168463; 100g nutrient basis"
+        }
+      ],
+      "origin": "database",
+      "sourceSnapshot": {
+        "food": {
+          "fdc_id": "168463",
+          "data_type": "sr_legacy_food",
+          "description": "Spinach, cooked, boiled, drained, without salt",
+          "food_category_id": "11",
+          "publication_date": "2019-04-01"
+        },
+        "nutrients": [
+          {
+            "id": "1362549",
+            "fdc_id": "168463",
+            "nutrient_id": "1005",
+            "amount": "3.75",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1362609",
+            "fdc_id": "168463",
+            "nutrient_id": "1004",
+            "amount": "0.26",
+            "data_points": "16",
+            "derivation_id": "",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1362616",
+            "fdc_id": "168463",
+            "nutrient_id": "1003",
+            "amount": "2.97",
+            "data_points": "16",
+            "derivation_id": "",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1362623",
+            "fdc_id": "168463",
+            "nutrient_id": "1079",
+            "amount": "2.4",
+            "data_points": "0",
+            "derivation_id": "",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1362639",
+            "fdc_id": "168463",
+            "nutrient_id": "1008",
+            "amount": "23",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ],
+        "portions": [
+          {
+            "id": "83136",
+            "fdc_id": "168463",
+            "seq_num": "1",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "cup",
+            "gram_weight": "180",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "usda-sr-168483",
+      "sourceName": "USDA FoodData Central / SR Legacy",
+      "sourceId": "168483",
+      "sourceVersion": "SR Legacy final 2018-04",
+      "sourceUrl": "https://fdc.nal.usda.gov/food-details/168483/nutrients",
+      "retrievedAt": "2026-10-23",
+      "nameZh": "烤红薯（薯肉，无盐）",
+      "nameOriginal": "Sweet potato, cooked, baked in skin, flesh, without salt",
+      "aliases": [
+        "烤红薯"
+      ],
+      "state": "cooked",
+      "category": "starch",
+      "ingredients": [
+        "烤红薯"
+      ],
+      "allergens": [],
+      "allergenStatus": "known",
+      "allergenNote": "按食物身份标注，不代表具体商品交叉接触或完整配料认证。",
+      "basisG": 100,
+      "nutrients": {
+        "energyKcal": 90.0,
+        "proteinG": 2.01,
+        "carbohydrateG": 20.71,
+        "fatG": 0.15,
+        "fiberG": 3.3
+      },
+      "carbohydrateBasis": "total_including_fiber",
+      "portions": [
+        {
+          "label": "100克可食部",
+          "grams": 100,
+          "origin": "database",
+          "sourceRef": "USDA FDC 168483; 100g nutrient basis"
+        }
+      ],
+      "origin": "database",
+      "sourceSnapshot": {
+        "food": {
+          "fdc_id": "168483",
+          "data_type": "sr_legacy_food",
+          "description": "Sweet potato, cooked, baked in skin, flesh, without salt",
+          "food_category_id": "11",
+          "publication_date": "2019-04-01"
+        },
+        "nutrients": [
+          {
+            "id": "1364253",
+            "fdc_id": "168483",
+            "nutrient_id": "1005",
+            "amount": "20.71",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1364254",
+            "fdc_id": "168483",
+            "nutrient_id": "1008",
+            "amount": "90",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1364310",
+            "fdc_id": "168483",
+            "nutrient_id": "1004",
+            "amount": "0.15",
+            "data_points": "5",
+            "derivation_id": "43",
+            "min": "0.1",
+            "max": "0.18",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1364333",
+            "fdc_id": "168483",
+            "nutrient_id": "1079",
+            "amount": "3.3",
+            "data_points": "4",
+            "derivation_id": "1",
+            "min": "3",
+            "max": "3.6",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1364334",
+            "fdc_id": "168483",
+            "nutrient_id": "1003",
+            "amount": "2.01",
+            "data_points": "4",
+            "derivation_id": "1",
+            "min": "1.61",
+            "max": "2.39",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ],
+        "portions": [
+          {
+            "id": "83168",
+            "fdc_id": "168483",
+            "seq_num": "1",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "cup",
+            "gram_weight": "200",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "83169",
+            "fdc_id": "168483",
+            "seq_num": "2",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "large",
+            "gram_weight": "180",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "83170",
+            "fdc_id": "168483",
+            "seq_num": "3",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "medium (2\" dia, 5\" long, raw)",
+            "gram_weight": "114",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "83171",
+            "fdc_id": "168483",
+            "seq_num": "4",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "small",
+            "gram_weight": "60",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "usda-sr-170440",
+      "sourceName": "USDA FoodData Central / SR Legacy",
+      "sourceId": "170440",
+      "sourceVersion": "SR Legacy final 2018-04",
+      "sourceUrl": "https://fdc.nal.usda.gov/food-details/170440/nutrients",
+      "retrievedAt": "2026-10-23",
+      "nameZh": "去皮水煮土豆（无盐）",
+      "nameOriginal": "Potatoes, boiled, cooked without skin, flesh, without salt",
+      "aliases": [
+        "去皮水煮土豆"
+      ],
+      "state": "cooked",
+      "category": "starch",
+      "ingredients": [
+        "去皮水煮土豆"
+      ],
+      "allergens": [],
+      "allergenStatus": "known",
+      "allergenNote": "按食物身份标注，不代表具体商品交叉接触或完整配料认证。",
+      "basisG": 100,
+      "nutrients": {
+        "energyKcal": 86.0,
+        "proteinG": 1.71,
+        "carbohydrateG": 20.01,
+        "fatG": 0.1,
+        "fiberG": 1.8
+      },
+      "carbohydrateBasis": "total_including_fiber",
+      "portions": [
+        {
+          "label": "100克可食部",
+          "grams": 100,
+          "origin": "database",
+          "sourceRef": "USDA FDC 170440; 100g nutrient basis"
+        }
+      ],
+      "origin": "database",
+      "sourceSnapshot": {
+        "food": {
+          "fdc_id": "170440",
+          "data_type": "sr_legacy_food",
+          "description": "Potatoes, boiled, cooked without skin, flesh, without salt",
+          "food_category_id": "11",
+          "publication_date": "2019-04-01"
+        },
+        "nutrients": [
+          {
+            "id": "1523972",
+            "fdc_id": "170440",
+            "nutrient_id": "1005",
+            "amount": "20.01",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1524014",
+            "fdc_id": "170440",
+            "nutrient_id": "1008",
+            "amount": "86",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1524020",
+            "fdc_id": "170440",
+            "nutrient_id": "1004",
+            "amount": "0.1",
+            "data_points": "0",
+            "derivation_id": "",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1524037",
+            "fdc_id": "170440",
+            "nutrient_id": "1003",
+            "amount": "1.71",
+            "data_points": "6",
+            "derivation_id": "",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1524039",
+            "fdc_id": "170440",
+            "nutrient_id": "1079",
+            "amount": "1.8",
+            "data_points": "0",
+            "derivation_id": "",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ],
+        "portions": [
+          {
+            "id": "86651",
+            "fdc_id": "170440",
+            "seq_num": "1",
+            "amount": "0.5",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "cup",
+            "gram_weight": "78",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "86652",
+            "fdc_id": "170440",
+            "seq_num": "2",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "large (3\" to 4-1/4\" dia.)",
+            "gram_weight": "300",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "86653",
+            "fdc_id": "170440",
+            "seq_num": "3",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "medium (2-1/4\" to 3-1/4\" dia.)",
+            "gram_weight": "167",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "86654",
+            "fdc_id": "170440",
+            "seq_num": "4",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "small (1-3/4\" to 2-1/2\" dia.)",
+            "gram_weight": "125",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "usda-sr-171413",
+      "sourceName": "USDA FoodData Central / SR Legacy",
+      "sourceId": "171413",
+      "sourceVersion": "SR Legacy final 2018-04",
+      "sourceUrl": "https://fdc.nal.usda.gov/food-details/171413/nutrients",
+      "retrievedAt": "2026-10-23",
+      "nameZh": "橄榄油",
+      "nameOriginal": "Oil, olive, salad or cooking",
+      "aliases": [
+        "橄榄油"
+      ],
+      "state": "as_sold",
+      "category": "fat",
+      "ingredients": [
+        "橄榄油"
+      ],
+      "allergens": [],
+      "allergenStatus": "known",
+      "allergenNote": "按食物身份标注，不代表具体商品交叉接触或完整配料认证。",
+      "basisG": 100,
+      "nutrients": {
+        "energyKcal": 884.0,
+        "proteinG": 0.0,
+        "carbohydrateG": 0.0,
+        "fatG": 100.0,
+        "fiberG": 0.0
+      },
+      "carbohydrateBasis": "total_including_fiber",
+      "portions": [
+        {
+          "label": "100克可食部",
+          "grams": 100,
+          "origin": "database",
+          "sourceRef": "USDA FDC 171413; 100g nutrient basis"
+        }
+      ],
+      "origin": "database",
+      "sourceSnapshot": {
+        "food": {
+          "fdc_id": "171413",
+          "data_type": "sr_legacy_food",
+          "description": "Oil, olive, salad or cooking",
+          "food_category_id": "4",
+          "publication_date": "2019-04-01"
+        },
+        "nutrients": [
+          {
+            "id": "1607766",
+            "fdc_id": "171413",
+            "nutrient_id": "1004",
+            "amount": "100",
+            "data_points": "0",
+            "derivation_id": "52",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1607767",
+            "fdc_id": "171413",
+            "nutrient_id": "1005",
+            "amount": "0",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1607768",
+            "fdc_id": "171413",
+            "nutrient_id": "1008",
+            "amount": "884",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1607794",
+            "fdc_id": "171413",
+            "nutrient_id": "1003",
+            "amount": "0",
+            "data_points": "4",
+            "derivation_id": "1",
+            "min": "0",
+            "max": "0",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1607828",
+            "fdc_id": "171413",
+            "nutrient_id": "1079",
+            "amount": "0",
+            "data_points": "0",
+            "derivation_id": "",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ],
+        "portions": [
+          {
+            "id": "88667",
+            "fdc_id": "171413",
+            "seq_num": "1",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "tablespoon",
+            "gram_weight": "13.5",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "88668",
+            "fdc_id": "171413",
+            "seq_num": "2",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "cup",
+            "gram_weight": "216",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "88669",
+            "fdc_id": "171413",
+            "seq_num": "3",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "tsp",
+            "gram_weight": "4.5",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "usda-sr-175168",
+      "sourceName": "USDA FoodData Central / SR Legacy",
+      "sourceId": "175168",
+      "sourceVersion": "SR Legacy final 2018-04",
+      "sourceUrl": "https://fdc.nal.usda.gov/food-details/175168/nutrients",
+      "retrievedAt": "2026-10-23",
+      "nameZh": "熟养殖大西洋三文鱼（干热）",
+      "nameOriginal": "Fish, salmon, Atlantic, farmed, cooked, dry heat",
+      "aliases": [
+        "熟养殖大西洋三文鱼"
+      ],
+      "state": "cooked",
+      "category": "protein",
+      "ingredients": [
+        "熟养殖大西洋三文鱼"
+      ],
+      "allergens": [
+        "fish"
+      ],
+      "allergenStatus": "known",
+      "allergenNote": "按食物身份标注，不代表具体商品交叉接触或完整配料认证。",
+      "basisG": 100,
+      "nutrients": {
+        "energyKcal": 206.0,
+        "proteinG": 22.1,
+        "carbohydrateG": 0.0,
+        "fatG": 12.35,
+        "fiberG": 0.0
+      },
+      "carbohydrateBasis": "total_including_fiber",
+      "portions": [
+        {
+          "label": "100克可食部",
+          "grams": 100,
+          "origin": "database",
+          "sourceRef": "USDA FDC 175168; 100g nutrient basis"
+        }
+      ],
+      "origin": "database",
+      "sourceSnapshot": {
+        "food": {
+          "fdc_id": "175168",
+          "data_type": "sr_legacy_food",
+          "description": "Fish, salmon, Atlantic, farmed, cooked, dry heat",
+          "food_category_id": "15",
+          "publication_date": "2019-04-01"
+        },
+        "nutrients": [
+          {
+            "id": "1918222",
+            "fdc_id": "175168",
+            "nutrient_id": "1004",
+            "amount": "12.35",
+            "data_points": "2",
+            "derivation_id": "",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1918223",
+            "fdc_id": "175168",
+            "nutrient_id": "1005",
+            "amount": "0",
+            "data_points": "0",
+            "derivation_id": "68",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1918224",
+            "fdc_id": "175168",
+            "nutrient_id": "1003",
+            "amount": "22.1",
+            "data_points": "2",
+            "derivation_id": "",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1918245",
+            "fdc_id": "175168",
+            "nutrient_id": "1079",
+            "amount": "0",
+            "data_points": "0",
+            "derivation_id": "68",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1918253",
+            "fdc_id": "175168",
+            "nutrient_id": "1008",
+            "amount": "206",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ],
+        "portions": [
+          {
+            "id": "95788",
+            "fdc_id": "175168",
+            "seq_num": "1",
+            "amount": "3",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "oz",
+            "gram_weight": "85",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "95789",
+            "fdc_id": "175168",
+            "seq_num": "2",
+            "amount": "0.5",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "fillet",
+            "gram_weight": "178",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "usda-sr-171791",
+      "sourceName": "USDA FoodData Central / SR Legacy",
+      "sourceId": "171791",
+      "sourceVersion": "SR Legacy final 2018-04",
+      "sourceUrl": "https://fdc.nal.usda.gov/food-details/171791/nutrients",
+      "retrievedAt": "2026-10-23",
+      "nameZh": "熟95%瘦牛肉饼（烤制）",
+      "nameOriginal": "Beef, ground, 95% lean meat / 5% fat, patty, cooked, broiled",
+      "aliases": [
+        "熟95%瘦牛肉饼"
+      ],
+      "state": "cooked",
+      "category": "protein",
+      "ingredients": [
+        "熟95%瘦牛肉饼"
+      ],
+      "allergens": [],
+      "allergenStatus": "known",
+      "allergenNote": "按食物身份标注，不代表具体商品交叉接触或完整配料认证。",
+      "basisG": 100,
+      "nutrients": {
+        "energyKcal": 174.0,
+        "proteinG": 26.29,
+        "carbohydrateG": 0.0,
+        "fatG": 6.8,
+        "fiberG": 0.0
+      },
+      "carbohydrateBasis": "total_including_fiber",
+      "portions": [
+        {
+          "label": "100克可食部",
+          "grams": 100,
+          "origin": "database",
+          "sourceRef": "USDA FDC 171791; 100g nutrient basis"
+        }
+      ],
+      "origin": "database",
+      "sourceSnapshot": {
+        "food": {
+          "fdc_id": "171791",
+          "data_type": "sr_legacy_food",
+          "description": "Beef, ground, 95% lean meat / 5% fat, patty, cooked, broiled",
+          "food_category_id": "13",
+          "publication_date": "2019-04-01"
+        },
+        "nutrients": [
+          {
+            "id": "1640867",
+            "fdc_id": "171791",
+            "nutrient_id": "1005",
+            "amount": "0",
+            "data_points": "0",
+            "derivation_id": "68",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1640876",
+            "fdc_id": "171791",
+            "nutrient_id": "1079",
+            "amount": "0",
+            "data_points": "0",
+            "derivation_id": "68",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1640883",
+            "fdc_id": "171791",
+            "nutrient_id": "1003",
+            "amount": "26.29",
+            "data_points": "72",
+            "derivation_id": "3",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1640933",
+            "fdc_id": "171791",
+            "nutrient_id": "1004",
+            "amount": "6.8",
+            "data_points": "107",
+            "derivation_id": "3",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1640935",
+            "fdc_id": "171791",
+            "nutrient_id": "1008",
+            "amount": "174",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ],
+        "portions": [
+          {
+            "id": "89375",
+            "fdc_id": "171791",
+            "seq_num": "1",
+            "amount": "3",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "oz",
+            "gram_weight": "85",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "usda-sr-168250",
+      "sourceName": "USDA FoodData Central / SR Legacy",
+      "sourceId": "168250",
+      "sourceVersion": "SR Legacy final 2018-04",
+      "sourceUrl": "https://fdc.nal.usda.gov/food-details/168250/nutrients",
+      "retrievedAt": "2026-10-23",
+      "nameZh": "烤猪里脊（仅瘦肉）",
+      "nameOriginal": "Pork, fresh, loin, tenderloin, separable lean only, cooked, roasted",
+      "aliases": [
+        "烤猪里脊"
+      ],
+      "state": "cooked",
+      "category": "protein",
+      "ingredients": [
+        "烤猪里脊"
+      ],
+      "allergens": [],
+      "allergenStatus": "known",
+      "allergenNote": "按食物身份标注，不代表具体商品交叉接触或完整配料认证。",
+      "basisG": 100,
+      "nutrients": {
+        "energyKcal": 143.0,
+        "proteinG": 26.17,
+        "carbohydrateG": 0.0,
+        "fatG": 3.51,
+        "fiberG": 0.0
+      },
+      "carbohydrateBasis": "total_including_fiber",
+      "portions": [
+        {
+          "label": "100克可食部",
+          "grams": 100,
+          "origin": "database",
+          "sourceRef": "USDA FDC 168250; 100g nutrient basis"
+        }
+      ],
+      "origin": "database",
+      "sourceSnapshot": {
+        "food": {
+          "fdc_id": "168250",
+          "data_type": "sr_legacy_food",
+          "description": "Pork, fresh, loin, tenderloin, separable lean only, cooked, roasted",
+          "food_category_id": "10",
+          "publication_date": "2019-04-01"
+        },
+        "nutrients": [
+          {
+            "id": "1342539",
+            "fdc_id": "168250",
+            "nutrient_id": "1003",
+            "amount": "26.17",
+            "data_points": "12",
+            "derivation_id": "1",
+            "min": "22.31",
+            "max": "29.16",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1342588",
+            "fdc_id": "168250",
+            "nutrient_id": "1004",
+            "amount": "3.51",
+            "data_points": "12",
+            "derivation_id": "1",
+            "min": "2.28",
+            "max": "5.42",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1342638",
+            "fdc_id": "168250",
+            "nutrient_id": "1008",
+            "amount": "143",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1342646",
+            "fdc_id": "168250",
+            "nutrient_id": "1079",
+            "amount": "0",
+            "data_points": "0",
+            "derivation_id": "68",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1342647",
+            "fdc_id": "168250",
+            "nutrient_id": "1005",
+            "amount": "0",
+            "data_points": "0",
+            "derivation_id": "68",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ],
+        "portions": [
+          {
+            "id": "82751",
+            "fdc_id": "168250",
+            "seq_num": "1",
+            "amount": "3",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "oz",
+            "gram_weight": "85",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "82752",
+            "fdc_id": "168250",
+            "seq_num": "2",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "piece, cooked, excluding refuse (yield from 1 lb raw meat with refuse)",
+            "gram_weight": "333",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "82753",
+            "fdc_id": "168250",
+            "seq_num": "3",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "roast",
+            "gram_weight": "402",
+            "data_points": "31",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "usda-sr-172421",
+      "sourceName": "USDA FoodData Central / SR Legacy",
+      "sourceId": "172421",
+      "sourceVersion": "SR Legacy final 2018-04",
+      "sourceUrl": "https://fdc.nal.usda.gov/food-details/172421/nutrients",
+      "retrievedAt": "2026-10-23",
+      "nameZh": "水煮扁豆（无盐）",
+      "nameOriginal": "Lentils, mature seeds, cooked, boiled, without salt",
+      "aliases": [
+        "水煮扁豆"
+      ],
+      "state": "cooked",
+      "category": "legume",
+      "ingredients": [
+        "水煮扁豆"
+      ],
+      "allergens": [],
+      "allergenStatus": "known",
+      "allergenNote": "按食物身份标注，不代表具体商品交叉接触或完整配料认证。",
+      "basisG": 100,
+      "nutrients": {
+        "energyKcal": 116.0,
+        "proteinG": 9.02,
+        "carbohydrateG": 20.13,
+        "fatG": 0.38,
+        "fiberG": 7.9
+      },
+      "carbohydrateBasis": "total_including_fiber",
+      "portions": [
+        {
+          "label": "100克可食部",
+          "grams": 100,
+          "origin": "database",
+          "sourceRef": "USDA FDC 172421; 100g nutrient basis"
+        }
+      ],
+      "origin": "database",
+      "sourceSnapshot": {
+        "food": {
+          "fdc_id": "172421",
+          "data_type": "sr_legacy_food",
+          "description": "Lentils, mature seeds, cooked, boiled, without salt",
+          "food_category_id": "16",
+          "publication_date": "2019-04-01"
+        },
+        "nutrients": [
+          {
+            "id": "1693799",
+            "fdc_id": "172421",
+            "nutrient_id": "1005",
+            "amount": "20.13",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1693800",
+            "fdc_id": "172421",
+            "nutrient_id": "1008",
+            "amount": "116",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1693807",
+            "fdc_id": "172421",
+            "nutrient_id": "1003",
+            "amount": "9.02",
+            "data_points": "23",
+            "derivation_id": "",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1693809",
+            "fdc_id": "172421",
+            "nutrient_id": "1079",
+            "amount": "7.9",
+            "data_points": "0",
+            "derivation_id": "",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1693834",
+            "fdc_id": "172421",
+            "nutrient_id": "1004",
+            "amount": "0.38",
+            "data_points": "22",
+            "derivation_id": "",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ],
+        "portions": [
+          {
+            "id": "90596",
+            "fdc_id": "172421",
+            "seq_num": "1",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "cup",
+            "gram_weight": "198",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "90597",
+            "fdc_id": "172421",
+            "seq_num": "2",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "tbsp",
+            "gram_weight": "12.3",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "usda-sr-173735",
+      "sourceName": "USDA FoodData Central / SR Legacy",
+      "sourceId": "173735",
+      "sourceVersion": "SR Legacy final 2018-04",
+      "sourceUrl": "https://fdc.nal.usda.gov/food-details/173735/nutrients",
+      "retrievedAt": "2026-10-23",
+      "nameZh": "水煮黑豆（无盐）",
+      "nameOriginal": "Beans, black, mature seeds, cooked, boiled, without salt",
+      "aliases": [
+        "水煮黑豆"
+      ],
+      "state": "cooked",
+      "category": "legume",
+      "ingredients": [
+        "水煮黑豆"
+      ],
+      "allergens": [],
+      "allergenStatus": "known",
+      "allergenNote": "按食物身份标注，不代表具体商品交叉接触或完整配料认证。",
+      "basisG": 100,
+      "nutrients": {
+        "energyKcal": 132.0,
+        "proteinG": 8.86,
+        "carbohydrateG": 23.71,
+        "fatG": 0.54,
+        "fiberG": 8.7
+      },
+      "carbohydrateBasis": "total_including_fiber",
+      "portions": [
+        {
+          "label": "100克可食部",
+          "grams": 100,
+          "origin": "database",
+          "sourceRef": "USDA FDC 173735; 100g nutrient basis"
+        }
+      ],
+      "origin": "database",
+      "sourceSnapshot": {
+        "food": {
+          "fdc_id": "173735",
+          "data_type": "sr_legacy_food",
+          "description": "Beans, black, mature seeds, cooked, boiled, without salt",
+          "food_category_id": "16",
+          "publication_date": "2019-04-01"
+        },
+        "nutrients": [
+          {
+            "id": "1802376",
+            "fdc_id": "173735",
+            "nutrient_id": "1004",
+            "amount": "0.54",
+            "data_points": "8",
+            "derivation_id": "",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1802377",
+            "fdc_id": "173735",
+            "nutrient_id": "1005",
+            "amount": "23.71",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1802378",
+            "fdc_id": "173735",
+            "nutrient_id": "1008",
+            "amount": "132",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1802380",
+            "fdc_id": "173735",
+            "nutrient_id": "1003",
+            "amount": "8.86",
+            "data_points": "8",
+            "derivation_id": "",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1802382",
+            "fdc_id": "173735",
+            "nutrient_id": "1079",
+            "amount": "8.7",
+            "data_points": "0",
+            "derivation_id": "",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ],
+        "portions": [
+          {
+            "id": "93200",
+            "fdc_id": "173735",
+            "seq_num": "1",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "cup",
+            "gram_weight": "172",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "usda-sr-173806",
+      "sourceName": "USDA FoodData Central / SR Legacy",
+      "sourceId": "173806",
+      "sourceVersion": "SR Legacy final 2018-04",
+      "sourceUrl": "https://fdc.nal.usda.gov/food-details/173806/nutrients",
+      "retrievedAt": "2026-10-23",
+      "nameZh": "干烤花生（无盐）",
+      "nameOriginal": "Peanuts, all types, dry-roasted, without salt",
+      "aliases": [
+        "干烤花生"
+      ],
+      "state": "as_sold",
+      "category": "fat",
+      "ingredients": [
+        "干烤花生"
+      ],
+      "allergens": [
+        "peanut"
+      ],
+      "allergenStatus": "known",
+      "allergenNote": "按食物身份标注，不代表具体商品交叉接触或完整配料认证。",
+      "basisG": 100,
+      "nutrients": {
+        "energyKcal": 587.0,
+        "proteinG": 24.35,
+        "carbohydrateG": 21.26,
+        "fatG": 49.66,
+        "fiberG": 8.4
+      },
+      "carbohydrateBasis": "total_including_fiber",
+      "portions": [
+        {
+          "label": "100克可食部",
+          "grams": 100,
+          "origin": "database",
+          "sourceRef": "USDA FDC 173806; 100g nutrient basis"
+        }
+      ],
+      "origin": "database",
+      "sourceSnapshot": {
+        "food": {
+          "fdc_id": "173806",
+          "data_type": "sr_legacy_food",
+          "description": "Peanuts, all types, dry-roasted, without salt",
+          "food_category_id": "16",
+          "publication_date": "2019-04-01"
+        },
+        "nutrients": [
+          {
+            "id": "1806511",
+            "fdc_id": "173806",
+            "nutrient_id": "1079",
+            "amount": "8.4",
+            "data_points": "8",
+            "derivation_id": "1",
+            "min": "6.4",
+            "max": "11.5",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1806515",
+            "fdc_id": "173806",
+            "nutrient_id": "1003",
+            "amount": "24.35",
+            "data_points": "17",
+            "derivation_id": "1",
+            "min": "21.51",
+            "max": "25.28",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1806554",
+            "fdc_id": "173806",
+            "nutrient_id": "1005",
+            "amount": "21.26",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1806555",
+            "fdc_id": "173806",
+            "nutrient_id": "1008",
+            "amount": "587",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1806616",
+            "fdc_id": "173806",
+            "nutrient_id": "1004",
+            "amount": "49.66",
+            "data_points": "9",
+            "derivation_id": "",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ],
+        "portions": [
+          {
+            "id": "93280",
+            "fdc_id": "173806",
+            "seq_num": "1",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "cup",
+            "gram_weight": "146",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "93281",
+            "fdc_id": "173806",
+            "seq_num": "2",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "oz",
+            "gram_weight": "28.35",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "93282",
+            "fdc_id": "173806",
+            "seq_num": "3",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "peanut",
+            "gram_weight": "1",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "usda-sr-170393",
+      "sourceName": "USDA FoodData Central / SR Legacy",
+      "sourceId": "170393",
+      "sourceVersion": "SR Legacy final 2018-04",
+      "sourceUrl": "https://fdc.nal.usda.gov/food-details/170393/nutrients",
+      "retrievedAt": "2026-10-23",
+      "nameZh": "胡萝卜（生）",
+      "nameOriginal": "Carrots, raw",
+      "aliases": [
+        "胡萝卜"
+      ],
+      "state": "raw",
+      "category": "vegetable",
+      "ingredients": [
+        "胡萝卜"
+      ],
+      "allergens": [],
+      "allergenStatus": "known",
+      "allergenNote": "按食物身份标注，不代表具体商品交叉接触或完整配料认证。",
+      "basisG": 100,
+      "nutrients": {
+        "energyKcal": 41.0,
+        "proteinG": 0.93,
+        "carbohydrateG": 9.58,
+        "fatG": 0.24,
+        "fiberG": 2.8
+      },
+      "carbohydrateBasis": "total_including_fiber",
+      "portions": [
+        {
+          "label": "100克可食部",
+          "grams": 100,
+          "origin": "database",
+          "sourceRef": "USDA FDC 170393; 100g nutrient basis"
+        }
+      ],
+      "origin": "database",
+      "sourceSnapshot": {
+        "food": {
+          "fdc_id": "170393",
+          "data_type": "sr_legacy_food",
+          "description": "Carrots, raw",
+          "food_category_id": "11",
+          "publication_date": "2019-04-01"
+        },
+        "nutrients": [
+          {
+            "id": "1519940",
+            "fdc_id": "170393",
+            "nutrient_id": "1003",
+            "amount": "0.93",
+            "data_points": "19",
+            "derivation_id": "43",
+            "min": "0.68",
+            "max": "1.19",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1519947",
+            "fdc_id": "170393",
+            "nutrient_id": "1004",
+            "amount": "0.24",
+            "data_points": "26",
+            "derivation_id": "43",
+            "min": "0.1",
+            "max": "0.4",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1519995",
+            "fdc_id": "170393",
+            "nutrient_id": "1005",
+            "amount": "9.58",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1519996",
+            "fdc_id": "170393",
+            "nutrient_id": "1008",
+            "amount": "41",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1520031",
+            "fdc_id": "170393",
+            "nutrient_id": "1079",
+            "amount": "2.8",
+            "data_points": "4",
+            "derivation_id": "1",
+            "min": "2.7",
+            "max": "3",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ],
+        "portions": [
+          {
+            "id": "86555",
+            "fdc_id": "170393",
+            "seq_num": "1",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "cup chopped",
+            "gram_weight": "128",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "86556",
+            "fdc_id": "170393",
+            "seq_num": "2",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "cup grated",
+            "gram_weight": "110",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "86557",
+            "fdc_id": "170393",
+            "seq_num": "3",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "cup strips or slices",
+            "gram_weight": "122",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "86558",
+            "fdc_id": "170393",
+            "seq_num": "4",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "large (7-1/4\" to 8-/1/2\" long)",
+            "gram_weight": "72",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "86559",
+            "fdc_id": "170393",
+            "seq_num": "5",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "medium",
+            "gram_weight": "61",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "86560",
+            "fdc_id": "170393",
+            "seq_num": "6",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "small (5-1/2\" long)",
+            "gram_weight": "50",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "86561",
+            "fdc_id": "170393",
+            "seq_num": "7",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "slice",
+            "gram_weight": "3",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "86562",
+            "fdc_id": "170393",
+            "seq_num": "8",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "strip large (3\" long)",
+            "gram_weight": "7",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "86563",
+            "fdc_id": "170393",
+            "seq_num": "9",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "strip medium",
+            "gram_weight": "4",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "usda-sr-168409",
+      "sourceName": "USDA FoodData Central / SR Legacy",
+      "sourceId": "168409",
+      "sourceVersion": "SR Legacy final 2018-04",
+      "sourceUrl": "https://fdc.nal.usda.gov/food-details/168409/nutrients",
+      "retrievedAt": "2026-10-23",
+      "nameZh": "带皮黄瓜（生）",
+      "nameOriginal": "Cucumber, with peel, raw",
+      "aliases": [
+        "带皮黄瓜"
+      ],
+      "state": "raw",
+      "category": "vegetable",
+      "ingredients": [
+        "带皮黄瓜"
+      ],
+      "allergens": [],
+      "allergenStatus": "known",
+      "allergenNote": "按食物身份标注，不代表具体商品交叉接触或完整配料认证。",
+      "basisG": 100,
+      "nutrients": {
+        "energyKcal": 15.0,
+        "proteinG": 0.65,
+        "carbohydrateG": 3.63,
+        "fatG": 0.11,
+        "fiberG": 0.5
+      },
+      "carbohydrateBasis": "total_including_fiber",
+      "portions": [
+        {
+          "label": "100克可食部",
+          "grams": 100,
+          "origin": "database",
+          "sourceRef": "USDA FDC 168409; 100g nutrient basis"
+        }
+      ],
+      "origin": "database",
+      "sourceSnapshot": {
+        "food": {
+          "fdc_id": "168409",
+          "data_type": "sr_legacy_food",
+          "description": "Cucumber, with peel, raw",
+          "food_category_id": "11",
+          "publication_date": "2019-04-01"
+        },
+        "nutrients": [
+          {
+            "id": "1358223",
+            "fdc_id": "168409",
+            "nutrient_id": "1005",
+            "amount": "3.63",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1358224",
+            "fdc_id": "168409",
+            "nutrient_id": "1008",
+            "amount": "15",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1358295",
+            "fdc_id": "168409",
+            "nutrient_id": "1004",
+            "amount": "0.11",
+            "data_points": "9",
+            "derivation_id": "43",
+            "min": "0.1",
+            "max": "0.11",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1358328",
+            "fdc_id": "168409",
+            "nutrient_id": "1079",
+            "amount": "0.5",
+            "data_points": "1",
+            "derivation_id": "",
+            "min": "0.5",
+            "max": "0.5",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1358332",
+            "fdc_id": "168409",
+            "nutrient_id": "1003",
+            "amount": "0.65",
+            "data_points": "4",
+            "derivation_id": "1",
+            "min": "0.65",
+            "max": "0.65",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ],
+        "portions": [
+          {
+            "id": "83049",
+            "fdc_id": "168409",
+            "seq_num": "1",
+            "amount": "0.5",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "cup slices",
+            "gram_weight": "52",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "83050",
+            "fdc_id": "168409",
+            "seq_num": "2",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "cucumber (8-1/4\")",
+            "gram_weight": "301",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "usda-sr-170457",
+      "sourceName": "USDA FoodData Central / SR Legacy",
+      "sourceId": "170457",
+      "sourceVersion": "SR Legacy final 2018-04",
+      "sourceUrl": "https://fdc.nal.usda.gov/food-details/170457/nutrients",
+      "retrievedAt": "2026-10-23",
+      "nameZh": "红番茄（生）",
+      "nameOriginal": "Tomatoes, red, ripe, raw, year round average",
+      "aliases": [
+        "红番茄"
+      ],
+      "state": "raw",
+      "category": "vegetable",
+      "ingredients": [
+        "红番茄"
+      ],
+      "allergens": [],
+      "allergenStatus": "known",
+      "allergenNote": "按食物身份标注，不代表具体商品交叉接触或完整配料认证。",
+      "basisG": 100,
+      "nutrients": {
+        "energyKcal": 18.0,
+        "proteinG": 0.88,
+        "carbohydrateG": 3.89,
+        "fatG": 0.2,
+        "fiberG": 1.2
+      },
+      "carbohydrateBasis": "total_including_fiber",
+      "portions": [
+        {
+          "label": "100克可食部",
+          "grams": 100,
+          "origin": "database",
+          "sourceRef": "USDA FDC 170457; 100g nutrient basis"
+        }
+      ],
+      "origin": "database",
+      "sourceSnapshot": {
+        "food": {
+          "fdc_id": "170457",
+          "data_type": "sr_legacy_food",
+          "description": "Tomatoes, red, ripe, raw, year round average",
+          "food_category_id": "11",
+          "publication_date": "2019-04-01"
+        },
+        "nutrients": [
+          {
+            "id": "1525333",
+            "fdc_id": "170457",
+            "nutrient_id": "1005",
+            "amount": "3.89",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1525334",
+            "fdc_id": "170457",
+            "nutrient_id": "1008",
+            "amount": "18",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1525365",
+            "fdc_id": "170457",
+            "nutrient_id": "1004",
+            "amount": "0.2",
+            "data_points": "26",
+            "derivation_id": "43",
+            "min": "0.07",
+            "max": "0.8",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1525369",
+            "fdc_id": "170457",
+            "nutrient_id": "1079",
+            "amount": "1.2",
+            "data_points": "5",
+            "derivation_id": "42",
+            "min": "0.7",
+            "max": "2",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1525376",
+            "fdc_id": "170457",
+            "nutrient_id": "1003",
+            "amount": "0.88",
+            "data_points": "19",
+            "derivation_id": "43",
+            "min": "0.59",
+            "max": "1.06",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ],
+        "portions": [
+          {
+            "id": "86681",
+            "fdc_id": "170457",
+            "seq_num": "1",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "cup cherry tomatoes",
+            "gram_weight": "149",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "86682",
+            "fdc_id": "170457",
+            "seq_num": "2",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "cup, chopped or sliced",
+            "gram_weight": "180",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "86683",
+            "fdc_id": "170457",
+            "seq_num": "3",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "Italian tomato",
+            "gram_weight": "62",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "86684",
+            "fdc_id": "170457",
+            "seq_num": "4",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "cherry",
+            "gram_weight": "17",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "86685",
+            "fdc_id": "170457",
+            "seq_num": "5",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "large whole (3\" dia)",
+            "gram_weight": "182",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "86686",
+            "fdc_id": "170457",
+            "seq_num": "6",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "medium whole (2-3/5\" dia)",
+            "gram_weight": "123",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "86687",
+            "fdc_id": "170457",
+            "seq_num": "7",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "slice, medium (1/4\" thick)",
+            "gram_weight": "20",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "86688",
+            "fdc_id": "170457",
+            "seq_num": "8",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "plum tomato",
+            "gram_weight": "62",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "86689",
+            "fdc_id": "170457",
+            "seq_num": "9",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "small whole (2-2/5\" dia)",
+            "gram_weight": "91",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "86690",
+            "fdc_id": "170457",
+            "seq_num": "10",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "slice, thick/large (1/2\" thick)",
+            "gram_weight": "27",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "86691",
+            "fdc_id": "170457",
+            "seq_num": "11",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "wedge (1/4 of medium tomato)",
+            "gram_weight": "31",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "86692",
+            "fdc_id": "170457",
+            "seq_num": "12",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "slice, thin/small",
+            "gram_weight": "15",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "86693",
+            "fdc_id": "170457",
+            "seq_num": "13",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "NLEA serving",
+            "gram_weight": "148",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "usda-sr-169999",
+      "sourceName": "USDA FoodData Central / SR Legacy",
+      "sourceId": "169999",
+      "sourceVersion": "SR Legacy final 2018-04",
+      "sourceUrl": "https://fdc.nal.usda.gov/food-details/169999/nutrients",
+      "retrievedAt": "2026-10-23",
+      "nameZh": "水煮甜玉米（沥干，无盐）",
+      "nameOriginal": "Corn, sweet, yellow, cooked, boiled, drained, without salt",
+      "aliases": [
+        "水煮甜玉米"
+      ],
+      "state": "cooked",
+      "category": "starch",
+      "ingredients": [
+        "水煮甜玉米"
+      ],
+      "allergens": [],
+      "allergenStatus": "known",
+      "allergenNote": "按食物身份标注，不代表具体商品交叉接触或完整配料认证。",
+      "basisG": 100,
+      "nutrients": {
+        "energyKcal": 96.0,
+        "proteinG": 3.41,
+        "carbohydrateG": 20.98,
+        "fatG": 1.5,
+        "fiberG": 2.4
+      },
+      "carbohydrateBasis": "total_including_fiber",
+      "portions": [
+        {
+          "label": "100克可食部",
+          "grams": 100,
+          "origin": "database",
+          "sourceRef": "USDA FDC 169999; 100g nutrient basis"
+        }
+      ],
+      "origin": "database",
+      "sourceSnapshot": {
+        "food": {
+          "fdc_id": "169999",
+          "data_type": "sr_legacy_food",
+          "description": "Corn, sweet, yellow, cooked, boiled, drained, without salt",
+          "food_category_id": "11",
+          "publication_date": "2019-04-01"
+        },
+        "nutrients": [
+          {
+            "id": "1486474",
+            "fdc_id": "169999",
+            "nutrient_id": "1004",
+            "amount": "1.5",
+            "data_points": "10",
+            "derivation_id": "42",
+            "min": "1.28",
+            "max": "2.04",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1486475",
+            "fdc_id": "169999",
+            "nutrient_id": "1005",
+            "amount": "20.98",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1486476",
+            "fdc_id": "169999",
+            "nutrient_id": "1008",
+            "amount": "96",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1486489",
+            "fdc_id": "169999",
+            "nutrient_id": "1003",
+            "amount": "3.41",
+            "data_points": "10",
+            "derivation_id": "42",
+            "min": "3.31",
+            "max": "3.88",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1486497",
+            "fdc_id": "169999",
+            "nutrient_id": "1079",
+            "amount": "2.4",
+            "data_points": "3",
+            "derivation_id": "42",
+            "min": "2.3",
+            "max": "2.8",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ],
+        "portions": [
+          {
+            "id": "85850",
+            "fdc_id": "169999",
+            "seq_num": "1",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "ear small (5-1/2\" to 6-1/2\" long)",
+            "gram_weight": "89",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "85851",
+            "fdc_id": "169999",
+            "seq_num": "2",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "ear medium (6-3/4\" to 7-1/2\" long)",
+            "gram_weight": "103",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "85852",
+            "fdc_id": "169999",
+            "seq_num": "3",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "ear large (7-3/4\" to 9\" long)",
+            "gram_weight": "118",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "85853",
+            "fdc_id": "169999",
+            "seq_num": "4",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "cup cut",
+            "gram_weight": "149",
+            "data_points": "6",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "85854",
+            "fdc_id": "169999",
+            "seq_num": "5",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "baby ear",
+            "gram_weight": "8",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "usda-sr-169283",
+      "sourceName": "USDA FoodData Central / SR Legacy",
+      "sourceId": "169283",
+      "sourceVersion": "SR Legacy final 2018-04",
+      "sourceUrl": "https://fdc.nal.usda.gov/food-details/169283/nutrients",
+      "retrievedAt": "2026-10-23",
+      "nameZh": "水煮青大豆（沥干，无盐）",
+      "nameOriginal": "Soybeans, green, cooked, boiled, drained, without salt",
+      "aliases": [
+        "水煮青大豆"
+      ],
+      "state": "cooked",
+      "category": "legume",
+      "ingredients": [
+        "水煮青大豆"
+      ],
+      "allergens": [
+        "soy"
+      ],
+      "allergenStatus": "known",
+      "allergenNote": "按食物身份标注，不代表具体商品交叉接触或完整配料认证。",
+      "basisG": 100,
+      "nutrients": {
+        "energyKcal": 141.0,
+        "proteinG": 12.35,
+        "carbohydrateG": 11.05,
+        "fatG": 6.4,
+        "fiberG": 4.2
+      },
+      "carbohydrateBasis": "total_including_fiber",
+      "portions": [
+        {
+          "label": "100克可食部",
+          "grams": 100,
+          "origin": "database",
+          "sourceRef": "USDA FDC 169283; 100g nutrient basis"
+        }
+      ],
+      "origin": "database",
+      "sourceSnapshot": {
+        "food": {
+          "fdc_id": "169283",
+          "data_type": "sr_legacy_food",
+          "description": "Soybeans, green, cooked, boiled, drained, without salt",
+          "food_category_id": "11",
+          "publication_date": "2019-04-01"
+        },
+        "nutrients": [
+          {
+            "id": "1429840",
+            "fdc_id": "169283",
+            "nutrient_id": "1004",
+            "amount": "6.4",
+            "data_points": "1",
+            "derivation_id": "",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1429841",
+            "fdc_id": "169283",
+            "nutrient_id": "1005",
+            "amount": "11.05",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1429842",
+            "fdc_id": "169283",
+            "nutrient_id": "1008",
+            "amount": "141",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1429875",
+            "fdc_id": "169283",
+            "nutrient_id": "1003",
+            "amount": "12.35",
+            "data_points": "2",
+            "derivation_id": "",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1429877",
+            "fdc_id": "169283",
+            "nutrient_id": "1079",
+            "amount": "4.2",
+            "data_points": "0",
+            "derivation_id": "",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ],
+        "portions": [
+          {
+            "id": "84595",
+            "fdc_id": "169283",
+            "seq_num": "1",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "cup",
+            "gram_weight": "180",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "usda-sr-169252",
+      "sourceName": "USDA FoodData Central / SR Legacy",
+      "sourceId": "169252",
+      "sourceVersion": "SR Legacy final 2018-04",
+      "sourceUrl": "https://fdc.nal.usda.gov/food-details/169252/nutrients",
+      "retrievedAt": "2026-10-23",
+      "nameZh": "水煮白蘑菇（沥干，无盐）",
+      "nameOriginal": "Mushrooms, white, cooked, boiled, drained, without salt",
+      "aliases": [
+        "水煮白蘑菇"
+      ],
+      "state": "cooked",
+      "category": "vegetable",
+      "ingredients": [
+        "水煮白蘑菇"
+      ],
+      "allergens": [],
+      "allergenStatus": "known",
+      "allergenNote": "按食物身份标注，不代表具体商品交叉接触或完整配料认证。",
+      "basisG": 100,
+      "nutrients": {
+        "energyKcal": 28.0,
+        "proteinG": 2.17,
+        "carbohydrateG": 5.29,
+        "fatG": 0.47,
+        "fiberG": 2.2
+      },
+      "carbohydrateBasis": "total_including_fiber",
+      "portions": [
+        {
+          "label": "100克可食部",
+          "grams": 100,
+          "origin": "database",
+          "sourceRef": "USDA FDC 169252; 100g nutrient basis"
+        }
+      ],
+      "origin": "database",
+      "sourceSnapshot": {
+        "food": {
+          "fdc_id": "169252",
+          "data_type": "sr_legacy_food",
+          "description": "Mushrooms, white, cooked, boiled, drained, without salt",
+          "food_category_id": "11",
+          "publication_date": "2019-04-01"
+        },
+        "nutrients": [
+          {
+            "id": "1427461",
+            "fdc_id": "169252",
+            "nutrient_id": "1079",
+            "amount": "2.2",
+            "data_points": "0",
+            "derivation_id": "",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1427488",
+            "fdc_id": "169252",
+            "nutrient_id": "1003",
+            "amount": "2.17",
+            "data_points": "0",
+            "derivation_id": "",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1427495",
+            "fdc_id": "169252",
+            "nutrient_id": "1004",
+            "amount": "0.47",
+            "data_points": "0",
+            "derivation_id": "",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1427508",
+            "fdc_id": "169252",
+            "nutrient_id": "1005",
+            "amount": "5.29",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1427509",
+            "fdc_id": "169252",
+            "nutrient_id": "1008",
+            "amount": "28",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ],
+        "portions": [
+          {
+            "id": "84533",
+            "fdc_id": "169252",
+            "seq_num": "1",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "cup pieces",
+            "gram_weight": "156",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "84534",
+            "fdc_id": "169252",
+            "seq_num": "2",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "tbsp",
+            "gram_weight": "9.8",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "84535",
+            "fdc_id": "169252",
+            "seq_num": "3",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "mushroom",
+            "gram_weight": "12",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "usda-sr-169762",
+      "sourceName": "USDA FoodData Central / SR Legacy",
+      "sourceId": "169762",
+      "sourceVersion": "SR Legacy final 2018-04",
+      "sourceUrl": "https://fdc.nal.usda.gov/food-details/169762/nutrients",
+      "retrievedAt": "2026-10-23",
+      "nameZh": "熟鸡蛋面（未强化，加盐）",
+      "nameOriginal": "Noodles, egg, cooked, unenriched, with added salt",
+      "aliases": [
+        "熟鸡蛋面"
+      ],
+      "state": "cooked",
+      "category": "grain",
+      "ingredients": [
+        "熟鸡蛋面"
+      ],
+      "allergens": [
+        "wheat",
+        "egg"
+      ],
+      "allergenStatus": "known",
+      "allergenNote": "按食物身份标注，不代表具体商品交叉接触或完整配料认证。",
+      "basisG": 100,
+      "nutrients": {
+        "energyKcal": 138.0,
+        "proteinG": 4.54,
+        "carbohydrateG": 25.16,
+        "fatG": 2.07,
+        "fiberG": 1.2
+      },
+      "carbohydrateBasis": "total_including_fiber",
+      "portions": [
+        {
+          "label": "100克可食部",
+          "grams": 100,
+          "origin": "database",
+          "sourceRef": "USDA FDC 169762; 100g nutrient basis"
+        }
+      ],
+      "origin": "database",
+      "sourceSnapshot": {
+        "food": {
+          "fdc_id": "169762",
+          "data_type": "sr_legacy_food",
+          "description": "Noodles, egg, cooked, unenriched, with added salt",
+          "food_category_id": "20",
+          "publication_date": "2019-04-01"
+        },
+        "nutrients": [
+          {
+            "id": "1467744",
+            "fdc_id": "169762",
+            "nutrient_id": "1004",
+            "amount": "2.07",
+            "data_points": "3",
+            "derivation_id": "1",
+            "min": "1.89",
+            "max": "2.31",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1467760",
+            "fdc_id": "169762",
+            "nutrient_id": "1079",
+            "amount": "1.2",
+            "data_points": "6",
+            "derivation_id": "1",
+            "min": "0.9",
+            "max": "1.7",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1467773",
+            "fdc_id": "169762",
+            "nutrient_id": "1003",
+            "amount": "4.54",
+            "data_points": "3",
+            "derivation_id": "1",
+            "min": "2.76",
+            "max": "6.41",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1467793",
+            "fdc_id": "169762",
+            "nutrient_id": "1005",
+            "amount": "25.16",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          },
+          {
+            "id": "1467794",
+            "fdc_id": "169762",
+            "nutrient_id": "1008",
+            "amount": "138",
+            "data_points": "0",
+            "derivation_id": "49",
+            "min": "",
+            "max": "",
+            "median": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ],
+        "portions": [
+          {
+            "id": "85467",
+            "fdc_id": "169762",
+            "seq_num": "1",
+            "amount": "1",
+            "measure_unit_id": "9999",
+            "portion_description": "",
+            "modifier": "cup",
+            "gram_weight": "160",
+            "data_points": "",
+            "footnote": "",
+            "min_year_acquired": ""
+          }
+        ]
+      }
+    }
+  ]
+}

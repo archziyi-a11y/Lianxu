@@ -39,6 +39,12 @@ interface CollaborationDao {
     @Query("SELECT * FROM day_plans WHERE id = :id") suspend fun plan(id: String): DayPlanEntity?
     @Insert(onConflict = OnConflictStrategy.ABORT) suspend fun putPolicy(value: NutritionPolicyEntity)
     @Query("SELECT * FROM nutrition_policies ORDER BY startsOn DESC, createdAt DESC LIMIT 1") suspend fun latestPolicy(): NutritionPolicyEntity?
+    @Query("SELECT * FROM nutrition_policies WHERE startsOn <= :date ORDER BY startsOn DESC, createdAt DESC LIMIT 1") suspend fun policyOn(date: String): NutritionPolicyEntity?
+    @Insert(onConflict = OnConflictStrategy.ABORT) suspend fun putEntitySnapshot(value: EntitySnapshotEntity)
+    @Query("SELECT * FROM entity_snapshots WHERE entityType = :type AND entityId = :id AND revision = :revision")
+    suspend fun entitySnapshot(type: String, id: String, revision: Int): EntitySnapshotEntity?
+    @Query("SELECT * FROM day_plans WHERE dateContext = :context LIMIT 1") suspend fun planForDate(context: String): DayPlanEntity?
+    @Query("SELECT * FROM day_plans WHERE dateContext = :context LIMIT 1") fun watchPlan(context: String): Flow<DayPlanEntity?>
     @Query("UPDATE analyses SET freshness = 'stale' WHERE freshness = 'current'") suspend fun invalidateAnalyses()
     @Query("UPDATE day_plans SET state = 'stale' WHERE state = 'current'") suspend fun invalidatePlans()
 }
@@ -52,5 +58,7 @@ interface RecordDao {
     @Query("SELECT * FROM intake_entries WHERE deletedAt IS NULL ORDER BY createdAt DESC") fun intakes(): Flow<List<IntakeEntry>>
     @Query("SELECT * FROM intake_entries WHERE id = :id") suspend fun intake(id: String): IntakeEntry?
     @Insert(onConflict = OnConflictStrategy.ABORT) suspend fun insertKnowledge(value: KnowledgeNote)
+    @Query("SELECT * FROM intake_entries WHERE deletedAt IS NULL ORDER BY createdAt DESC") suspend fun allIntakes(): List<IntakeEntry>
+    @Query("SELECT * FROM training_sessions WHERE deletedAt IS NULL ORDER BY createdAt DESC") suspend fun allTrainings(): List<TrainingSession>
     @Query("SELECT * FROM knowledge_notes WHERE deletedAt IS NULL AND status = 'current'") fun knowledge(): Flow<List<KnowledgeNote>>
 }

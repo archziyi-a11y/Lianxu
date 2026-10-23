@@ -9,6 +9,17 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.contentDescription
+import com.example.lianxu.data.repository.ResolvedComponent
+import com.example.lianxu.data.model.CardAction
+import coil.compose.AsyncImage
+import java.io.File
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -38,7 +49,10 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 @Composable
 fun TodayScreen(modifier: Modifier = Modifier, viewModel: TodayViewModel = viewModel()) {
     val cards by viewModel.cards.collectAsState()
+    val resolved by viewModel.resolved.collectAsState()
+    val sourceDetails by viewModel.sourceDetails.collectAsState()
     val isProcessing by viewModel.isProcessing.collectAsState()
+    val isPlanning by viewModel.isPlanning.collectAsState()
     val notice by viewModel.notice.collectAsState()
     val isImporting by viewModel.isImporting.collectAsState()
     val demoMode by viewModel.demoMode.collectAsState()
@@ -60,6 +74,12 @@ fun TodayScreen(modifier: Modifier = Modifier, viewModel: TodayViewModel = viewM
             }
         }
     )
+
+    sourceDetails?.let { details ->
+        AlertDialog(onDismissRequest = viewModel::dismissSource, title = { Text("食物与计算依据") },
+            text = { Text(details, modifier = Modifier.heightIn(max = 420.dp).verticalScroll(rememberScrollState())) },
+            confirmButton = { TextButton(onClick = viewModel::dismissSource) { Text("关闭") } })
+    }
 
     if (showSettingsDialog) {
         var apiKeyInput by remember { mutableStateOf("") }
@@ -128,7 +148,7 @@ fun TodayScreen(modifier: Modifier = Modifier, viewModel: TodayViewModel = viewM
         modifier = modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
-                title = { Text("Dashboard") },
+                title = { Text("今日") },
                 actions = {
                     IconButton(onClick = { showSettingsDialog = true }) {
                         Icon(Icons.Filled.Settings, contentDescription = "Settings")
@@ -163,7 +183,8 @@ fun TodayScreen(modifier: Modifier = Modifier, viewModel: TodayViewModel = viewM
         ) {
             Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
                 Text(profileSummary, style = MaterialTheme.typography.bodyMedium)
-                if (demoMode) Text("演示模式 · 尚未连接AI", color = MaterialTheme.colorScheme.secondary)
+                if (demoMode) Text("AI未配置 · 本地营养规划可用", color = MaterialTheme.colorScheme.secondary)
+                if (isPlanning) Text("正在更新营养与餐食…")
                 if (isImporting) Text("正在保存图片…")
                 notice?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
             }
@@ -194,6 +215,8 @@ fun TodayScreen(modifier: Modifier = Modifier, viewModel: TodayViewModel = viewM
                         ) { card ->
                             DashboardCardItem(
                                 card = card,
+                                resolved = resolved[card.id].orEmpty(),
+                                onAction = { action, value -> viewModel.performAction(action, value) },
                                 onLongPress = { viewModel.toggleAnnotationMode(card.id) },
                                 onTap = {
                                     currentCardIdForText = card.id
@@ -233,12 +256,14 @@ fun DashboardCardItem(
     onLongPress: () -> Unit,
     onTap: () -> Unit,
     onSwipeUp: () -> Unit,
+    resolved: List<ResolvedComponent> = emptyList(),
+    onAction: (CardAction, String?) -> Unit = { _, _ -> },
     modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(120.dp)
+            .heightIn(min = 120.dp)
             .combinedClickable(
                 onLongClick = onLongPress,
                 onClick = {}
@@ -255,7 +280,7 @@ fun DashboardCardItem(
         Box(modifier = Modifier.fillMaxSize()) {
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxWidth()
                     .padding(16.dp),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
@@ -265,12 +290,8 @@ fun DashboardCardItem(
                     color = MaterialTheme.colorScheme.secondary,
                     fontWeight = FontWeight.Bold
                 )
-                Text(
-                    text = card.value,
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontWeight = FontWeight.Black
-                )
+                if (card.blocks.isEmpty()) Text(card.value, style = MaterialTheme.typography.bodyLarge)
+                else resolved.forEach { block -> ComponentView(block, resolved.size == 1, onAction) }
             }
             if (card.isAnnotationMode) {
                 Box(
@@ -306,6 +327,56 @@ fun DashboardCardItem(
                     )
                 }
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun ComponentView(block: ResolvedComponent, largeMetric: Boolean, onAction: (CardAction, String?) -> Unit) {
+    val context = LocalContext.current
+    Column(modifier = Modifier.fillMaxWidth().padding(top = 8.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        when (block.type) {
+            "metric" -> {
+                if (block.label.isNotBlank() && !largeMetric) Text(block.label, style = MaterialTheme.typography.labelMedium)
+                Text(block.text, style = if (largeMetric) MaterialTheme.typography.headlineSmall else MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Bold)
+            }
+            "choice" -> {
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    block.options.forEach { option ->
+                        FilterChip(selected = block.selectedKey == option.key, enabled = block.actions.isNotEmpty(),
+                            onClick = { block.actions.firstOrNull()?.let { onAction(it, option.key) } }, label = { Text(option.label) })
+                    }
+                }
+            }
+            "trend" -> {
+                val color = MaterialTheme.colorScheme.primary
+                if (block.points.isNotEmpty()) {
+                    Canvas(modifier = Modifier.fillMaxWidth().height(100.dp).semantics {
+                        contentDescription = block.points.joinToString { "${it.label}: ${it.value}kg" }
+                    }) {
+                        val low = block.points.minOf { it.value }; val high = block.points.maxOf { it.value }
+                        val spread = (high - low).coerceAtLeast(.2)
+                        val coordinates = block.points.mapIndexed { i, point -> Offset(
+                            if (block.points.size == 1) size.width / 2 else i.toFloat() / (block.points.size - 1) * size.width,
+                            size.height - 8f - ((point.value - low) / spread).toFloat() * (size.height - 16f)) }
+                        coordinates.zipWithNext().forEach { (a, b) -> drawLine(color, a, b, 3f) }
+                        coordinates.forEach { drawCircle(color, 4f, it) }
+                    }
+                    Text("${block.points.first().label} — ${block.points.last().label}", style = MaterialTheme.typography.labelSmall)
+                }
+                Text(block.text, style = MaterialTheme.typography.bodyMedium)
+            }
+            "image" -> {
+                block.attachmentPath?.let { AsyncImage(model = File(context.filesDir, it), contentDescription = block.text,
+                    modifier = Modifier.fillMaxWidth().heightIn(max = 240.dp)) }
+                if (block.text.isNotBlank()) Text(block.text)
+            }
+            else -> Text(block.text, style = MaterialTheme.typography.bodyMedium)
+        }
+        if (block.type != "choice") FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            block.actions.forEach { action -> OutlinedButton(onClick = { onAction(action, null) }) { Text(action.label) } }
         }
     }
 }

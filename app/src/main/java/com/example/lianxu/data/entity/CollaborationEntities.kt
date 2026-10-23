@@ -48,3 +48,7 @@ data class NutritionPolicyEntity(@PrimaryKey val id: String, val revision: Int, 
 data class MutationReceiptEntity(@PrimaryKey val id: String, val submissionId: String,
     val operationId: String, val resultRefs: String, val beforeSnapshotId: String?,
     val afterSnapshotId: String?, val createdAt: Long)
+
+@Entity(tableName = "entity_snapshots", indices = [Index(value = ["entityType", "entityId", "revision"], unique = true)])
+data class EntitySnapshotEntity(@PrimaryKey val id: String, val entityType: String, val entityId: String,
+    val revision: Int, val dataJson: String, val createdAt: Long)

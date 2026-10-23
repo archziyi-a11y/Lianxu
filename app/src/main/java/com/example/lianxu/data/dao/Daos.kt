@@ -42,7 +42,10 @@ interface GoalPhaseDao {
 
 @Dao
 interface MeasurementDao {
-    @Query("SELECT * FROM measurements WHERE deletedAt IS NULL ORDER BY observed DESC, measuredAt DESC")
+    @Query("SELECT * FROM measurements WHERE deletedAt IS NULL ORDER BY observed DESC, measuredAt DESC, createdAt DESC")
+    suspend fun all(): List<Measurement>
+
+    @Query("SELECT * FROM measurements WHERE deletedAt IS NULL ORDER BY observed DESC, measuredAt DESC, createdAt DESC")
     fun getMeasurementsFlow(): Flow<List<Measurement>>
     
     @Query("SELECT * FROM measurements WHERE deletedAt IS NULL AND metric = :metric ORDER BY observed DESC, measuredAt DESC LIMIT 1")

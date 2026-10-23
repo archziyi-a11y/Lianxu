@@ -4,7 +4,7 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class ChatCompletionRequest(
-    val model: String = "deepseek-chat",
+    val model: String = "deepseek-flash",
     val messages: List<Message>,
     val tools: List<Tool>? = null,
     val tool_choice: String? = "auto"

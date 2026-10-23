@@ -1,0 +1,1517 @@
+{
+  "schemaVersion": 1,
+  "recipes": [
+    {
+      "id": "recipe-oats-milk-banana-home",
+      "revision": 1,
+      "name": "燕麦牛奶香蕉",
+      "scene": "home",
+      "mealKeys": [
+        "breakfast"
+      ],
+      "ingredients": [
+        {
+          "foodId": "usda-sr-173904",
+          "grams": 100
+        },
+        {
+          "foodId": "usda-sr-171267",
+          "grams": 250
+        },
+        {
+          "foodId": "usda-sr-173944",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-sr-173806",
+          "grams": 15
+        }
+      ],
+      "baseServings": 1,
+      "portionMinFactor": 0.75,
+      "portionMaxFactor": 1.25,
+      "excludedTags": [],
+      "preparation": "按所列食物生熟状态和可食重量组合；调味和额外用油另计。",
+      "origin": "authored_from_sourced_foods",
+      "nutrientsPerBaseServing": {
+        "energyKcal": 725.55,
+        "proteinG": 26.6875,
+        "carbohydrateG": 117.149,
+        "fatG": 19.414,
+        "fiberG": 15.26
+      },
+      "sceneNote": "建议组合；食堂/外卖实际份量和烹调须按需要估计，不是具体商家实测营养。"
+    },
+    {
+      "id": "recipe-oats-milk-banana-canteen",
+      "revision": 1,
+      "name": "燕麦牛奶香蕉",
+      "scene": "canteen",
+      "mealKeys": [
+        "breakfast"
+      ],
+      "ingredients": [
+        {
+          "foodId": "usda-sr-173904",
+          "grams": 100
+        },
+        {
+          "foodId": "usda-sr-171267",
+          "grams": 250
+        },
+        {
+          "foodId": "usda-sr-173944",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-sr-173806",
+          "grams": 15
+        }
+      ],
+      "baseServings": 1,
+      "portionMinFactor": 0.75,
+      "portionMaxFactor": 1.25,
+      "excludedTags": [],
+      "preparation": "按所列食物生熟状态和可食重量组合；调味和额外用油另计。",
+      "origin": "authored_from_sourced_foods",
+      "nutrientsPerBaseServing": {
+        "energyKcal": 725.55,
+        "proteinG": 26.6875,
+        "carbohydrateG": 117.149,
+        "fatG": 19.414,
+        "fiberG": 15.26
+      },
+      "sceneNote": "建议组合；食堂/外卖实际份量和烹调须按需要估计，不是具体商家实测营养。"
+    },
+    {
+      "id": "recipe-oats-milk-banana-takeout",
+      "revision": 1,
+      "name": "燕麦牛奶香蕉",
+      "scene": "takeout",
+      "mealKeys": [
+        "breakfast"
+      ],
+      "ingredients": [
+        {
+          "foodId": "usda-sr-173904",
+          "grams": 100
+        },
+        {
+          "foodId": "usda-sr-171267",
+          "grams": 250
+        },
+        {
+          "foodId": "usda-sr-173944",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-sr-173806",
+          "grams": 15
+        }
+      ],
+      "baseServings": 1,
+      "portionMinFactor": 0.75,
+      "portionMaxFactor": 1.25,
+      "excludedTags": [],
+      "preparation": "按所列食物生熟状态和可食重量组合；调味和额外用油另计。",
+      "origin": "authored_from_sourced_foods",
+      "nutrientsPerBaseServing": {
+        "energyKcal": 725.55,
+        "proteinG": 26.6875,
+        "carbohydrateG": 117.149,
+        "fatG": 19.414,
+        "fiberG": 15.26
+      },
+      "sceneNote": "建议组合；食堂/外卖实际份量和烹调须按需要估计，不是具体商家实测营养。"
+    },
+    {
+      "id": "recipe-bread-egg-yogurt-home",
+      "revision": 1,
+      "name": "全麦面包鸡蛋酸奶",
+      "scene": "home",
+      "mealKeys": [
+        "breakfast"
+      ],
+      "ingredients": [
+        {
+          "foodId": "usda-sr-172688",
+          "grams": 120
+        },
+        {
+          "foodId": "usda-sr-173424",
+          "grams": 100
+        },
+        {
+          "foodId": "usda-sr-170894",
+          "grams": 200
+        },
+        {
+          "foodId": "usda-sr-171688",
+          "grams": 150
+        }
+      ],
+      "baseServings": 1,
+      "portionMinFactor": 0.75,
+      "portionMaxFactor": 1.25,
+      "excludedTags": [],
+      "preparation": "按所列食物生熟状态和可食重量组合；调味和额外用油另计。",
+      "origin": "authored_from_sourced_foods",
+      "nutrientsPerBaseServing": {
+        "energyKcal": 653.4,
+        "proteinG": 48.29,
+        "carbohydrateG": 80.287,
+        "fatG": 15.845,
+        "fiberG": 10.8
+      },
+      "sceneNote": "建议组合；食堂/外卖实际份量和烹调须按需要估计，不是具体商家实测营养。"
+    },
+    {
+      "id": "recipe-bread-egg-yogurt-canteen",
+      "revision": 1,
+      "name": "全麦面包鸡蛋酸奶",
+      "scene": "canteen",
+      "mealKeys": [
+        "breakfast"
+      ],
+      "ingredients": [
+        {
+          "foodId": "usda-sr-172688",
+          "grams": 120
+        },
+        {
+          "foodId": "usda-sr-173424",
+          "grams": 100
+        },
+        {
+          "foodId": "usda-sr-170894",
+          "grams": 200
+        },
+        {
+          "foodId": "usda-sr-171688",
+          "grams": 150
+        }
+      ],
+      "baseServings": 1,
+      "portionMinFactor": 0.75,
+      "portionMaxFactor": 1.25,
+      "excludedTags": [],
+      "preparation": "按所列食物生熟状态和可食重量组合；调味和额外用油另计。",
+      "origin": "authored_from_sourced_foods",
+      "nutrientsPerBaseServing": {
+        "energyKcal": 653.4,
+        "proteinG": 48.29,
+        "carbohydrateG": 80.287,
+        "fatG": 15.845,
+        "fiberG": 10.8
+      },
+      "sceneNote": "建议组合；食堂/外卖实际份量和烹调须按需要估计，不是具体商家实测营养。"
+    },
+    {
+      "id": "recipe-bread-egg-yogurt-takeout",
+      "revision": 1,
+      "name": "全麦面包鸡蛋酸奶",
+      "scene": "takeout",
+      "mealKeys": [
+        "breakfast"
+      ],
+      "ingredients": [
+        {
+          "foodId": "usda-sr-172688",
+          "grams": 120
+        },
+        {
+          "foodId": "usda-sr-173424",
+          "grams": 100
+        },
+        {
+          "foodId": "usda-sr-170894",
+          "grams": 200
+        },
+        {
+          "foodId": "usda-sr-171688",
+          "grams": 150
+        }
+      ],
+      "baseServings": 1,
+      "portionMinFactor": 0.75,
+      "portionMaxFactor": 1.25,
+      "excludedTags": [],
+      "preparation": "按所列食物生熟状态和可食重量组合；调味和额外用油另计。",
+      "origin": "authored_from_sourced_foods",
+      "nutrientsPerBaseServing": {
+        "energyKcal": 653.4,
+        "proteinG": 48.29,
+        "carbohydrateG": 80.287,
+        "fatG": 15.845,
+        "fiberG": 10.8
+      },
+      "sceneNote": "建议组合；食堂/外卖实际份量和烹调须按需要估计，不是具体商家实测营养。"
+    },
+    {
+      "id": "recipe-sweetpotato-egg-milk-home",
+      "revision": 1,
+      "name": "红薯鸡蛋牛奶",
+      "scene": "home",
+      "mealKeys": [
+        "breakfast"
+      ],
+      "ingredients": [
+        {
+          "foodId": "usda-sr-168483",
+          "grams": 300
+        },
+        {
+          "foodId": "usda-sr-173424",
+          "grams": 100
+        },
+        {
+          "foodId": "usda-sr-171267",
+          "grams": 250
+        },
+        {
+          "foodId": "usda-sr-173944",
+          "grams": 100
+        }
+      ],
+      "baseServings": 1,
+      "portionMinFactor": 0.75,
+      "portionMaxFactor": 1.25,
+      "excludedTags": [],
+      "preparation": "按所列食物生熟状态和可食重量组合；调味和额外用油另计。",
+      "origin": "authored_from_sourced_foods",
+      "nutrientsPerBaseServing": {
+        "energyKcal": 639.0,
+        "proteinG": 27.95,
+        "carbohydrateG": 98.09,
+        "fatG": 16.34,
+        "fiberG": 12.5
+      },
+      "sceneNote": "建议组合；食堂/外卖实际份量和烹调须按需要估计，不是具体商家实测营养。"
+    },
+    {
+      "id": "recipe-sweetpotato-egg-milk-canteen",
+      "revision": 1,
+      "name": "红薯鸡蛋牛奶",
+      "scene": "canteen",
+      "mealKeys": [
+        "breakfast"
+      ],
+      "ingredients": [
+        {
+          "foodId": "usda-sr-168483",
+          "grams": 300
+        },
+        {
+          "foodId": "usda-sr-173424",
+          "grams": 100
+        },
+        {
+          "foodId": "usda-sr-171267",
+          "grams": 250
+        },
+        {
+          "foodId": "usda-sr-173944",
+          "grams": 100
+        }
+      ],
+      "baseServings": 1,
+      "portionMinFactor": 0.75,
+      "portionMaxFactor": 1.25,
+      "excludedTags": [],
+      "preparation": "按所列食物生熟状态和可食重量组合；调味和额外用油另计。",
+      "origin": "authored_from_sourced_foods",
+      "nutrientsPerBaseServing": {
+        "energyKcal": 639.0,
+        "proteinG": 27.95,
+        "carbohydrateG": 98.09,
+        "fatG": 16.34,
+        "fiberG": 12.5
+      },
+      "sceneNote": "建议组合；食堂/外卖实际份量和烹调须按需要估计，不是具体商家实测营养。"
+    },
+    {
+      "id": "recipe-sweetpotato-egg-milk-takeout",
+      "revision": 1,
+      "name": "红薯鸡蛋牛奶",
+      "scene": "takeout",
+      "mealKeys": [
+        "breakfast"
+      ],
+      "ingredients": [
+        {
+          "foodId": "usda-sr-168483",
+          "grams": 300
+        },
+        {
+          "foodId": "usda-sr-173424",
+          "grams": 100
+        },
+        {
+          "foodId": "usda-sr-171267",
+          "grams": 250
+        },
+        {
+          "foodId": "usda-sr-173944",
+          "grams": 100
+        }
+      ],
+      "baseServings": 1,
+      "portionMinFactor": 0.75,
+      "portionMaxFactor": 1.25,
+      "excludedTags": [],
+      "preparation": "按所列食物生熟状态和可食重量组合；调味和额外用油另计。",
+      "origin": "authored_from_sourced_foods",
+      "nutrientsPerBaseServing": {
+        "energyKcal": 639.0,
+        "proteinG": 27.95,
+        "carbohydrateG": 98.09,
+        "fatG": 16.34,
+        "fiberG": 12.5
+      },
+      "sceneNote": "建议组合；食堂/外卖实际份量和烹调须按需要估计，不是具体商家实测营养。"
+    },
+    {
+      "id": "recipe-yogurt-oats-fruit-home",
+      "revision": 1,
+      "name": "酸奶燕麦水果",
+      "scene": "home",
+      "mealKeys": [
+        "breakfast"
+      ],
+      "ingredients": [
+        {
+          "foodId": "usda-sr-170894",
+          "grams": 250
+        },
+        {
+          "foodId": "usda-sr-173904",
+          "grams": 100
+        },
+        {
+          "foodId": "usda-sr-173944",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-sr-173806",
+          "grams": 20
+        }
+      ],
+      "baseServings": 1,
+      "portionMinFactor": 0.75,
+      "portionMaxFactor": 1.25,
+      "excludedTags": [],
+      "preparation": "按所列食物生熟状态和可食重量组合；调味和额外用油另计。",
+      "origin": "authored_from_sourced_foods",
+      "nutrientsPerBaseServing": {
+        "energyKcal": 777.4,
+        "proteinG": 45.13,
+        "carbohydrateG": 115.212,
+        "fatG": 17.922,
+        "fiberG": 15.68
+      },
+      "sceneNote": "建议组合；食堂/外卖实际份量和烹调须按需要估计，不是具体商家实测营养。"
+    },
+    {
+      "id": "recipe-yogurt-oats-fruit-canteen",
+      "revision": 1,
+      "name": "酸奶燕麦水果",
+      "scene": "canteen",
+      "mealKeys": [
+        "breakfast"
+      ],
+      "ingredients": [
+        {
+          "foodId": "usda-sr-170894",
+          "grams": 250
+        },
+        {
+          "foodId": "usda-sr-173904",
+          "grams": 100
+        },
+        {
+          "foodId": "usda-sr-173944",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-sr-173806",
+          "grams": 20
+        }
+      ],
+      "baseServings": 1,
+      "portionMinFactor": 0.75,
+      "portionMaxFactor": 1.25,
+      "excludedTags": [],
+      "preparation": "按所列食物生熟状态和可食重量组合；调味和额外用油另计。",
+      "origin": "authored_from_sourced_foods",
+      "nutrientsPerBaseServing": {
+        "energyKcal": 777.4,
+        "proteinG": 45.13,
+        "carbohydrateG": 115.212,
+        "fatG": 17.922,
+        "fiberG": 15.68
+      },
+      "sceneNote": "建议组合；食堂/外卖实际份量和烹调须按需要估计，不是具体商家实测营养。"
+    },
+    {
+      "id": "recipe-yogurt-oats-fruit-takeout",
+      "revision": 1,
+      "name": "酸奶燕麦水果",
+      "scene": "takeout",
+      "mealKeys": [
+        "breakfast"
+      ],
+      "ingredients": [
+        {
+          "foodId": "usda-sr-170894",
+          "grams": 250
+        },
+        {
+          "foodId": "usda-sr-173904",
+          "grams": 100
+        },
+        {
+          "foodId": "usda-sr-173944",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-sr-173806",
+          "grams": 20
+        }
+      ],
+      "baseServings": 1,
+      "portionMinFactor": 0.75,
+      "portionMaxFactor": 1.25,
+      "excludedTags": [],
+      "preparation": "按所列食物生熟状态和可食重量组合；调味和额外用油另计。",
+      "origin": "authored_from_sourced_foods",
+      "nutrientsPerBaseServing": {
+        "energyKcal": 777.4,
+        "proteinG": 45.13,
+        "carbohydrateG": 115.212,
+        "fatG": 17.922,
+        "fiberG": 15.68
+      },
+      "sceneNote": "建议组合；食堂/外卖实际份量和烹调须按需要估计，不是具体商家实测营养。"
+    },
+    {
+      "id": "recipe-rice-chicken-broccoli-home",
+      "revision": 1,
+      "name": "米饭鸡胸西兰花",
+      "scene": "home",
+      "mealKeys": [
+        "lunch",
+        "dinner"
+      ],
+      "ingredients": [
+        {
+          "foodId": "usda-sr-168878",
+          "grams": 400
+        },
+        {
+          "foodId": "usda-sr-171477",
+          "grams": 100
+        },
+        {
+          "foodId": "usda-sr-169967",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-sr-171413",
+          "grams": 10
+        }
+      ],
+      "baseServings": 1,
+      "portionMinFactor": 0.75,
+      "portionMaxFactor": 1.25,
+      "excludedTags": [],
+      "preparation": "按所列食物生熟状态和可食重量组合；调味和额外用油另计。",
+      "origin": "authored_from_sourced_foods",
+      "nutrientsPerBaseServing": {
+        "energyKcal": 825.9,
+        "proteinG": 45.35,
+        "carbohydrateG": 123.45,
+        "fatG": 15.305,
+        "fiberG": 6.55
+      },
+      "sceneNote": "建议组合；食堂/外卖实际份量和烹调须按需要估计，不是具体商家实测营养。"
+    },
+    {
+      "id": "recipe-rice-chicken-broccoli-canteen",
+      "revision": 1,
+      "name": "米饭鸡胸西兰花",
+      "scene": "canteen",
+      "mealKeys": [
+        "lunch",
+        "dinner"
+      ],
+      "ingredients": [
+        {
+          "foodId": "usda-sr-168878",
+          "grams": 400
+        },
+        {
+          "foodId": "usda-sr-171477",
+          "grams": 100
+        },
+        {
+          "foodId": "usda-sr-169967",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-sr-171413",
+          "grams": 10
+        }
+      ],
+      "baseServings": 1,
+      "portionMinFactor": 0.75,
+      "portionMaxFactor": 1.25,
+      "excludedTags": [],
+      "preparation": "按所列食物生熟状态和可食重量组合；调味和额外用油另计。",
+      "origin": "authored_from_sourced_foods",
+      "nutrientsPerBaseServing": {
+        "energyKcal": 825.9,
+        "proteinG": 45.35,
+        "carbohydrateG": 123.45,
+        "fatG": 15.305,
+        "fiberG": 6.55
+      },
+      "sceneNote": "建议组合；食堂/外卖实际份量和烹调须按需要估计，不是具体商家实测营养。"
+    },
+    {
+      "id": "recipe-rice-chicken-broccoli-takeout",
+      "revision": 1,
+      "name": "米饭鸡胸西兰花",
+      "scene": "takeout",
+      "mealKeys": [
+        "lunch",
+        "dinner"
+      ],
+      "ingredients": [
+        {
+          "foodId": "usda-sr-168878",
+          "grams": 400
+        },
+        {
+          "foodId": "usda-sr-171477",
+          "grams": 100
+        },
+        {
+          "foodId": "usda-sr-169967",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-sr-171413",
+          "grams": 10
+        }
+      ],
+      "baseServings": 1,
+      "portionMinFactor": 0.75,
+      "portionMaxFactor": 1.25,
+      "excludedTags": [],
+      "preparation": "按所列食物生熟状态和可食重量组合；调味和额外用油另计。",
+      "origin": "authored_from_sourced_foods",
+      "nutrientsPerBaseServing": {
+        "energyKcal": 825.9,
+        "proteinG": 45.35,
+        "carbohydrateG": 123.45,
+        "fatG": 15.305,
+        "fiberG": 6.55
+      },
+      "sceneNote": "建议组合；食堂/外卖实际份量和烹调须按需要估计，不是具体商家实测营养。"
+    },
+    {
+      "id": "recipe-rice-tofu-spinach-home",
+      "revision": 1,
+      "name": "米饭豆腐菠菜",
+      "scene": "home",
+      "mealKeys": [
+        "lunch",
+        "dinner"
+      ],
+      "ingredients": [
+        {
+          "foodId": "usda-sr-168878",
+          "grams": 450
+        },
+        {
+          "foodId": "usda-sr-172475",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-sr-168463",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-sr-171413",
+          "grams": 10
+        }
+      ],
+      "baseServings": 1,
+      "portionMinFactor": 0.75,
+      "portionMaxFactor": 1.25,
+      "excludedTags": [],
+      "preparation": "按所列食物生熟状态和可食重量组合；调味和额外用油另计。",
+      "origin": "authored_from_sourced_foods",
+      "nutrientsPerBaseServing": {
+        "energyKcal": 923.9,
+        "proteinG": 42.465,
+        "carbohydrateG": 136.56,
+        "fatG": 24.73,
+        "fiberG": 8.85
+      },
+      "sceneNote": "建议组合；食堂/外卖实际份量和烹调须按需要估计，不是具体商家实测营养。"
+    },
+    {
+      "id": "recipe-rice-tofu-spinach-canteen",
+      "revision": 1,
+      "name": "米饭豆腐菠菜",
+      "scene": "canteen",
+      "mealKeys": [
+        "lunch",
+        "dinner"
+      ],
+      "ingredients": [
+        {
+          "foodId": "usda-sr-168878",
+          "grams": 450
+        },
+        {
+          "foodId": "usda-sr-172475",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-sr-168463",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-sr-171413",
+          "grams": 10
+        }
+      ],
+      "baseServings": 1,
+      "portionMinFactor": 0.75,
+      "portionMaxFactor": 1.25,
+      "excludedTags": [],
+      "preparation": "按所列食物生熟状态和可食重量组合；调味和额外用油另计。",
+      "origin": "authored_from_sourced_foods",
+      "nutrientsPerBaseServing": {
+        "energyKcal": 923.9,
+        "proteinG": 42.465,
+        "carbohydrateG": 136.56,
+        "fatG": 24.73,
+        "fiberG": 8.85
+      },
+      "sceneNote": "建议组合；食堂/外卖实际份量和烹调须按需要估计，不是具体商家实测营养。"
+    },
+    {
+      "id": "recipe-rice-tofu-spinach-takeout",
+      "revision": 1,
+      "name": "米饭豆腐菠菜",
+      "scene": "takeout",
+      "mealKeys": [
+        "lunch",
+        "dinner"
+      ],
+      "ingredients": [
+        {
+          "foodId": "usda-sr-168878",
+          "grams": 450
+        },
+        {
+          "foodId": "usda-sr-172475",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-sr-168463",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-sr-171413",
+          "grams": 10
+        }
+      ],
+      "baseServings": 1,
+      "portionMinFactor": 0.75,
+      "portionMaxFactor": 1.25,
+      "excludedTags": [],
+      "preparation": "按所列食物生熟状态和可食重量组合；调味和额外用油另计。",
+      "origin": "authored_from_sourced_foods",
+      "nutrientsPerBaseServing": {
+        "energyKcal": 923.9,
+        "proteinG": 42.465,
+        "carbohydrateG": 136.56,
+        "fatG": 24.73,
+        "fiberG": 8.85
+      },
+      "sceneNote": "建议组合；食堂/外卖实际份量和烹调须按需要估计，不是具体商家实测营养。"
+    },
+    {
+      "id": "recipe-rice-salmon-vegetable-home",
+      "revision": 1,
+      "name": "米饭三文鱼蔬菜",
+      "scene": "home",
+      "mealKeys": [
+        "lunch",
+        "dinner"
+      ],
+      "ingredients": [
+        {
+          "foodId": "usda-sr-168878",
+          "grams": 350
+        },
+        {
+          "foodId": "usda-sr-175168",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-sr-169967",
+          "grams": 150
+        }
+      ],
+      "baseServings": 1,
+      "portionMinFactor": 0.75,
+      "portionMaxFactor": 1.25,
+      "excludedTags": [],
+      "preparation": "按所列食物生熟状态和可食重量组合；调味和额外用油另计。",
+      "origin": "authored_from_sourced_foods",
+      "nutrientsPerBaseServing": {
+        "energyKcal": 816.5,
+        "proteinG": 46.135,
+        "carbohydrateG": 109.365,
+        "fatG": 20.12,
+        "fiberG": 6.35
+      },
+      "sceneNote": "建议组合；食堂/外卖实际份量和烹调须按需要估计，不是具体商家实测营养。"
+    },
+    {
+      "id": "recipe-rice-salmon-vegetable-canteen",
+      "revision": 1,
+      "name": "米饭三文鱼蔬菜",
+      "scene": "canteen",
+      "mealKeys": [
+        "lunch",
+        "dinner"
+      ],
+      "ingredients": [
+        {
+          "foodId": "usda-sr-168878",
+          "grams": 350
+        },
+        {
+          "foodId": "usda-sr-175168",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-sr-169967",
+          "grams": 150
+        }
+      ],
+      "baseServings": 1,
+      "portionMinFactor": 0.75,
+      "portionMaxFactor": 1.25,
+      "excludedTags": [],
+      "preparation": "按所列食物生熟状态和可食重量组合；调味和额外用油另计。",
+      "origin": "authored_from_sourced_foods",
+      "nutrientsPerBaseServing": {
+        "energyKcal": 816.5,
+        "proteinG": 46.135,
+        "carbohydrateG": 109.365,
+        "fatG": 20.12,
+        "fiberG": 6.35
+      },
+      "sceneNote": "建议组合；食堂/外卖实际份量和烹调须按需要估计，不是具体商家实测营养。"
+    },
+    {
+      "id": "recipe-rice-salmon-vegetable-takeout",
+      "revision": 1,
+      "name": "米饭三文鱼蔬菜",
+      "scene": "takeout",
+      "mealKeys": [
+        "lunch",
+        "dinner"
+      ],
+      "ingredients": [
+        {
+          "foodId": "usda-sr-168878",
+          "grams": 350
+        },
+        {
+          "foodId": "usda-sr-175168",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-sr-169967",
+          "grams": 150
+        }
+      ],
+      "baseServings": 1,
+      "portionMinFactor": 0.75,
+      "portionMaxFactor": 1.25,
+      "excludedTags": [],
+      "preparation": "按所列食物生熟状态和可食重量组合；调味和额外用油另计。",
+      "origin": "authored_from_sourced_foods",
+      "nutrientsPerBaseServing": {
+        "energyKcal": 816.5,
+        "proteinG": 46.135,
+        "carbohydrateG": 109.365,
+        "fatG": 20.12,
+        "fiberG": 6.35
+      },
+      "sceneNote": "建议组合；食堂/外卖实际份量和烹调须按需要估计，不是具体商家实测营养。"
+    },
+    {
+      "id": "recipe-potato-pork-vegetable-home",
+      "revision": 1,
+      "name": "土豆里脊蔬菜",
+      "scene": "home",
+      "mealKeys": [
+        "lunch",
+        "dinner"
+      ],
+      "ingredients": [
+        {
+          "foodId": "usda-sr-170440",
+          "grams": 450
+        },
+        {
+          "foodId": "usda-sr-168250",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-sr-169967",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-sr-171413",
+          "grams": 10
+        }
+      ],
+      "baseServings": 1,
+      "portionMinFactor": 0.75,
+      "portionMaxFactor": 1.25,
+      "excludedTags": [],
+      "preparation": "按所列食物生熟状态和可食重量组合；调味和额外用油另计。",
+      "origin": "authored_from_sourced_foods",
+      "nutrientsPerBaseServing": {
+        "energyKcal": 742.4,
+        "proteinG": 50.52,
+        "carbohydrateG": 100.815,
+        "fatG": 16.33,
+        "fiberG": 13.05
+      },
+      "sceneNote": "建议组合；食堂/外卖实际份量和烹调须按需要估计，不是具体商家实测营养。"
+    },
+    {
+      "id": "recipe-potato-pork-vegetable-canteen",
+      "revision": 1,
+      "name": "土豆里脊蔬菜",
+      "scene": "canteen",
+      "mealKeys": [
+        "lunch",
+        "dinner"
+      ],
+      "ingredients": [
+        {
+          "foodId": "usda-sr-170440",
+          "grams": 450
+        },
+        {
+          "foodId": "usda-sr-168250",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-sr-169967",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-sr-171413",
+          "grams": 10
+        }
+      ],
+      "baseServings": 1,
+      "portionMinFactor": 0.75,
+      "portionMaxFactor": 1.25,
+      "excludedTags": [],
+      "preparation": "按所列食物生熟状态和可食重量组合；调味和额外用油另计。",
+      "origin": "authored_from_sourced_foods",
+      "nutrientsPerBaseServing": {
+        "energyKcal": 742.4,
+        "proteinG": 50.52,
+        "carbohydrateG": 100.815,
+        "fatG": 16.33,
+        "fiberG": 13.05
+      },
+      "sceneNote": "建议组合；食堂/外卖实际份量和烹调须按需要估计，不是具体商家实测营养。"
+    },
+    {
+      "id": "recipe-potato-pork-vegetable-takeout",
+      "revision": 1,
+      "name": "土豆里脊蔬菜",
+      "scene": "takeout",
+      "mealKeys": [
+        "lunch",
+        "dinner"
+      ],
+      "ingredients": [
+        {
+          "foodId": "usda-sr-170440",
+          "grams": 450
+        },
+        {
+          "foodId": "usda-sr-168250",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-sr-169967",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-sr-171413",
+          "grams": 10
+        }
+      ],
+      "baseServings": 1,
+      "portionMinFactor": 0.75,
+      "portionMaxFactor": 1.25,
+      "excludedTags": [],
+      "preparation": "按所列食物生熟状态和可食重量组合；调味和额外用油另计。",
+      "origin": "authored_from_sourced_foods",
+      "nutrientsPerBaseServing": {
+        "energyKcal": 742.4,
+        "proteinG": 50.52,
+        "carbohydrateG": 100.815,
+        "fatG": 16.33,
+        "fiberG": 13.05
+      },
+      "sceneNote": "建议组合；食堂/外卖实际份量和烹调须按需要估计，不是具体商家实测营养。"
+    },
+    {
+      "id": "recipe-rice-beans-egg-home",
+      "revision": 1,
+      "name": "米饭黑豆鸡蛋",
+      "scene": "home",
+      "mealKeys": [
+        "lunch",
+        "dinner"
+      ],
+      "ingredients": [
+        {
+          "foodId": "usda-sr-168878",
+          "grams": 300
+        },
+        {
+          "foodId": "usda-sr-173735",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-sr-173424",
+          "grams": 100
+        },
+        {
+          "foodId": "usda-sr-170457",
+          "grams": 150
+        }
+      ],
+      "baseServings": 1,
+      "portionMinFactor": 0.75,
+      "portionMaxFactor": 1.25,
+      "excludedTags": [],
+      "preparation": "按所列食物生熟状态和可食重量组合；调味和额外用油另计。",
+      "origin": "authored_from_sourced_foods",
+      "nutrientsPerBaseServing": {
+        "energyKcal": 770.0,
+        "proteinG": 35.26,
+        "carbohydrateG": 127.03,
+        "fatG": 12.56,
+        "fiberG": 16.05
+      },
+      "sceneNote": "建议组合；食堂/外卖实际份量和烹调须按需要估计，不是具体商家实测营养。"
+    },
+    {
+      "id": "recipe-rice-beans-egg-canteen",
+      "revision": 1,
+      "name": "米饭黑豆鸡蛋",
+      "scene": "canteen",
+      "mealKeys": [
+        "lunch",
+        "dinner"
+      ],
+      "ingredients": [
+        {
+          "foodId": "usda-sr-168878",
+          "grams": 300
+        },
+        {
+          "foodId": "usda-sr-173735",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-sr-173424",
+          "grams": 100
+        },
+        {
+          "foodId": "usda-sr-170457",
+          "grams": 150
+        }
+      ],
+      "baseServings": 1,
+      "portionMinFactor": 0.75,
+      "portionMaxFactor": 1.25,
+      "excludedTags": [],
+      "preparation": "按所列食物生熟状态和可食重量组合；调味和额外用油另计。",
+      "origin": "authored_from_sourced_foods",
+      "nutrientsPerBaseServing": {
+        "energyKcal": 770.0,
+        "proteinG": 35.26,
+        "carbohydrateG": 127.03,
+        "fatG": 12.56,
+        "fiberG": 16.05
+      },
+      "sceneNote": "建议组合；食堂/外卖实际份量和烹调须按需要估计，不是具体商家实测营养。"
+    },
+    {
+      "id": "recipe-rice-beans-egg-takeout",
+      "revision": 1,
+      "name": "米饭黑豆鸡蛋",
+      "scene": "takeout",
+      "mealKeys": [
+        "lunch",
+        "dinner"
+      ],
+      "ingredients": [
+        {
+          "foodId": "usda-sr-168878",
+          "grams": 300
+        },
+        {
+          "foodId": "usda-sr-173735",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-sr-173424",
+          "grams": 100
+        },
+        {
+          "foodId": "usda-sr-170457",
+          "grams": 150
+        }
+      ],
+      "baseServings": 1,
+      "portionMinFactor": 0.75,
+      "portionMaxFactor": 1.25,
+      "excludedTags": [],
+      "preparation": "按所列食物生熟状态和可食重量组合；调味和额外用油另计。",
+      "origin": "authored_from_sourced_foods",
+      "nutrientsPerBaseServing": {
+        "energyKcal": 770.0,
+        "proteinG": 35.26,
+        "carbohydrateG": 127.03,
+        "fatG": 12.56,
+        "fiberG": 16.05
+      },
+      "sceneNote": "建议组合；食堂/外卖实际份量和烹调须按需要估计，不是具体商家实测营养。"
+    },
+    {
+      "id": "recipe-noodles-beef-vegetable-home",
+      "revision": 1,
+      "name": "鸡蛋面牛肉蔬菜",
+      "scene": "home",
+      "mealKeys": [
+        "lunch",
+        "dinner"
+      ],
+      "ingredients": [
+        {
+          "foodId": "usda-sr-169762",
+          "grams": 350
+        },
+        {
+          "foodId": "usda-sr-171791",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-sr-169252",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-sr-171413",
+          "grams": 5
+        }
+      ],
+      "baseServings": 1,
+      "portionMinFactor": 0.75,
+      "portionMaxFactor": 1.25,
+      "excludedTags": [],
+      "preparation": "按所列食物生熟状态和可食重量组合；调味和额外用油另计。",
+      "origin": "authored_from_sourced_foods",
+      "nutrientsPerBaseServing": {
+        "energyKcal": 830.2,
+        "proteinG": 58.58,
+        "carbohydrateG": 95.995,
+        "fatG": 23.15,
+        "fiberG": 7.5
+      },
+      "sceneNote": "建议组合；食堂/外卖实际份量和烹调须按需要估计，不是具体商家实测营养。"
+    },
+    {
+      "id": "recipe-noodles-beef-vegetable-canteen",
+      "revision": 1,
+      "name": "鸡蛋面牛肉蔬菜",
+      "scene": "canteen",
+      "mealKeys": [
+        "lunch",
+        "dinner"
+      ],
+      "ingredients": [
+        {
+          "foodId": "usda-sr-169762",
+          "grams": 350
+        },
+        {
+          "foodId": "usda-sr-171791",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-sr-169252",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-sr-171413",
+          "grams": 5
+        }
+      ],
+      "baseServings": 1,
+      "portionMinFactor": 0.75,
+      "portionMaxFactor": 1.25,
+      "excludedTags": [],
+      "preparation": "按所列食物生熟状态和可食重量组合；调味和额外用油另计。",
+      "origin": "authored_from_sourced_foods",
+      "nutrientsPerBaseServing": {
+        "energyKcal": 830.2,
+        "proteinG": 58.58,
+        "carbohydrateG": 95.995,
+        "fatG": 23.15,
+        "fiberG": 7.5
+      },
+      "sceneNote": "建议组合；食堂/外卖实际份量和烹调须按需要估计，不是具体商家实测营养。"
+    },
+    {
+      "id": "recipe-noodles-beef-vegetable-takeout",
+      "revision": 1,
+      "name": "鸡蛋面牛肉蔬菜",
+      "scene": "takeout",
+      "mealKeys": [
+        "lunch",
+        "dinner"
+      ],
+      "ingredients": [
+        {
+          "foodId": "usda-sr-169762",
+          "grams": 350
+        },
+        {
+          "foodId": "usda-sr-171791",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-sr-169252",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-sr-171413",
+          "grams": 5
+        }
+      ],
+      "baseServings": 1,
+      "portionMinFactor": 0.75,
+      "portionMaxFactor": 1.25,
+      "excludedTags": [],
+      "preparation": "按所列食物生熟状态和可食重量组合；调味和额外用油另计。",
+      "origin": "authored_from_sourced_foods",
+      "nutrientsPerBaseServing": {
+        "energyKcal": 830.2,
+        "proteinG": 58.58,
+        "carbohydrateG": 95.995,
+        "fatG": 23.15,
+        "fiberG": 7.5
+      },
+      "sceneNote": "建议组合；食堂/外卖实际份量和烹调须按需要估计，不是具体商家实测营养。"
+    },
+    {
+      "id": "recipe-rice-chicken-corn-home",
+      "revision": 1,
+      "name": "米饭鸡胸玉米",
+      "scene": "home",
+      "mealKeys": [
+        "lunch",
+        "dinner"
+      ],
+      "ingredients": [
+        {
+          "foodId": "usda-sr-168878",
+          "grams": 350
+        },
+        {
+          "foodId": "usda-sr-171477",
+          "grams": 100
+        },
+        {
+          "foodId": "usda-sr-169999",
+          "grams": 200
+        },
+        {
+          "foodId": "usda-sr-168409",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-sr-171413",
+          "grams": 10
+        }
+      ],
+      "baseServings": 1,
+      "portionMinFactor": 0.75,
+      "portionMaxFactor": 1.25,
+      "excludedTags": [],
+      "preparation": "按所列食物生熟状态和可食重量组合；调味和额外用油另计。",
+      "origin": "authored_from_sourced_foods",
+      "nutrientsPerBaseServing": {
+        "energyKcal": 922.9,
+        "proteinG": 48.23,
+        "carbohydrateG": 146.0,
+        "fatG": 17.715,
+        "fiberG": 6.95
+      },
+      "sceneNote": "建议组合；食堂/外卖实际份量和烹调须按需要估计，不是具体商家实测营养。"
+    },
+    {
+      "id": "recipe-rice-chicken-corn-canteen",
+      "revision": 1,
+      "name": "米饭鸡胸玉米",
+      "scene": "canteen",
+      "mealKeys": [
+        "lunch",
+        "dinner"
+      ],
+      "ingredients": [
+        {
+          "foodId": "usda-sr-168878",
+          "grams": 350
+        },
+        {
+          "foodId": "usda-sr-171477",
+          "grams": 100
+        },
+        {
+          "foodId": "usda-sr-169999",
+          "grams": 200
+        },
+        {
+          "foodId": "usda-sr-168409",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-sr-171413",
+          "grams": 10
+        }
+      ],
+      "baseServings": 1,
+      "portionMinFactor": 0.75,
+      "portionMaxFactor": 1.25,
+      "excludedTags": [],
+      "preparation": "按所列食物生熟状态和可食重量组合；调味和额外用油另计。",
+      "origin": "authored_from_sourced_foods",
+      "nutrientsPerBaseServing": {
+        "energyKcal": 922.9,
+        "proteinG": 48.23,
+        "carbohydrateG": 146.0,
+        "fatG": 17.715,
+        "fiberG": 6.95
+      },
+      "sceneNote": "建议组合；食堂/外卖实际份量和烹调须按需要估计，不是具体商家实测营养。"
+    },
+    {
+      "id": "recipe-rice-chicken-corn-takeout",
+      "revision": 1,
+      "name": "米饭鸡胸玉米",
+      "scene": "takeout",
+      "mealKeys": [
+        "lunch",
+        "dinner"
+      ],
+      "ingredients": [
+        {
+          "foodId": "usda-sr-168878",
+          "grams": 350
+        },
+        {
+          "foodId": "usda-sr-171477",
+          "grams": 100
+        },
+        {
+          "foodId": "usda-sr-169999",
+          "grams": 200
+        },
+        {
+          "foodId": "usda-sr-168409",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-sr-171413",
+          "grams": 10
+        }
+      ],
+      "baseServings": 1,
+      "portionMinFactor": 0.75,
+      "portionMaxFactor": 1.25,
+      "excludedTags": [],
+      "preparation": "按所列食物生熟状态和可食重量组合；调味和额外用油另计。",
+      "origin": "authored_from_sourced_foods",
+      "nutrientsPerBaseServing": {
+        "energyKcal": 922.9,
+        "proteinG": 48.23,
+        "carbohydrateG": 146.0,
+        "fatG": 17.715,
+        "fiberG": 6.95
+      },
+      "sceneNote": "建议组合；食堂/外卖实际份量和烹调须按需要估计，不是具体商家实测营养。"
+    },
+    {
+      "id": "recipe-rice-lentils-tofu-home",
+      "revision": 1,
+      "name": "米饭扁豆豆腐",
+      "scene": "home",
+      "mealKeys": [
+        "lunch",
+        "dinner"
+      ],
+      "ingredients": [
+        {
+          "foodId": "usda-sr-168878",
+          "grams": 300
+        },
+        {
+          "foodId": "usda-sr-172421",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-sr-172475",
+          "grams": 100
+        },
+        {
+          "foodId": "usda-sr-170393",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-sr-171413",
+          "grams": 5
+        }
+      ],
+      "baseServings": 1,
+      "portionMinFactor": 0.75,
+      "portionMaxFactor": 1.25,
+      "excludedTags": [],
+      "preparation": "按所列食物生熟状态和可食重量组合；调味和额外用油另计。",
+      "origin": "authored_from_sourced_foods",
+      "nutrientsPerBaseServing": {
+        "energyKcal": 813.7,
+        "proteinG": 40.265,
+        "carbohydrateG": 131.855,
+        "fatG": 15.49,
+        "fiberG": 19.55
+      },
+      "sceneNote": "建议组合；食堂/外卖实际份量和烹调须按需要估计，不是具体商家实测营养。"
+    },
+    {
+      "id": "recipe-rice-lentils-tofu-canteen",
+      "revision": 1,
+      "name": "米饭扁豆豆腐",
+      "scene": "canteen",
+      "mealKeys": [
+        "lunch",
+        "dinner"
+      ],
+      "ingredients": [
+        {
+          "foodId": "usda-sr-168878",
+          "grams": 300
+        },
+        {
+          "foodId": "usda-sr-172421",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-sr-172475",
+          "grams": 100
+        },
+        {
+          "foodId": "usda-sr-170393",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-sr-171413",
+          "grams": 5
+        }
+      ],
+      "baseServings": 1,
+      "portionMinFactor": 0.75,
+      "portionMaxFactor": 1.25,
+      "excludedTags": [],
+      "preparation": "按所列食物生熟状态和可食重量组合；调味和额外用油另计。",
+      "origin": "authored_from_sourced_foods",
+      "nutrientsPerBaseServing": {
+        "energyKcal": 813.7,
+        "proteinG": 40.265,
+        "carbohydrateG": 131.855,
+        "fatG": 15.49,
+        "fiberG": 19.55
+      },
+      "sceneNote": "建议组合；食堂/外卖实际份量和烹调须按需要估计，不是具体商家实测营养。"
+    },
+    {
+      "id": "recipe-rice-lentils-tofu-takeout",
+      "revision": 1,
+      "name": "米饭扁豆豆腐",
+      "scene": "takeout",
+      "mealKeys": [
+        "lunch",
+        "dinner"
+      ],
+      "ingredients": [
+        {
+          "foodId": "usda-sr-168878",
+          "grams": 300
+        },
+        {
+          "foodId": "usda-sr-172421",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-sr-172475",
+          "grams": 100
+        },
+        {
+          "foodId": "usda-sr-170393",
+          "grams": 150
+        },
+        {
+          "foodId": "usda-sr-171413",
+          "grams": 5
+        }
+      ],
+      "baseServings": 1,
+      "portionMinFactor": 0.75,
+      "portionMaxFactor": 1.25,
+      "excludedTags": [],
+      "preparation": "按所列食物生熟状态和可食重量组合；调味和额外用油另计。",
+      "origin": "authored_from_sourced_foods",
+      "nutrientsPerBaseServing": {
+        "energyKcal": 813.7,
+        "proteinG": 40.265,
+        "carbohydrateG": 131.855,
+        "fatG": 15.49,
+        "fiberG": 19.55
+      },
+      "sceneNote": "建议组合；食堂/外卖实际份量和烹调须按需要估计，不是具体商家实测营养。"
+    }
+  ]
+}

@@ -100,3 +100,6 @@ tasks.withType<Test>().configureEach {
     maxHeapSize = "192m"
     maxParallelForks = 1
 }
+
+// Exercise the exact packaged food catalog in JVM calculation tests.
+android.sourceSets.getByName("test").resources.srcDir("$projectDir/src/main/assets")

@@ -1,0 +1,13 @@
+{
+  "emulator": "emulator-5554",
+  "checks": {
+    "coldLaunch": true,
+    "missingDataGuidance": true,
+    "noInventedMetrics": true,
+    "swipeToArchive": true,
+    "returnToToday": true,
+    "cardMarkEatenVerifiedByComposeTest": true
+  },
+  "personalProfileModified": false,
+  "realApiCalled": false
+}

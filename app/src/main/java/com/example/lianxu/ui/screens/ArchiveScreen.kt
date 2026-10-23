@@ -12,6 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.lianxu.engine.*
+import com.example.lianxu.data.repository.ComponentResolver
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -80,6 +82,27 @@ fun ArchiveScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
+            Text("默认用餐场景", style = MaterialTheme.typography.titleSmall)
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                listOf("home" to "自己做", "canteen" to "食堂", "takeout" to "外食").forEach { (key, label) ->
+                    FilterChip(selected = uiState.scene == key, onClick = { viewModel.onScene(key) }, label = { Text(label) })
+                }
+            }
+            OutlinedTextField(value = uiState.excluded, onValueChange = viewModel::onExcluded,
+                label = { Text("不吃的食物（用顿号分隔，可留空）") }, modifier = Modifier.fillMaxWidth())
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                Text("手动设置营养目标")
+                Switch(checked = uiState.manualMode, onCheckedChange = viewModel::onManualMode)
+            }
+            if (uiState.manualMode) {
+                listOf(Triple("energyKcal", "能量 kcal", uiState.manualEnergy), Triple("proteinG", "蛋白质 g", uiState.manualProtein),
+                    Triple("carbohydrateG", "碳水 g", uiState.manualCarbs), Triple("fatG", "脂肪 g", uiState.manualFat),
+                    Triple("fiberG", "纤维 g（可留空）", uiState.manualFiber)).forEach { (key, label, value) ->
+                    OutlinedTextField(value = value, onValueChange = { viewModel.onManual(key, it) }, label = { Text(label) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal), modifier = Modifier.fillMaxWidth())
+                }
+            }
+
             uiState.error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
 
             Button(
@@ -91,20 +114,19 @@ fun ArchiveScreen(
             }
 
             uiState.nutritionResult?.let { result ->
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text("计算结果", style = MaterialTheme.typography.titleMedium)
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text("静息能量 (REE): ${result.restingKcal} kcal")
-                        Text("维持能量: ${result.maintenanceKcal} kcal")
-                        Text("目标能量: ${result.energyKcal} kcal")
-                        Text("蛋白质: ${result.proteinG} g")
-                        Text("碳水化合物: ${result.carbohydrateG} g")
-                        Text("脂肪: ${result.fatG} g")
-                        Text("膳食纤维: ${result.fiberG} g")
+                Card(modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                        Text("每日营养参考", style = MaterialTheme.typography.titleMedium)
+                        if (result.status in listOf("ready", "manual")) {
+                            listOf("energyKcal" to "能量", "proteinG" to "蛋白质", "carbohydrateG" to "碳水", "fatG" to "脂肪", "fiberG" to "膳食纤维").forEach { (key, name) ->
+                                result.targets[key]?.let { value ->
+                                    val unit = if (key == "energyKcal") "kcal" else "g"
+                                    Text("$name：约 ${ComponentResolver.displayNumber(value, unit)} $unit")
+                                }
+                            }
+                            result.manualEnergyDifferenceKcal?.let { Text("与4/4/9换算差额：${ComponentResolver.displayNumber(it, "kcal")} kcal") }
+                        } else if (result.status == "needs_input") Text("资料尚未完整，可继续补充；已有记录会保留。")
+                        result.notes.forEach { Text(it, style = MaterialTheme.typography.bodySmall) }
                     }
                 }
             }

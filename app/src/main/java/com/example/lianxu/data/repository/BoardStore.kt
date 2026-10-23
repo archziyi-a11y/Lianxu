@@ -4,6 +4,8 @@ import androidx.room.withTransaction
 import com.example.lianxu.data.db.AppDatabase
 import com.example.lianxu.data.entity.*
 import com.example.lianxu.data.model.DashboardCard
+import com.example.lianxu.data.model.AnnotationAnchor
+import com.example.lianxu.engine.DomainJson
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -46,8 +48,19 @@ class BoardStore(private val db: AppDatabase) {
 
     suspend fun edit(boardId: String, transform: (List<DashboardCard>) -> List<DashboardCard>) = db.withTransaction {
         val draft = requireNotNull(dao.draft(boardId))
+        val before = decode(draft.cardsJson).associateBy { it.id }
+        val board = requireNotNull(dao.board(boardId))
+        val next = transform(before.values.toList()).map { card ->
+            val hasInput = !card.annotationText.isNullOrBlank() || card.attachmentId != null
+            if (!card.isAnnotationMode && !hasInput) card.copy(annotationAnchor = null)
+            else if (card.annotationAnchor == null) {
+                val original = before.getValue(card.id)
+                card.copy(annotationAnchor = AnnotationAnchor(board.revision, original.revision,
+                    ComponentResolver(db).readable(original), JSONArray(original.blocks.map { JSONObject(DomainJson.encode(it)) }).toString(), original.title))
+            } else card
+        }
         dao.putDraft(draft.copy(revision = draft.revision + 1,
-            cardsJson = encode(transform(decode(draft.cardsJson))), updatedAt = System.currentTimeMillis()))
+            cardsJson = encode(next), updatedAt = System.currentTimeMillis()))
     }
 
     suspend fun prepare(boardId: String): Submission = db.withTransaction {
@@ -80,10 +93,12 @@ class BoardStore(private val db: AppDatabase) {
                 requireNotNull(dao.attachment(it)) { "图片来源已丢失" }
                 parts.put(JSONObject().put("type", "image").put("attachmentId", it))
             }
+            val anchor = card.annotationAnchor
             annotations.put(JSONObject().put("annotationId", UUID.randomUUID().toString())
-                .put("target", JSONObject().put("boardId", boardId).put("boardRevision", board.revision)
-                    .put("cardId", card.id).put("cardRevision", card.revision))
-                .put("targetSnapshot", JSONObject().put("title", card.title).put("readableContent", card.value))
+                .put("target", JSONObject().put("boardId", boardId).put("boardRevision", anchor?.boardRevision ?: board.revision)
+                    .put("cardId", card.id).put("cardRevision", anchor?.cardRevision ?: card.revision))
+                .put("targetSnapshot", JSONObject().put("title", anchor?.title?.takeIf { it.isNotBlank() } ?: card.title).put("readableContent", anchor?.readableContent ?: ComponentResolver(db).readable(card))
+                    .put("components", JSONArray(anchor?.componentsJson ?: "[]")))
                 .put("inputParts", parts))
         }
         dao.putSnapshot(BoardSnapshotEntity(snapshotId, boardId, board.revision, null,
@@ -107,7 +122,7 @@ class BoardStore(private val db: AppDatabase) {
         val board = requireNotNull(dao.board(task.boardId))
         check(board.revision == submission.boardRevision) { "看板已更新，请重新提交" }
         require(result.map { it.id }.distinct().size == result.size) { "卡片标识重复" }
-        val clean = result.map { it.copy(isAnnotationMode = false, annotationText = null, annotationImageUri = null, attachmentId = null) }
+        val clean = result.map { it.copy(isAnnotationMode = false, annotationText = null, annotationImageUri = null, attachmentId = null, annotationAnchor = null) }
         val now = System.currentTimeMillis()
         val snapshotId = UUID.randomUUID().toString()
         dao.removeCards(board.id)
@@ -119,7 +134,7 @@ class BoardStore(private val db: AppDatabase) {
         val next = if (draft.revision == task.draftRevision) clean else {
             val pending = decode(draft.cardsJson).associateBy { it.id }
             clean.map { card -> pending[card.id]?.let { old -> card.copy(isAnnotationMode = old.isAnnotationMode,
-                annotationText = old.annotationText, annotationImageUri = old.annotationImageUri, attachmentId = old.attachmentId) } ?: card } +
+                annotationText = old.annotationText, annotationImageUri = old.annotationImageUri, attachmentId = old.attachmentId, annotationAnchor = old.annotationAnchor) } ?: card } +
                 pending.values.filter { old -> clean.none { it.id == old.id } }
         }
         dao.putDraft(draft.copy(revision = draft.revision + 1, cardsJson = encode(next), updatedAt = now))
