@@ -1,12 +1,15 @@
 package com.example.lianxu.data.db
 
 import android.content.Context
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.lianxu.data.dao.GoalPhaseDao
 import com.example.lianxu.data.dao.MeasurementDao
 import com.example.lianxu.data.dao.ProfileDao
+import com.example.lianxu.data.dao.CollaborationDao
+import com.example.lianxu.data.dao.RecordDao
 import com.example.lianxu.data.entity.*
 
 @Database(
@@ -19,12 +22,17 @@ import com.example.lianxu.data.entity.*
         Measurement::class,
         Turn::class,
         Board::class,
-        Card::class
+        Card::class, DraftEntity::class, AttachmentEntity::class, InputBundleEntity::class,
+        TaskEntity::class, BoardSnapshotEntity::class, CalculationEntity::class,
+        AnalysisEntity::class, DayPlanEntity::class, NutritionPolicyEntity::class, MutationReceiptEntity::class
     ],
-    version = 1,
-    exportSchema = false
+    version = 2,
+    autoMigrations = [AutoMigration(from = 1, to = 2)],
+    exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {
+    abstract fun collaborationDao(): CollaborationDao
+    abstract fun recordDao(): RecordDao
     abstract fun profileDao(): ProfileDao
     abstract fun goalPhaseDao(): GoalPhaseDao
     abstract fun measurementDao(): MeasurementDao

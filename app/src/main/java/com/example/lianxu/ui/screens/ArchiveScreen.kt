@@ -80,11 +80,14 @@ fun ArchiveScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
+            uiState.error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+
             Button(
                 onClick = { viewModel.saveData() },
+                enabled = !uiState.isSaving,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("保存并重新计算")
+                Text(if (uiState.isSaving) "正在保存…" else "保存并重新计算")
             }
 
             uiState.nutritionResult?.let { result ->

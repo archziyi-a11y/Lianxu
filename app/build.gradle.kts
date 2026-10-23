@@ -89,3 +89,14 @@ dependencies {
     "ksp"(libs.androidx.room.compiler)
     "ksp"(libs.moshi.kotlin.codegen)
 }
+// Keep historical Room schemas for non-destructive upgrades.
+ksp { arg("room.schemaLocation", "$projectDir/schemas") }
+
+android.sourceSets.getByName("androidTest").assets.srcDir("$projectDir/schemas")
+
+// Keep test workers lightweight on a workstation also running Studio and an emulator.
+tasks.withType<Test>().configureEach {
+    minHeapSize = "64m"
+    maxHeapSize = "192m"
+    maxParallelForks = 1
+}

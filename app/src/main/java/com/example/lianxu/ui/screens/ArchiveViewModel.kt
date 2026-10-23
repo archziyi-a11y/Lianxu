@@ -4,173 +4,80 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.lianxu.data.db.AppDatabase
-import com.example.lianxu.data.entity.GoalPhase
-import com.example.lianxu.data.entity.Measurement
-import com.example.lianxu.data.entity.Profile
 import com.example.lianxu.data.repository.AppRepository
+import com.example.lianxu.data.repository.ArchiveData
 import com.example.lianxu.engine.CalculationEngine
 import com.example.lianxu.engine.NutritionResult
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.time.LocalDate
-import java.util.UUID
 
 class ArchiveViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository: AppRepository
+    private val _uiState = MutableStateFlow(ArchiveUiState())
+    val uiState = _uiState.asStateFlow()
+    private val repository = AppRepository(AppDatabase.getDatabase(application))
+    private var dirty = false
 
     init {
-        val database = AppDatabase.getDatabase(application)
-        repository = AppRepository(
-            database.profileDao(),
-            database.goalPhaseDao(),
-            database.measurementDao()
-        )
-        loadData()
-    }
-
-    private val _uiState = MutableStateFlow(ArchiveUiState())
-    val uiState: StateFlow<ArchiveUiState> = _uiState.asStateFlow()
-
-    private fun loadData() {
         viewModelScope.launch {
-            val profile = repository.getProfile()
-            val goalPhase = repository.getCurrentGoalPhase()
-            val weightMeasurement = repository.getLatestWeight()
-
-            _uiState.value = _uiState.value.copy(
-                weightStr = weightMeasurement?.value?.toString() ?: "",
-                heightStr = profile?.heightCm?.toString() ?: "",
-                birthDateStr = profile?.birthDate ?: "",
-                formulaSex = profile?.formulaSex ?: "male",
-                activityFactorStr = profile?.activityFactor?.toString() ?: "1.6",
-                goalKind = goalPhase?.kind ?: "maintain"
-            )
-            recalculate(profile, goalPhase, weightMeasurement)
+            repository.archiveFlow.collect { if (!dirty) showSaved(it) }
         }
     }
 
-    fun onWeightChange(value: String) { _uiState.value = _uiState.value.copy(weightStr = value) }
-    fun onHeightChange(value: String) { _uiState.value = _uiState.value.copy(heightStr = value) }
-    fun onBirthDateChange(value: String) { _uiState.value = _uiState.value.copy(birthDateStr = value) }
-    fun onFormulaSexChange(value: String) { _uiState.value = _uiState.value.copy(formulaSex = value) }
-    fun onActivityFactorChange(value: String) { _uiState.value = _uiState.value.copy(activityFactorStr = value) }
-    fun onGoalKindChange(value: String) { _uiState.value = _uiState.value.copy(goalKind = value) }
+    private fun showSaved(data: ArchiveData) {
+        val p = data.profile
+        val result = runCatching {
+            val weight = data.weight?.value ?: return@runCatching null
+            val height = p?.heightCm ?: return@runCatching null
+            val birthDate = p.birthDate ?: return@runCatching null
+            val sex = p.formulaSex ?: return@runCatching null
+            if (sex !in listOf("male", "female")) return@runCatching null
+            CalculationEngine.calculate(weight, height, LocalDate.parse(birthDate), sex,
+                p.activityFactor ?: 1.6f, data.goal?.kind ?: "maintain")
+        }.getOrNull()
+        _uiState.value = ArchiveUiState(data.weight?.value?.toString() ?: "", p?.heightCm?.toString() ?: "",
+            p?.birthDate ?: "", p?.formulaSex ?: "", p?.activityFactor?.toString() ?: "1.6",
+            data.goal?.kind ?: "maintain", result)
+    }
+
+    private fun edit(transform: (ArchiveUiState) -> ArchiveUiState) {
+        if (_uiState.value.isSaving) return
+        dirty = true
+        _uiState.value = transform(_uiState.value).copy(error = null, nutritionResult = null)
+    }
+    fun onWeightChange(value: String) = edit { it.copy(weightStr = value) }
+    fun onHeightChange(value: String) = edit { it.copy(heightStr = value) }
+    fun onBirthDateChange(value: String) = edit { it.copy(birthDateStr = value) }
+    fun onFormulaSexChange(value: String) = edit { it.copy(formulaSex = value) }
+    fun onActivityFactorChange(value: String) = edit { it.copy(activityFactorStr = value) }
+    fun onGoalKindChange(value: String) = edit { it.copy(goalKind = value) }
 
     fun saveData() {
+        if (_uiState.value.isSaving) return
+        val state = _uiState.value
+        _uiState.value = state.copy(isSaving = true, error = null)
         viewModelScope.launch {
-            val state = _uiState.value
-            val weight = state.weightStr.toFloatOrNull()
-            val height = state.heightStr.toFloatOrNull()
-            val birthDate = state.birthDateStr // Should be YYYY-MM-DD
-            val activityFactor = state.activityFactorStr.toFloatOrNull() ?: 1.6f
-            
-            val nowStr = LocalDate.now().toString()
-            val nowMs = System.currentTimeMillis()
-            
-            if (weight != null) {
-                repository.insertMeasurement(
-                    Measurement(
-                        id = UUID.randomUUID().toString(),
-                        metric = "weight",
-                        observed = "{\"date\":\"$nowStr\",\"basis\":\"operation_context\"}", // simplified DateContext
-                        measuredAt = nowMs,
-                        value = weight,
-                        unit = "kg",
-                        origin = "user",
-                        note = null,
-                        revision = 1,
-                        createdAt = nowMs,
-                        updatedAt = nowMs
-                    )
-                )
+            try {
+                fun number(raw: String, label: String): Float? = if (raw.isBlank()) null else
+                    requireNotNull(raw.trim().toFloatOrNull()) { "$label 格式不正确" }
+                repository.saveArchive(number(state.heightStr, "身高"), state.birthDateStr.trim().ifEmpty { null },
+                    state.formulaSex.trim().lowercase().ifEmpty { null }, number(state.activityFactorStr, "活动系数"),
+                    number(state.weightStr, "体重"), state.goalKind.trim().lowercase())
+                dirty = false
+                showSaved(repository.archiveFlow.first())
+            } catch (error: CancellationException) { throw error
+            } catch (error: Exception) {
+                _uiState.value = _uiState.value.copy(isSaving = false, error = error.message ?: "保存失败，输入已保留")
             }
-            
-            var existingProfile = repository.getProfile()
-            if (existingProfile == null) {
-                existingProfile = Profile(
-                    id = UUID.randomUUID().toString(),
-                    heightCm = height,
-                    birthDate = birthDate,
-                    formulaSex = state.formulaSex,
-                    activityFactor = activityFactor,
-                    preferredZoneId = "Asia/Shanghai",
-                    mealSlots = "[]",
-                    defaultScene = "home",
-                    excludedIngredients = "[]",
-                    preferredFoods = "[]",
-                    nutritionMode = "standard_adult",
-                    manualTargets = null,
-                    revision = 1,
-                    createdAt = nowMs,
-                    updatedAt = nowMs
-                )
-            } else {
-                existingProfile = existingProfile.copy(
-                    heightCm = height,
-                    birthDate = birthDate,
-                    formulaSex = state.formulaSex,
-                    activityFactor = activityFactor,
-                    revision = existingProfile.revision + 1,
-                    updatedAt = nowMs
-                )
-            }
-            repository.insertProfile(existingProfile)
-            
-            val existingGoal = repository.getCurrentGoalPhase()
-            if (existingGoal?.kind != state.goalKind) {
-                // Terminate old one, start new one (simplified here)
-                val newGoal = GoalPhase(
-                    id = UUID.randomUUID().toString(),
-                    kind = state.goalKind,
-                    startsOn = nowStr,
-                    endsOn = null,
-                    note = null,
-                    revision = 1,
-                    createdAt = nowMs,
-                    updatedAt = nowMs
-                )
-                repository.insertGoalPhase(newGoal)
-                recalculate(existingProfile, newGoal, Measurement(id="", metric="weight", observed="", measuredAt=null, value=weight ?: 0f, unit="kg", origin="", note="", revision=1, createdAt=nowMs, updatedAt=nowMs))
-            } else {
-                recalculate(existingProfile, existingGoal, Measurement(id="", metric="weight", observed="", measuredAt=null, value=weight ?: 0f, unit="kg", origin="", note="", revision=1, createdAt=nowMs, updatedAt=nowMs))
-            }
-        }
-    }
-
-    private fun recalculate(profile: Profile?, goalPhase: GoalPhase?, weightMeasurement: Measurement?) {
-        val weight = weightMeasurement?.value ?: return
-        val height = profile?.heightCm ?: return
-        val birthDateStr = profile.birthDate ?: return
-        val formulaSex = profile.formulaSex ?: return
-        val activityFactor = profile.activityFactor ?: 1.6f
-        val goalKind = goalPhase?.kind ?: "maintain"
-
-        try {
-            val birthDate = LocalDate.parse(birthDateStr)
-            val result = CalculationEngine.calculate(
-                weightKg = weight,
-                heightCm = height,
-                birthDate = birthDate,
-                formulaSex = formulaSex,
-                activityFactor = activityFactor,
-                goalKind = goalKind
-            )
-            _uiState.value = _uiState.value.copy(nutritionResult = result)
-        } catch (e: Exception) {
-            // handle parse error
-            _uiState.value = _uiState.value.copy(nutritionResult = null)
         }
     }
 }
 
 data class ArchiveUiState(
-    val weightStr: String = "",
-    val heightStr: String = "",
-    val birthDateStr: String = "",
-    val formulaSex: String = "male",
-    val activityFactorStr: String = "1.6",
-    val goalKind: String = "maintain",
-    val nutritionResult: NutritionResult? = null
+    val weightStr: String = "", val heightStr: String = "", val birthDateStr: String = "",
+    val formulaSex: String = "", val activityFactorStr: String = "1.6", val goalKind: String = "maintain",
+    val nutritionResult: NutritionResult? = null, val isSaving: Boolean = false, val error: String? = null
 )

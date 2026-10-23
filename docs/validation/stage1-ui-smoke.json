@@ -1,0 +1,13 @@
+{
+  "emulator": "emulator-5554",
+  "android": "17 / API 37",
+  "checks": {
+    "coldLaunch": true,
+    "demoLabelVisible": true,
+    "saveAnnotation": true,
+    "forceStopAndNewProcess": true,
+    "annotationRestoredInEditor": true,
+    "temporaryAnnotationRemoved": true
+  },
+  "realApiCalled": false
+}

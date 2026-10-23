@@ -3,7 +3,6 @@ package com.example.lianxu.ui.screens
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.PickVisualMediaRequest
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -31,29 +30,19 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import java.util.UUID
-
-enum class CardSpan(val span: Int) {
-    SMALL(2),
-    MEDIUM(3),
-    LARGE(6)
-}
-
-data class DashboardCard(
-    val id: String = UUID.randomUUID().toString(),
-    val title: String,
-    val value: String,
-    val span: CardSpan,
-    val isAnnotationMode: Boolean = false,
-    val annotationText: String? = null,
-    val annotationImageUri: String? = null
-)
+import com.example.lianxu.data.model.CardSpan
+import com.example.lianxu.data.model.DashboardCard
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TodayScreen(modifier: Modifier = Modifier, viewModel: TodayViewModel = viewModel()) {
     val cards by viewModel.cards.collectAsState()
     val isProcessing by viewModel.isProcessing.collectAsState()
+    val notice by viewModel.notice.collectAsState()
+    val isImporting by viewModel.isImporting.collectAsState()
+    val demoMode by viewModel.demoMode.collectAsState()
+    val profileSummary by viewModel.profileSummary.collectAsState()
 
     var showSettingsDialog by remember { mutableStateOf(false) }
     var showTextInputDialog by remember { mutableStateOf(false) }
@@ -85,6 +74,7 @@ fun TodayScreen(modifier: Modifier = Modifier, viewModel: TodayViewModel = viewM
                     value = apiKeyInput,
                     onValueChange = { apiKeyInput = it },
                     label = { Text("DeepSeek API Key (leave empty for Demo)") },
+                    visualTransformation = PasswordVisualTransformation(),
                     modifier = Modifier.fillMaxWidth()
                 )
             },
@@ -147,8 +137,8 @@ fun TodayScreen(modifier: Modifier = Modifier, viewModel: TodayViewModel = viewM
             )
         },
         floatingActionButton = {
-            val hasAnnotations = cards.any { it.isAnnotationMode && (!it.annotationText.isNullOrEmpty() || !it.annotationImageUri.isNullOrEmpty()) }
-            if (hasAnnotations && !isProcessing) {
+            val hasAnnotations = cards.any { !it.annotationText.isNullOrEmpty() || it.attachmentId != null }
+            if (hasAnnotations && !isProcessing && !isImporting) {
                 FloatingActionButton(
                     onClick = { viewModel.submitAnnotations() },
                     containerColor = MaterialTheme.colorScheme.primary,
@@ -166,62 +156,70 @@ fun TodayScreen(modifier: Modifier = Modifier, viewModel: TodayViewModel = viewM
         },
         containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
-        Box(
+        Column(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
         ) {
-            AnimatedVisibility(
-                visible = !isProcessing,
-                enter = slideInVertically(
-                    initialOffsetY = { it },
-                    animationSpec = tween(500)
-                ) + fadeIn(animationSpec = tween(500)),
-                exit = slideOutVertically(
-                    targetOffsetY = { -it },
-                    animationSpec = tween(500)
-                ) + fadeOut(animationSpec = tween(500)),
-                modifier = Modifier.fillMaxSize()
-            ) {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(6),
-                    contentPadding = PaddingValues(16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
+            Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
+                Text(profileSummary, style = MaterialTheme.typography.bodyMedium)
+                if (demoMode) Text("演示模式 · 尚未连接AI", color = MaterialTheme.colorScheme.secondary)
+                if (isImporting) Text("正在保存图片…")
+                notice?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
+            }
+            Box(modifier = Modifier.weight(1f)) {
+                androidx.compose.animation.AnimatedVisibility(
+                    visible = !isProcessing,
+                    enter = slideInVertically(
+                        initialOffsetY = { it },
+                        animationSpec = tween(500)
+                    ) + fadeIn(animationSpec = tween(500)),
+                    exit = slideOutVertically(
+                        targetOffsetY = { -it },
+                        animationSpec = tween(500)
+                    ) + fadeOut(animationSpec = tween(500)),
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    items(
-                        items = cards,
-                        key = { it.id },
-                        span = { card -> GridItemSpan(card.span.span) }
-                    ) { card ->
-                        DashboardCardItem(
-                            card = card,
-                            onLongPress = { viewModel.toggleAnnotationMode(card.id) },
-                            onTap = {
-                                currentCardIdForText = card.id
-                                currentTextInput = card.annotationText ?: ""
-                                showTextInputDialog = true
-                            },
-                            onSwipeUp = {
-                                currentCardIdForImage = card.id
-                                photoPickerLauncher.launch(
-                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                                )
-                            }
-                        )
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(6),
+                        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 96.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        items(
+                            items = cards,
+                            key = { it.id },
+                            span = { card -> GridItemSpan(card.span.span) }
+                        ) { card ->
+                            DashboardCardItem(
+                                card = card,
+                                onLongPress = { viewModel.toggleAnnotationMode(card.id) },
+                                onTap = {
+                                    currentCardIdForText = card.id
+                                    currentTextInput = card.annotationText ?: ""
+                                    showTextInputDialog = true
+                                },
+                                onSwipeUp = {
+                                    currentCardIdForImage = card.id
+                                    photoPickerLauncher.launch(
+                                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                    )
+                                }
+                            )
+                        }
                     }
                 }
-            }
             
-            if (isProcessing) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(
-                        text = "PROCESSING...",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Bold
-                    )
+                if (isProcessing) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text(
+                            text = "PROCESSING...",
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
         }

@@ -26,3 +26,7 @@ local.properties
 *.jks
 *.keystore
 key.properties
+
+# JVM crash diagnostics may contain local paths or process state
+hs_err_pid*.log
+replay_pid*.log

@@ -1,218 +1,186 @@
 package com.example.lianxu.ui.screens
 
 import android.app.Application
+import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.lianxu.data.api.ChatCompletionRequest
-import com.example.lianxu.data.api.DeepSeekApi
-import com.example.lianxu.data.api.FunctionDefinition
-import com.example.lianxu.data.api.ItemDefinition
-import com.example.lianxu.data.api.Message
-import com.example.lianxu.data.api.Parameters
-import com.example.lianxu.data.api.PropertyDefinition
-import com.example.lianxu.data.api.Tool
+import com.example.lianxu.data.api.*
+import com.example.lianxu.data.db.AppDatabase
+import com.example.lianxu.data.model.CardSpan
+import com.example.lianxu.data.model.DashboardCard
 import com.example.lianxu.data.prefs.SettingsManager
+import com.example.lianxu.data.repository.AppRepository
+import com.example.lianxu.data.repository.AttachmentStore
+import com.example.lianxu.data.repository.BoardStore
+import com.example.lianxu.data.repository.Submission
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
+import org.json.JSONObject
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
-import java.util.UUID
+import java.io.File
+import java.util.concurrent.TimeUnit
+import java.time.LocalDate
+import java.time.ZoneId
 
 class TodayViewModel(application: Application) : AndroidViewModel(application) {
-    private val settingsManager = SettingsManager(application)
-    
+    private val db = AppDatabase.getDatabase(application)
+    private val settings = SettingsManager(application)
+    private val store = BoardStore(db)
+    private val attachments = AttachmentStore(application, db)
+    private val writes = Mutex()
+    private var boardId: String? = null
     private val _cards = MutableStateFlow<List<DashboardCard>>(emptyList())
-    val cards: StateFlow<List<DashboardCard>> = _cards.asStateFlow()
-    
+    val cards = _cards.asStateFlow()
     private val _isProcessing = MutableStateFlow(false)
-    val isProcessing: StateFlow<Boolean> = _isProcessing.asStateFlow()
-
-    private val moshi = Moshi.Builder()
-        .addLast(KotlinJsonAdapterFactory())
-        .build()
-        
-    private val retrofit = Retrofit.Builder()
-        .baseUrl("https://api.deepseek.com/")
-        .client(
-            OkHttpClient.Builder()
-                .addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY })
-                .build()
-        )
-        .addConverterFactory(MoshiConverterFactory.create(moshi))
-        .build()
-        
-    private val api = retrofit.create(DeepSeekApi::class.java)
+    val isProcessing = _isProcessing.asStateFlow()
+    private val _notice = MutableStateFlow<String?>(null)
+    val notice = _notice.asStateFlow()
+    private val _isImporting = MutableStateFlow(false)
+    val isImporting = _isImporting.asStateFlow()
+    private val _demoMode = MutableStateFlow(true)
+    val demoMode = _demoMode.asStateFlow()
+    private val _profileSummary = MutableStateFlow("尚未补充身体资料")
+    val profileSummary = _profileSummary.asStateFlow()
+    private val moshi = Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()
+    private val api = Retrofit.Builder().baseUrl("https://api.deepseek.com/")
+        .client(OkHttpClient.Builder().callTimeout(90, TimeUnit.SECONDS).build())
+        .addConverterFactory(MoshiConverterFactory.create(moshi)).build().create(DeepSeekApi::class.java)
 
     init {
-        _cards.value = listOf(
-            DashboardCard(title = "Heart Rate", value = "72 bpm", span = CardSpan.SMALL),
-            DashboardCard(title = "Calories", value = "320 kcal", span = CardSpan.SMALL),
-            DashboardCard(title = "Steps", value = "4500", span = CardSpan.SMALL),
-            DashboardCard(title = "Active Time", value = "45 min", span = CardSpan.MEDIUM),
-            DashboardCard(title = "Distance", value = "3.2 km", span = CardSpan.MEDIUM),
-            DashboardCard(title = "Daily Goal", value = "65% Complete", span = CardSpan.LARGE)
-        )
-    }
-
-    fun toggleAnnotationMode(cardId: String) {
-        _cards.value = _cards.value.map {
-            if (it.id == cardId) {
-                it.copy(isAnnotationMode = !it.isAnnotationMode)
-            } else {
-                it
+        viewModelScope.launch {
+            try {
+                store.recoverInterrupted()
+                // Transitional placeholders carry no fabricated health metrics.
+                val zone = AppRepository(db).getProfile()?.preferredZoneId?.let { ZoneId.of(it) } ?: ZoneId.systemDefault()
+                val id = store.open(listOf(
+                    DashboardCard(id = "training-input", title = "训练记录", value = "长按补充今天的训练", span = CardSpan.MEDIUM),
+                    DashboardCard(id = "intake-input", title = "饮食补充", value = "可选：补充实际摄入", span = CardSpan.MEDIUM),
+                    DashboardCard(id = "assistant-input", title = "当日建议", value = "营养与餐食看板正在接入", span = CardSpan.LARGE)), LocalDate.now(zone), zone)
+                boardId = id
+                store.watchCards(id).collect { _cards.value = it }
+            } catch (error: CancellationException) { throw error
+            } catch (error: Exception) { _notice.value = "载入失败，原数据保留：${error.message}" }
+        }
+        viewModelScope.launch {
+            AppRepository(db).archiveFlow.collect { data ->
+                _profileSummary.value = listOfNotNull(data.weight?.let { "${it.value} kg" },
+                    data.goal?.let { when (it.kind) { "gain" -> "增肌"; "cut" -> "减脂"; else -> "维持" } }).joinToString(" · ")
+                    .ifEmpty { "尚未补充身体资料" }
             }
+        }
+        viewModelScope.launch {
+            try { settings.apiKeyFlow.collect { _demoMode.value = it.isNullOrBlank() } }
+            catch (error: CancellationException) { throw error }
+            catch (error: Exception) { _notice.value = "无法读取密钥，请在设置中重新保存" }
         }
     }
 
-    fun updateAnnotationText(cardId: String, text: String) {
-        _cards.value = _cards.value.map {
-            if (it.id == cardId) {
-                it.copy(annotationText = text)
-            } else {
-                it
-            }
+    private fun edit(transform: (List<DashboardCard>) -> List<DashboardCard>) {
+        val id = boardId ?: return
+        viewModelScope.launch {
+            try { writes.withLock { store.edit(id, transform) } }
+            catch (error: CancellationException) { throw error }
+            catch (error: Exception) { _notice.value = "保存补充失败，请重试：${error.message}" }
         }
     }
-
+    fun toggleAnnotationMode(cardId: String) = edit { cards -> cards.map {
+        if (it.id == cardId) it.copy(isAnnotationMode = !it.isAnnotationMode) else it } }
+    fun updateAnnotationText(cardId: String, text: String) = edit { cards -> cards.map {
+        if (it.id == cardId) it.copy(annotationText = text, isAnnotationMode = true) else it } }
     fun updateAnnotationImage(cardId: String, uri: String) {
-        _cards.value = _cards.value.map {
-            if (it.id == cardId) {
-                it.copy(annotationImageUri = uri)
-            } else {
-                it
-            }
+        val id = boardId ?: return
+        if (_isImporting.value) return
+        _isImporting.value = true
+        viewModelScope.launch {
+            try {
+                val attachment = attachments.import(Uri.parse(uri))
+                writes.withLock {
+                    store.edit(id) { cards -> cards.map { if (it.id == cardId) it.copy(attachmentId = attachment.id,
+                        annotationImageUri = Uri.fromFile(File(getApplication<Application>().filesDir, attachment.localPath)).toString(),
+                        isAnnotationMode = true) else it } }
+                }
+                _notice.value = "图片已保存在本机"
+            } catch (error: CancellationException) { throw error
+            } catch (error: Exception) { _notice.value = "图片未保存，请重新选择：${error.message}"
+            } finally { _isImporting.value = false }
         }
     }
-    
     fun getApiKey(callback: (String?) -> Unit) {
         viewModelScope.launch {
-            callback(settingsManager.apiKeyFlow.firstOrNull())
+            try { callback(settings.apiKeyFlow.first()) }
+            catch (error: Exception) { _notice.value = "读取密钥失败，请重新填写" }
         }
     }
-
     fun saveApiKey(key: String) {
         viewModelScope.launch {
-            settingsManager.saveApiKey(key)
+            try { settings.saveApiKey(key); _notice.value = "设置已保存" }
+            catch (error: Exception) { _notice.value = "密钥保存失败，请重试" }
+        }
+    }
+    fun submitAnnotations() {
+        val id = boardId ?: return
+        if (_isProcessing.value || _isImporting.value) return
+        _isProcessing.value = true
+        _notice.value = null
+        viewModelScope.launch {
+            var submission: Submission? = null
+            try {
+                val frozen = writes.withLock { store.prepare(id) }
+                submission = frozen
+                val key = settings.apiKeyFlow.first()
+                val result = if (key.isNullOrBlank()) {
+                    delay(600)
+                    _notice.value = "本地演示：补充已保存，尚未进行AI分析"
+                    frozen.cards // No random health values and no fabricated analysis.
+                } else {
+                    check(frozen.cards.none { it.attachmentId != null }) { "图片已保存；本阶段尚未接通视觉请求，请保留批注稍后发送" }
+                    legacyTextUpdate(key, frozen.cards)
+                }
+                store.complete(frozen, result)
+            } catch (error: CancellationException) { throw error
+            } catch (error: Exception) {
+                val message = if (error is retrofit2.HttpException) "服务请求失败（${error.code()}），输入已保留，可重试"
+                    else "处理未完成，输入已保留：${error.message ?: "请重试"}"
+                submission?.let { runCatching { store.fail(it, message) } }
+                _notice.value = message
+            } finally { _isProcessing.value = false }
         }
     }
 
-    fun submitAnnotations() {
-        val annotatedCards = _cards.value.filter { it.isAnnotationMode && (!it.annotationText.isNullOrEmpty() || !it.annotationImageUri.isNullOrEmpty()) }
-        if (annotatedCards.isEmpty()) return
-
-        _isProcessing.value = true
-
-        viewModelScope.launch {
-            val apiKey = settingsManager.apiKeyFlow.firstOrNull()
-            
-            if (apiKey.isNullOrEmpty()) {
-                // Demo Mode
-                delay(2000)
-                
-                // Simulate new cards
-                val newCards = _cards.value.map { card ->
-                    if (annotatedCards.any { it.id == card.id }) {
-                        // Modify value slightly for demo
-                        val newVal = when (card.title) {
-                            "Heart Rate" -> "${(60..90).random()} bpm"
-                            "Calories" -> "${(300..500).random()} kcal"
-                            "Steps" -> "${(4000..6000).random()}"
-                            "Active Time" -> "${(40..60).random()} min"
-                            "Distance" -> "${String.format(java.util.Locale.US, "%.1f", (3..5).random() + Math.random())} km"
-                            "Daily Goal" -> "${(70..90).random()}% Complete"
-                            else -> card.value
-                        }
-                        card.copy(value = newVal, isAnnotationMode = false, annotationText = null, annotationImageUri = null)
-                    } else {
-                        card
-                    }
-                }
-                _cards.value = newCards
-                _isProcessing.value = false
-            } else {
-                // Real API Mode
-                try {
-                    val prompt = buildString {
-                        append("Update the following fitness metrics based on user annotations:\\n")
-                        annotatedCards.forEach { card ->
-                            append("- ${card.title}: current value=${card.value}, user note='${card.annotationText}'\\n")
-                        }
-                    }
-
-                    val request = ChatCompletionRequest(
-                        messages = listOf(
-                            Message(role = "system", content = "You are a fitness AI. Analyze the user's annotations on their fitness cards and return updated values. Output numeric values with units similar to the current format."),
-                            Message(role = "user", content = prompt)
-                        ),
-                        tools = listOf(
-                            Tool(
-                                function = FunctionDefinition(
-                                    name = "update_cards",
-                                    description = "Updates the fitness dashboard cards",
-                                    parameters = Parameters(
-                                        properties = mapOf(
-                                            "cards" to PropertyDefinition(
-                                                type = "array",
-                                                description = "List of updated cards",
-                                                items = ItemDefinition(
-                                                    type = "object",
-                                                    properties = mapOf(
-                                                        "title" to PropertyDefinition(type = "string", description = "Title of the card"),
-                                                        "value" to PropertyDefinition(type = "string", description = "New updated value")
-                                                    ),
-                                                    required = listOf("title", "value")
-                                                )
-                                            )
-                                        ),
-                                        required = listOf("cards")
-                                    )
-                                )
-                            )
-                        )
-                    )
-                    
-                    val response = api.createChatCompletion("Bearer $apiKey", request)
-                    val toolCall = response.choices.firstOrNull()?.message?.tool_calls?.firstOrNull { it.function.name == "update_cards" }
-                    
-                    if (toolCall != null) {
-                        // Parse toolCall.function.arguments (which is a JSON string of { "cards": [...] })
-                        // In a real app we'd parse this with Moshi. For simplicity here, we'll try to find matching titles.
-                        val argsMapAdapter = moshi.adapter(Map::class.java)
-                        val map = argsMapAdapter.fromJson(toolCall.function.arguments)
-                        val updatedCardsList = map?.get("cards") as? List<Map<String, String>>
-                        
-                        if (updatedCardsList != null) {
-                            _cards.value = _cards.value.map { card ->
-                                val updated = updatedCardsList.find { it["title"] == card.title }
-                                if (updated != null) {
-                                    card.copy(value = updated["value"] ?: card.value, isAnnotationMode = false, annotationText = null, annotationImageUri = null)
-                                } else {
-                                    card.copy(isAnnotationMode = false, annotationText = null, annotationImageUri = null)
-                                }
-                            }
-                        } else {
-                            _cards.value = _cards.value.map { it.copy(isAnnotationMode = false, annotationText = null, annotationImageUri = null) }
-                        }
-                    } else {
-                         _cards.value = _cards.value.map { it.copy(isAnnotationMode = false, annotationText = null, annotationImageUri = null) }
-                    }
-                    
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    // Fallback to clear annotations on error
-                    _cards.value = _cards.value.map { it.copy(isAnnotationMode = false, annotationText = null, annotationImageUri = null) }
-                } finally {
-                    _isProcessing.value = false
-                }
-            }
+    // Kept only for the handover's text adapter. Full tool/vision orchestration is stage three.
+    private suspend fun legacyTextUpdate(key: String, cards: List<DashboardCard>): List<DashboardCard> {
+        val input = cards.filter { !it.annotationText.isNullOrBlank() }.joinToString("\n") {
+            "cardId=${it.id}; revision=${it.revision}; title=${it.title}; snapshot=${it.value}; note=${it.annotationText}"
         }
+        val response = api.createChatCompletion("Bearer $key", ChatCompletionRequest(messages = listOf(
+            Message("system", "Respond to the user's card annotations. Do not invent measurements or nutritional numbers. Use update_cards for text-only card responses."),
+            Message("user", input)), tools = listOf(Tool(function = FunctionDefinition("update_cards", "Update card text", Parameters(
+                properties = mapOf("cards" to PropertyDefinition("array", "Card updates", ItemDefinition("object", mapOf(
+                    "cardId" to PropertyDefinition("string", "Existing card ID"),
+                    "value" to PropertyDefinition("string", "Response text")), listOf("cardId", "value")))), required = listOf("cards")))))))
+        val call = response.choices.firstOrNull()?.message?.tool_calls?.singleOrNull { it.function.name == "update_cards" }
+            ?: error("服务未返回有效结果")
+        val list = JSONObject(call.function.arguments).getJSONArray("cards")
+        require(list.length() > 0) { "服务返回空结果" }
+        val updates = mutableMapOf<String, String>()
+        for (index in 0 until list.length()) {
+            val item = list.getJSONObject(index)
+            val id = item.getString("cardId")
+            require(cards.any { it.id == id } && !updates.containsKey(id)) { "返回卡片标识无效" }
+            val value = item.getString("value")
+            require(value.isNotBlank()) { "返回内容为空" }
+            updates[id] = value
+        }
+        return cards.map { card -> updates[card.id]?.let { card.copy(value = it, revision = card.revision + 1) } ?: card }
     }
 }
