@@ -1,0 +1,133 @@
+{
+  "schemaVersion": "1",
+  "kind": "illustrative_contract",
+  "notUserData": true,
+  "executionStatus": "not_executed",
+  "dateContext": {
+    "date": "2026-10-24",
+    "zoneId": "Asia/Shanghai",
+    "basis": "operation_context"
+  },
+  "beforeBoard": {
+    "id": "board-demo",
+    "revision": 4,
+    "latestCompletedTurnId": "turn-demo-1",
+    "cards": [
+      {
+        "cardId": "training-card",
+        "revision": 2,
+        "readableContent": "今日训练：尚未补充",
+        "entityRefs": []
+      },
+      {
+        "cardId": "lunch-card",
+        "revision": 3,
+        "readableContent": "午餐摄入：尚未补充",
+        "entityRefs": []
+      },
+      {
+        "cardId": "dinner-card",
+        "revision": 2,
+        "readableContent": "晚餐建议：按已有当日规划",
+        "entityRefs": [
+          "plan-demo@1"
+        ]
+      }
+    ]
+  },
+  "submission": {
+    "submissionId": "submission-demo-2",
+    "turnId": "turn-demo-2",
+    "sequence": 2,
+    "boardId": "board-demo",
+    "annotations": [
+      {
+        "annotationId": "annotation-training",
+        "target": {
+          "cardId": "training-card",
+          "cardRevision": 2
+        },
+        "targetSnapshot": {
+          "readableContent": "今日训练：尚未补充"
+        },
+        "inputMode": "image",
+        "inputParts": [
+          {
+            "kind": "text",
+            "text": "今天按这张图练的，最后一项没练。重量没记。"
+          },
+          {
+            "kind": "image",
+            "attachmentId": "sample-chest"
+          }
+        ]
+      },
+      {
+        "annotationId": "annotation-lunch",
+        "target": {
+          "cardId": "lunch-card",
+          "cardRevision": 3
+        },
+        "targetSnapshot": {
+          "readableContent": "午餐摄入：尚未补充"
+        },
+        "inputMode": "text",
+        "inputParts": [
+          {
+            "kind": "text",
+            "text": "午饭吃了鸡肉饭，分量不清楚。"
+          }
+        ]
+      },
+      {
+        "annotationId": "annotation-dinner",
+        "target": {
+          "cardId": "dinner-card",
+          "cardRevision": 2
+        },
+        "targetSnapshot": {
+          "readableContent": "晚餐建议：按已有当日规划"
+        },
+        "inputMode": "text",
+        "inputParts": [
+          {
+            "kind": "text",
+            "text": "结合这些调整今晚吃什么，我今天想吃食堂。"
+          }
+        ]
+      }
+    ]
+  },
+  "attachments": [
+    {
+      "id": "sample-chest",
+      "localFixture": "../开发规格/assets/samples/training-chest.jpg",
+      "runtimeDelivery": "由服务适配层传入图片内容，不把本地路径当作模型可读图片。"
+    }
+  ],
+  "availableContext": {
+    "profileRef": "profile-demo@1",
+    "goalRef": "goal-demo@1",
+    "nutritionPolicyRef": "policy-demo@1",
+    "planRef": "plan-demo@1",
+    "note": "这些是虚构引用；运行测试前须创建对应持久实体。此夹具不伪造完整营养计算结果。"
+  },
+  "expectedOutcome": {
+    "jointInterpretation": true,
+    "training": "按图片及用户原话记录可确定内容，不编重量、不把计划次数当作确切完成次数。",
+    "intake": "保存鸡肉饭及粗略份量描述；需要估计时保留估计来源。",
+    "nutrition": "使用可用目标、记录和食堂候选计算晚餐，缺参数时给可支持内容并集中提问。",
+    "presentation": "可更新相关餐食合计并增添解释，不要求一条批注对应一张回复卡。",
+    "atomicCommit": [
+      "业务变更与助手产物",
+      "来源和计算引用",
+      "更新后卡片及看板快照",
+      "轮次状态、凭据和最新成功轮次指针"
+    ],
+    "motion": [
+      "所有卡片向上离场",
+      "结果从下方继续向上进入"
+    ],
+    "nextRound": "同日下一次提交创建sequence=3，继续读取最新实体和board-demo，不新建同日看板。"
+  }
+}

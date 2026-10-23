@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "catalogVersion": "pilot-2026-10-23",
+  "retrievedAt": "2026-10-23",
+  "sourceUrl": "https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_sr_legacy_food_csv_2018-04.zip",
+  "archiveSha256": "b80817294b8850530aaedf2e515c02593b1824f763a0ff356e5c2081643e6fd0",
+  "archiveBytes": 6074592,
+  "license": "CC0; USDA FoodData Central public-domain data",
+  "foodCount": 31,
+  "recipeCount": 36,
+  "nutrientIds": {
+    "1008": "energyKcal",
+    "1003": "proteinG",
+    "1005": "carbohydrateG",
+    "1004": "fatG",
+    "1079": "fiberG"
+  },
+  "note": "SR Legacy final dataset 2018-04; downloaded food.csv publication_date may be 2019-04-01. Translations and meal combinations authored for this app.",
+  "outputs": {
+    "foods.v1.json": "6cff9bbf3ff2e108c1dc190bfd4a5a512f02917164a4f3bf2ee0d5b115710a29",
+    "recipes.v1.json": "345a598eaf799e8aa5fa73839ee709f7a5abd4faea99ffc9acb27fbd137d34ab",
+    "source-records.v1.json": "aaed9e8017ab7a81e11bafe452b29e0c60657ad7cb67662d2245714976080687"
+  }
+}

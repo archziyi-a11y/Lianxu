@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "status": "proposed",
+  "colors": {
+    "background": "#0B0D0B",
+    "surface": "#151815",
+    "divider": "#353C34",
+    "textPrimary": "#EDF0E8",
+    "textSecondary": "#A5B09F",
+    "accent": "#D7FF39",
+    "onAccent": "#11170A",
+    "change": "#8FDDC5",
+    "error": "#FFB4AB"
+  },
+  "typographySp": {"title": 28, "section": 20, "body": 14, "action": 14, "caption": 12, "heroNumber": 64, "compactHeroNumber": 48},
+  "dimensionsDp": {"pagePadding": 20, "sectionGap": 24, "rowGap": 12, "inlineGap": 8, "baseGrid": 4, "divider": 1, "corner": 4, "minTouchTarget": 48},
+  "motionMs": {"expand": 160, "insert": 200},
+  "referenceViewportDp": {"width": 390, "height": 844},
+  "fontPolicy": "System Chinese sans serif; tabular or monospace numbers; no first-run font download"
+}
