@@ -39,13 +39,22 @@ class ComponentResolver(private val db: AppDatabase) {
                 }
             }
             "list" -> {
-                val ref = c.entityRefs.firstOrNull()
-                val plan = ref?.let { db.collaborationDao().plan(it.id) }
-                if (plan == null || plan.revision != ref.revision || plan.state != "current") "方案已更新，请刷新" else {
-                    val meal = DomainJson.decode<MealsDocument>(plan.meals).meals.firstOrNull { it.mealId == c.mealId }
-                    meal?.items?.joinToString("\n") { "${it.name} ${displayNumber(it.grams, "g")}g" } ?: "暂无条目"
-                }
+                c.entityRefs.map { ref -> when (ref.type) {
+                    "training" -> db.recordDao().training(ref.id)?.takeIf { it.revision == ref.revision }?.let { session ->
+                        listOf(session.title, session.rawSummary.orEmpty()).filter(String::isNotBlank).joinToString("\n")
+                    } ?: "记录已更新"
+                    "intake" -> db.recordDao().intake(ref.id)?.takeIf { it.revision == ref.revision }?.rawDescription ?: "摄入记录已更新"
+                    "plan" -> {
+                        val plan = db.collaborationDao().plan(ref.id)
+                        if (plan == null || plan.revision != ref.revision || plan.state != "current") "方案已更新，请刷新" else {
+                            val meals = DomainJson.decode<MealsDocument>(plan.meals).meals.filter { c.mealId == null || it.mealId == c.mealId }
+                            meals.joinToString("\n") { meal -> meal.items.joinToString("\n") { "${it.name} ${displayNumber(it.grams, "g")}g" } }
+                        }
+                    }
+                    else -> "暂无条目"
+                } }.joinToString("\n")
             }
+
             "choice" -> c.options.firstOrNull { it.key == c.selectedKey }?.label.orEmpty()
             "trend" -> {
                 val result = c.calculationId?.let { db.collaborationDao().calculation(it) }?.let { JSONObject(it.result) }

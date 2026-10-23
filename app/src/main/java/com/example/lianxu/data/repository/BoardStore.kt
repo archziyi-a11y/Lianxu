@@ -72,7 +72,7 @@ class BoardStore(private val db: AppDatabase) {
         val existing = dao.taskForDraft(boardId, draft.revision)
         if (existing != null) {
             val turn = requireNotNull(dao.turn(existing.turnId))
-            require(existing.status !in listOf("running", "applying", "queued")) { "本轮正在处理" }
+            require(existing.status !in listOf("running", "staged", "applying", "queued")) { "本轮正在处理" }
             require(existing.status != "completed") { "本轮已完成" }
             val retry = existing.copy(status = "running", lastError = null, updatedAt = System.currentTimeMillis())
             dao.putTask(retry)
@@ -114,11 +114,11 @@ class BoardStore(private val db: AppDatabase) {
         Submission(turn, task, cards, board.revision)
     }
 
-    /** The legacy adapter only supplies render cards. Stage three adds validated business operations. */
+    /** Final rendering commit; Agent ProposalApplier wraps business operations in the same Room transaction. */
     suspend fun complete(submission: Submission, result: List<DashboardCard>) = db.withTransaction {
         val task = requireNotNull(dao.task(submission.task.id))
         if (dao.receipt(task.submissionId, "apply-board") != null) return@withTransaction
-        check(task.status == "running") { "任务状态已改变" }
+        check(task.status in listOf("running", "staged", "applying")) { "任务状态已改变" }
         val board = requireNotNull(dao.board(task.boardId))
         check(board.revision == submission.boardRevision) { "看板已更新，请重新提交" }
         require(result.map { it.id }.distinct().size == result.size) { "卡片标识重复" }
@@ -148,8 +148,9 @@ class BoardStore(private val db: AppDatabase) {
     suspend fun fail(submission: Submission, message: String) = db.withTransaction {
         val task = requireNotNull(dao.task(submission.task.id))
         if (task.status == "completed") return@withTransaction
-        dao.putTask(task.copy(status = "failed", lastError = message, updatedAt = System.currentTimeMillis()))
-        dao.turn(task.turnId)?.let { dao.putTurn(it.copy(status = "failed")) }
+        val status = if (message.contains("VERSION_CONFLICT")) "conflict" else "failed"
+        dao.putTask(task.copy(status = status, lastError = message, updatedAt = System.currentTimeMillis()))
+        dao.turn(task.turnId)?.let { dao.putTurn(it.copy(status = status)) }
     }
 
     suspend fun recoverInterrupted() = db.withTransaction {

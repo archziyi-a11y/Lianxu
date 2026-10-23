@@ -19,7 +19,8 @@ data class DashboardCard(
     val attachmentId: String? = null,
     val blocks: List<BoardComponent> = emptyList(),
     val entityRefs: List<EntityRef> = emptyList(),
-    val annotationAnchor: AnnotationAnchor? = null
+    val annotationAnchor: AnnotationAnchor? = null,
+    val managedBy: String = "local"
 )
 
 @JsonClass(generateAdapter = true)

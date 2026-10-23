@@ -6,6 +6,14 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CollaborationDao {
+    @Query("SELECT * FROM calculations") suspend fun allCalculations(): List<CalculationEntity>
+    @Query("SELECT * FROM analyses") suspend fun allAnalyses(): List<AnalysisEntity>
+    @Query("SELECT * FROM day_plans") suspend fun allPlans(): List<DayPlanEntity>
+    @Query("SELECT * FROM nutrition_policies") suspend fun allPolicies(): List<NutritionPolicyEntity>
+    @Query("SELECT * FROM entity_snapshots") suspend fun allEntitySnapshots(): List<EntitySnapshotEntity>
+    @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun putAgentCache(value: AgentCacheEntity)
+    @Query("SELECT * FROM agent_cache WHERE taskId = :id") suspend fun agentCache(id: String): AgentCacheEntity?
+
     @Query("SELECT * FROM boards WHERE id = :id") suspend fun board(id: String): Board?
     @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun putBoard(value: Board)
     @Query("SELECT * FROM cards WHERE boardId = :boardId ORDER BY rowid") suspend fun cards(boardId: String): List<Card>
@@ -51,6 +59,11 @@ interface CollaborationDao {
 
 @Dao
 interface RecordDao {
+    @Update suspend fun updateTraining(value: TrainingSession)
+    @Update suspend fun updateIntake(value: IntakeEntry)
+    @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun putKnowledge(value: KnowledgeNote)
+    @Query("SELECT * FROM knowledge_notes WHERE deletedAt IS NULL") suspend fun allKnowledge(): List<KnowledgeNote>
+
     @Insert(onConflict = OnConflictStrategy.ABORT) suspend fun insertTraining(value: TrainingSession)
     @Query("SELECT * FROM training_sessions WHERE deletedAt IS NULL ORDER BY createdAt DESC") fun trainings(): Flow<List<TrainingSession>>
     @Query("SELECT * FROM training_sessions WHERE id = :id") suspend fun training(id: String): TrainingSession?

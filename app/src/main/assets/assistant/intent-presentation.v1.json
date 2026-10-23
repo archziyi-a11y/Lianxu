@@ -1,0 +1,147 @@
+{
+  "schemaVersion": "1",
+  "policy": {
+    "composable": true,
+    "fixedBusinessTemplates": false,
+    "requiredInformationMeaning": "读取当前可用依据；仅当所请求定量动作确实缺必要参数时集中追问，不强制填写所有描述项。",
+    "selection": "按整轮语义与上下文选择，可同时采用多条；不是关键词分支。",
+    "output": "必要内容与动作受业务约束，推荐组件可合并、增减、重排。"
+  },
+  "rules": [
+    {
+      "intentKey": "record_training",
+      "requiredInformation": [
+        "用户本轮训练描述、图片及已有完成语境",
+        "可确定的动作、组次、日期；不明项保留原文"
+      ],
+      "requiredActions": [
+        "保存可支持的实际记录和原始来源",
+        "需要摘要时调用training_summary"
+      ],
+      "preferredComponents": [
+        "list",
+        "text",
+        "metric"
+      ],
+      "compositionHints": [
+        "记录较粗时保留描述；只有数字有计算依据时使用metric。"
+      ]
+    },
+    {
+      "intentKey": "record_body",
+      "requiredInformation": [
+        "用户提供的身体指标与日期",
+        "现有Profile与Measurement引用"
+      ],
+      "requiredActions": [
+        "写入对应资料或测量记录",
+        "让相关派生结果过期并按任务重算"
+      ],
+      "preferredComponents": [
+        "metric",
+        "text",
+        "trend"
+      ],
+      "compositionHints": [
+        "单次测量无需硬配趋势；已有足够历史时可合并展示。"
+      ]
+    },
+    {
+      "intentKey": "plan_daily_nutrition",
+      "requiredInformation": [
+        "阶段目标、可用身体资料、当前营养策略",
+        "用户选择的做饭／食堂／外食场景与限制"
+      ],
+      "requiredActions": [
+        "有必要参数时调用nutrition_target和meal_candidates",
+        "保存当日规划，说明食物重量与可替换组合"
+      ],
+      "preferredComponents": [
+        "metric",
+        "list",
+        "choice",
+        "text"
+      ],
+      "compositionHints": [
+        "不要求先记饮食；缺定量必要参数时一次集中提问，先给可支持的内容。"
+      ]
+    },
+    {
+      "intentKey": "revise_remaining_meals",
+      "requiredInformation": [
+        "整轮批注、今日规划、已知实际摄入和明确保留项",
+        "可用营养目标与食物候选"
+      ],
+      "requiredActions": [
+        "综合调整剩余饮食并调用相关计算",
+        "保留已摄入快照，保存新的规划或解释"
+      ],
+      "preferredComponents": [
+        "list",
+        "metric",
+        "choice",
+        "text"
+      ],
+      "compositionHints": [
+        "可联动相关未批注餐食，不重写无关内容；没有实际摄入时不假称已吃。"
+      ]
+    },
+    {
+      "intentKey": "explain_trend",
+      "requiredInformation": [
+        "可用测量与训练记录、有效阶段目标",
+        "用户关注的问题"
+      ],
+      "requiredActions": [
+        "读取相关记录并计算有数据支持的趋势",
+        "保存评价及依据，数据不足时给有限解释"
+      ],
+      "preferredComponents": [
+        "trend",
+        "text",
+        "metric"
+      ],
+      "compositionHints": [
+        "不要求所有指标都有曲线；定性总结不编身体成分结论。"
+      ]
+    },
+    {
+      "intentKey": "correct_long_term_knowledge",
+      "requiredInformation": [
+        "用户纠正原话、被纠正认识及版本",
+        "需要影响的资料或记录引用"
+      ],
+      "requiredActions": [
+        "更新或替代有效认识",
+        "标记相关旧摘要过期，下一轮由新依据生成上下文"
+      ],
+      "preferredComponents": [
+        "text",
+        "list"
+      ],
+      "compositionHints": [
+        "不要求用户手动维护依赖；原始实绩不随解释变化而覆盖。"
+      ]
+    },
+    {
+      "intentKey": "compare_food_alternatives",
+      "requiredInformation": [
+        "要替换的餐食、可用食物来源、场景与限制",
+        "用户指定的比较指标"
+      ],
+      "requiredActions": [
+        "查询食物并计算替代份量",
+        "呈现适用差异与可选组合"
+      ],
+      "preferredComponents": [
+        "choice",
+        "list",
+        "metric",
+        "text"
+      ],
+      "compositionHints": [
+        "推荐不等于记摄入；可用单个组合卡容纳多种基础组件。"
+      ]
+    }
+  ]
+}

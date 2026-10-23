@@ -52,6 +52,7 @@ fun TodayScreen(modifier: Modifier = Modifier, viewModel: TodayViewModel = viewM
     val resolved by viewModel.resolved.collectAsState()
     val sourceDetails by viewModel.sourceDetails.collectAsState()
     val isProcessing by viewModel.isProcessing.collectAsState()
+    val taskProgress by viewModel.taskProgress.collectAsState()
     val isPlanning by viewModel.isPlanning.collectAsState()
     val notice by viewModel.notice.collectAsState()
     val isImporting by viewModel.isImporting.collectAsState()
@@ -217,6 +218,7 @@ fun TodayScreen(modifier: Modifier = Modifier, viewModel: TodayViewModel = viewM
                                 card = card,
                                 resolved = resolved[card.id].orEmpty(),
                                 onAction = { action, value -> viewModel.performAction(action, value) },
+                                onChoice = { componentId, key -> viewModel.selectAssistantChoice(card.id, componentId, key) },
                                 onLongPress = { viewModel.toggleAnnotationMode(card.id) },
                                 onTap = {
                                     currentCardIdForText = card.id
@@ -236,12 +238,15 @@ fun TodayScreen(modifier: Modifier = Modifier, viewModel: TodayViewModel = viewM
             
                 if (isProcessing) {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            text = "PROCESSING...",
+                            text = taskProgress ?: "正在处理本轮补充",
                             style = MaterialTheme.typography.titleLarge,
                             color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.Bold
                         )
+                        TextButton(onClick = viewModel::cancelSubmission) { Text("取消 · 保留输入") }
+                        }
                     }
                 }
             }
@@ -258,6 +263,7 @@ fun DashboardCardItem(
     onSwipeUp: () -> Unit,
     resolved: List<ResolvedComponent> = emptyList(),
     onAction: (CardAction, String?) -> Unit = { _, _ -> },
+    onChoice: (String, String) -> Unit = { _, _ -> },
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -291,7 +297,7 @@ fun DashboardCardItem(
                     fontWeight = FontWeight.Bold
                 )
                 if (card.blocks.isEmpty()) Text(card.value, style = MaterialTheme.typography.bodyLarge)
-                else resolved.forEach { block -> ComponentView(block, resolved.size == 1, onAction) }
+                else resolved.forEach { block -> ComponentView(block, resolved.size == 1, onAction) { key -> onChoice(block.id, key) } }
             }
             if (card.isAnnotationMode) {
                 Box(
@@ -333,7 +339,7 @@ fun DashboardCardItem(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun ComponentView(block: ResolvedComponent, largeMetric: Boolean, onAction: (CardAction, String?) -> Unit) {
+private fun ComponentView(block: ResolvedComponent, largeMetric: Boolean, onAction: (CardAction, String?) -> Unit, onChoice: (String) -> Unit) {
     val context = LocalContext.current
     Column(modifier = Modifier.fillMaxWidth().padding(top = 8.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
         when (block.type) {
@@ -345,8 +351,8 @@ private fun ComponentView(block: ResolvedComponent, largeMetric: Boolean, onActi
             "choice" -> {
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     block.options.forEach { option ->
-                        FilterChip(selected = block.selectedKey == option.key, enabled = block.actions.isNotEmpty(),
-                            onClick = { block.actions.firstOrNull()?.let { onAction(it, option.key) } }, label = { Text(option.label) })
+                        FilterChip(selected = block.selectedKey == option.key, enabled = true,
+                            onClick = { block.actions.firstOrNull()?.let { onAction(it, option.key) } ?: onChoice(option.key) }, label = { Text(option.label) })
                     }
                 }
             }

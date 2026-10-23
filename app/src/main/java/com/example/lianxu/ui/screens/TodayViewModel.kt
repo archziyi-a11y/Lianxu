@@ -4,7 +4,6 @@ import android.app.Application
 import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.lianxu.data.api.*
 import com.example.lianxu.data.db.AppDatabase
 import com.example.lianxu.data.model.CardAction
 import com.example.lianxu.data.model.CardSpan
@@ -17,10 +16,7 @@ import com.example.lianxu.data.repository.AppRepository
 import com.example.lianxu.data.repository.AttachmentStore
 import com.example.lianxu.data.repository.BoardStore
 import com.example.lianxu.data.repository.Submission
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
@@ -28,12 +24,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import okhttp3.OkHttpClient
 import org.json.JSONObject
-import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
 import java.io.File
-import java.util.concurrent.TimeUnit
 import java.time.LocalDate
 import java.time.ZoneId
 
@@ -64,10 +56,10 @@ class TodayViewModel(application: Application) : AndroidViewModel(application) {
     val demoMode = _demoMode.asStateFlow()
     private val _profileSummary = MutableStateFlow("尚未补充身体资料")
     val profileSummary = _profileSummary.asStateFlow()
-    private val moshi = Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()
-    private val api = Retrofit.Builder().baseUrl("https://api.deepseek.com/")
-        .client(OkHttpClient.Builder().callTimeout(90, TimeUnit.SECONDS).build())
-        .addConverterFactory(MoshiConverterFactory.create(moshi)).build().create(DeepSeekApi::class.java)
+    private var activeTask: kotlinx.coroutines.Job? = null
+    private val _taskProgress = MutableStateFlow<String?>(null)
+    val taskProgress = _taskProgress.asStateFlow()
+    fun cancelSubmission() { activeTask?.cancel() }
 
     init {
         viewModelScope.launch {
@@ -126,6 +118,15 @@ class TodayViewModel(application: Application) : AndroidViewModel(application) {
         if (it.id == cardId) it.copy(isAnnotationMode = !it.isAnnotationMode) else it } }
     fun updateAnnotationText(cardId: String, text: String) = edit { cards -> cards.map {
         if (it.id == cardId) it.copy(annotationText = text, isAnnotationMode = true) else it } }
+    fun selectAssistantChoice(cardId: String, componentId: String, key: String) = edit { cards -> cards.map { card ->
+        if (card.id != cardId) card else {
+            val block = card.blocks.firstOrNull { it.componentId == componentId }
+            val option = block?.content?.options?.firstOrNull { it.key == key }
+            if (option == null) card else card.copy(isAnnotationMode = true,
+                annotationText = listOfNotNull(card.annotationText?.takeIf { it.isNotBlank() }, "选择：${option.label}（${option.key}）").joinToString("\n"),
+                blocks = card.blocks.map { if (it.componentId == componentId) it.copy(content = it.content.copy(selectedKey = key)) else it })
+        }
+    } }
     fun updateAnnotationImage(cardId: String, uri: String) {
         val id = boardId ?: return
         if (_isImporting.value) return
@@ -161,29 +162,31 @@ class TodayViewModel(application: Application) : AndroidViewModel(application) {
         if (_isProcessing.value || _isImporting.value) return
         _isProcessing.value = true
         _notice.value = null
-        viewModelScope.launch {
+        activeTask = viewModelScope.launch {
             var submission: Submission? = null
             try {
                 val frozen = writes.withLock { store.prepare(id) }
                 submission = frozen
                 val key = settings.apiKeyFlow.first()
-                val result = if (key.isNullOrBlank()) {
-                    delay(600)
-                    _notice.value = "本地演示：补充已保存，尚未进行AI分析"
-                    frozen.cards // No random health values and no fabricated analysis.
-                } else {
-                    check(frozen.cards.none { (!it.annotationText.isNullOrBlank() || it.attachmentId != null) && it.blocks.isNotEmpty() }) { "这项智能分析尚未启用，补充已保存；餐食可先用卡片按钮调整" }
-                    check(frozen.cards.none { it.attachmentId != null }) { "图片已保存；本阶段尚未接通视觉请求，请保留批注稍后发送" }
-                    legacyTextUpdate(key, frozen.cards)
+                val repository = requireNotNull(nutrition)
+                val runner = com.example.lianxu.agent.AgentRunner(getApplication(), db, repository.catalog,
+                    key?.takeIf { it.isNotBlank() }?.let { com.example.lianxu.agent.DeepSeekAgentClient(it) }) { _taskProgress.value = it }
+                _notice.value = runner.run(frozen)
+
+            } catch (error: CancellationException) {
+                val completed = kotlinx.coroutines.withContext(kotlinx.coroutines.NonCancellable) {
+                    val applied = submission?.let { db.collaborationDao().task(it.task.id)?.status == "completed" } == true
+                    if (!applied) submission?.let { store.fail(it, "处理已停止，输入已保留") }
+                    applied
                 }
-                store.complete(frozen, result)
-            } catch (error: CancellationException) { throw error
+                _notice.value = if (completed) "本轮已保存完成" else if (error is kotlinx.coroutines.TimeoutCancellationException) "处理超时，输入已保留，可重试" else "处理已取消，输入已保留"
+                if (error !is kotlinx.coroutines.TimeoutCancellationException) throw error
             } catch (error: Exception) {
                 val message = if (error is retrofit2.HttpException) "服务请求失败（${error.code()}），输入已保留，可重试"
                     else "处理未完成，输入已保留：${error.message ?: "请重试"}"
                 submission?.let { runCatching { store.fail(it, message) } }
                 _notice.value = message
-            } finally { _isProcessing.value = false }
+            } finally { _isProcessing.value = false; _taskProgress.value = null }
         }
     }
 
@@ -227,30 +230,4 @@ class TodayViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    // Kept only for the handover's text adapter. Full tool/vision orchestration is stage three.
-    private suspend fun legacyTextUpdate(key: String, cards: List<DashboardCard>): List<DashboardCard> {
-        val input = cards.filter { !it.annotationText.isNullOrBlank() }.joinToString("\n") {
-            "cardId=${it.id}; revision=${it.revision}; title=${it.title}; snapshot=${it.value}; note=${it.annotationText}"
-        }
-        val response = api.createChatCompletion("Bearer $key", ChatCompletionRequest(messages = listOf(
-            Message("system", "Respond to the user's card annotations. Do not invent measurements or nutritional numbers. Use update_cards for text-only card responses."),
-            Message("user", input)), tools = listOf(Tool(function = FunctionDefinition("update_cards", "Update card text", Parameters(
-                properties = mapOf("cards" to PropertyDefinition("array", "Card updates", ItemDefinition("object", mapOf(
-                    "cardId" to PropertyDefinition("string", "Existing card ID"),
-                    "value" to PropertyDefinition("string", "Response text")), listOf("cardId", "value")))), required = listOf("cards")))))))
-        val call = response.choices.firstOrNull()?.message?.tool_calls?.singleOrNull { it.function.name == "update_cards" }
-            ?: error("服务未返回有效结果")
-        val list = JSONObject(call.function.arguments).getJSONArray("cards")
-        require(list.length() > 0) { "服务返回空结果" }
-        val updates = mutableMapOf<String, String>()
-        for (index in 0 until list.length()) {
-            val item = list.getJSONObject(index)
-            val id = item.getString("cardId")
-            require(cards.any { it.id == id } && !updates.containsKey(id)) { "返回卡片标识无效" }
-            val value = item.getString("value")
-            require(value.isNotBlank()) { "返回内容为空" }
-            updates[id] = value
-        }
-        return cards.map { card -> updates[card.id]?.let { card.copy(value = it, revision = card.revision + 1) } ?: card }
-    }
 }

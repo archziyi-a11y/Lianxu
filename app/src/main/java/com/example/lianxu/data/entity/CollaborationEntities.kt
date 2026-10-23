@@ -52,3 +52,8 @@ data class MutationReceiptEntity(@PrimaryKey val id: String, val submissionId: S
 @Entity(tableName = "entity_snapshots", indices = [Index(value = ["entityType", "entityId", "revision"], unique = true)])
 data class EntitySnapshotEntity(@PrimaryKey val id: String, val entityType: String, val entityId: String,
     val revision: Int, val dataJson: String, val createdAt: Long)
+
+// Replayable, task-local tool cache. Never contains API keys or encoded image bytes.
+@Entity(tableName = "agent_cache")
+data class AgentCacheEntity(@PrimaryKey val taskId: String, val basis: String,
+    val entriesJson: String, val updatedAt: Long)

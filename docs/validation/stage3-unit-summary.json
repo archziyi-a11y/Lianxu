@@ -1,0 +1,27 @@
+{
+  "suites": [
+    {
+      "name": "com.example.lianxu.CalculationRulesTest",
+      "tests": "16",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-23T20:20:23.976Z",
+      "hostname": "DESKTOP-I29LU3K",
+      "time": "1.693"
+    },
+    {
+      "name": "com.example.lianxu.ExampleUnitTest",
+      "tests": "1",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-23T20:20:25.671Z",
+      "hostname": "DESKTOP-I29LU3K",
+      "time": "0.0"
+    }
+  ],
+  "tests": 17,
+  "failures": 0,
+  "errors": 0
+}

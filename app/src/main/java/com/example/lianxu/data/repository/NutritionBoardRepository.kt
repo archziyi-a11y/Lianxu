@@ -26,7 +26,7 @@ class NutritionBoardRepository(private val db: AppDatabase, val catalog: FoodCat
         LocalDate.parse(if (raw.startsWith("{")) JSONObject(raw).getString("date") else raw.take(10))
     }.getOrNull()
 
-    suspend fun refresh(boardId: String) = withContext(Dispatchers.IO) { db.withTransaction {
+    suspend fun refresh(boardId: String, preserveComposition: Boolean = true) = withContext(Dispatchers.IO) { db.withTransaction {
         val board = requireNotNull(dao.board(boardId)); val onDate = date(board.dateContext)!!
         val profile = db.profileDao().getProfile()
         val goals = db.goalPhaseDao().getGoalPhasesFlow().first()
@@ -192,7 +192,7 @@ class NutritionBoardRepository(private val db: AppDatabase, val catalog: FoodCat
             cards.add(DashboardCard(id = "$boardId:training-summary", title = "训练摘要", span = CardSpan.LARGE,
                 blocks = listOf(BoardComponent("training-summary", "text", ComponentContent(contentRef = ContentRef(EntityRef("analysis", aid), "summaryText"))))))
         }
-        publish(board, cards)
+        publish(board, cards, preserveComposition)
         target
     } }
 
@@ -231,14 +231,44 @@ class NutritionBoardRepository(private val db: AppDatabase, val catalog: FoodCat
         if (dao.entitySnapshot("plan", plan.id, plan.revision) == null)
             dao.putEntitySnapshot(EntitySnapshotEntity(id("plan:${plan.id}:${plan.revision}"), "plan", plan.id, plan.revision, DomainJson.encode(plan), System.currentTimeMillis()))
     }
-    private suspend fun publish(board: Board, generated: List<DashboardCard>) {
+    private suspend fun publish(board: Board, generated: List<DashboardCard>, preserveComposition: Boolean) {
         val current = dao.cards(board.id).associate { it.id to DomainJson.decode<DashboardCard>(it.data) }
         val draft = dao.draft(board.id)
         val pending = draft?.let { store.decode(it.cardsJson).associateBy { c -> c.id } } ?: emptyMap()
-        val result = generated.map { card ->
+        val composed = if (preserveComposition && board.latestCompletedTurnId != null) {
+            val byId = generated.associateBy { it.id }
+            val plan = dao.planForDate(board.dateContext)
+            val latestTurn = board.latestCompletedTurnId?.let { dao.turn(it) }
+            val cache = latestTurn?.let { dao.agentCache(it.taskId) }
+            val removed = cache?.let { JSONArray(it.entriesJson) }?.let { entries -> (0 until entries.length()).map { entries.getJSONObject(it) }.lastOrNull { it.optString("name") == "finish_proposal" } }
+                ?.optString("arguments")?.let { JSONObject(it).optJSONObject("boardPatch")?.optJSONArray("removeCardIds") }
+                ?.let { ids -> (0 until ids.length()).map { ids.getString(it) }.toSet() }.orEmpty()
+            val localBlocks = generated.flatMap { it.blocks }
+            current.values.map { old ->
+                if (old.managedBy != "assistant") byId[old.id] ?: old else old.copy(blocks = old.blocks.map { block ->
+                    fun currentRef(ref: EntityRef) = if (ref.type == "plan" && ref.id == plan?.id) ref.copy(revision = plan.revision) else ref
+                    val c = block.content
+                    var calculationId = c.calculationId; var path = c.resultPath
+                    val oldCalc = calculationId?.let { dao.calculation(it) }
+                    if (oldCalc != null) {
+                        if (oldCalc.type == "intake_totals") {
+                            localBlocks.firstOrNull { it.type == "metric" && it.content.resultPath == "intake.${c.resultPath}" }?.let { replacement -> calculationId = replacement.content.calculationId; path = replacement.content.resultPath }
+                        } else if (oldCalc.type in listOf("nutrition_target", "weight_trend", "training_summary")) {
+                            val replacement = localBlocks.firstOrNull { candidate -> candidate.type == block.type && candidate.content.resultPath == c.resultPath &&
+                                candidate.content.calculationId?.let { dao.calculation(it)?.type } == oldCalc.type }
+                            replacement?.let { calculationId = it.content.calculationId }
+                        }
+                    }
+                    block.copy(content = c.copy(entityRefs = c.entityRefs.map(::currentRef), calculationId = calculationId, resultPath = path),
+                        entityRef = block.entityRef?.let(::currentRef), actions = block.actions.map { it.copy(targetRef = currentRef(it.targetRef)) })
+                }, entityRefs = old.entityRefs.map { ref -> if (ref.type == "plan" && ref.id == plan?.id) ref.copy(revision = plan.revision) else ref })
+            } + generated.filter { it.id !in current && it.id !in removed && (it.id.endsWith(":intake-total") || it.id.endsWith(":training-summary") || it.id.endsWith(":weight-trend")) }
+
+        } else generated
+        val result = composed.map { card ->
             val old = current[card.id]
             card.copy(revision = if (old == null) 1 else if (card.copy(revision = old.revision) == old) old.revision else old.revision + 1)
-        } + current.values.filter { old -> generated.none { it.id == old.id } && pending[old.id]?.let { !it.annotationText.isNullOrBlank() || it.attachmentId != null } == true }
+        } + current.values.filter { old -> composed.none { it.id == old.id } && pending[old.id]?.let { !it.annotationText.isNullOrBlank() || it.attachmentId != null } == true }
         if (current.values.toList() == result) return
         dao.removeCards(board.id); dao.putCards(result.map { Card(it.id, board.id, DomainJson.encode(it)) })
         dao.putBoard(board.copy(revision = board.revision + 1, updatedAt = System.currentTimeMillis()))

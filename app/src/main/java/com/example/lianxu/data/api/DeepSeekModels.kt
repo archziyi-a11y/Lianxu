@@ -7,13 +7,18 @@ data class ChatCompletionRequest(
     val model: String = "deepseek-flash",
     val messages: List<Message>,
     val tools: List<Tool>? = null,
-    val tool_choice: String? = "auto"
+    val tool_choice: String? = "auto",
+    val thinking: Map<String, String> = mapOf("type" to "disabled"),
+    val max_tokens: Int = 8192
 )
 
 @JsonClass(generateAdapter = true)
 data class Message(
     val role: String,
-    val content: String
+    val content: Any? = null,
+    val tool_calls: List<ToolCall>? = null,
+    val tool_call_id: String? = null,
+    val reasoning_content: String? = null
 )
 
 @JsonClass(generateAdapter = true)
@@ -26,28 +31,7 @@ data class Tool(
 data class FunctionDefinition(
     val name: String,
     val description: String,
-    val parameters: Parameters
-)
-
-@JsonClass(generateAdapter = true)
-data class Parameters(
-    val type: String = "object",
-    val properties: Map<String, PropertyDefinition>,
-    val required: List<String>
-)
-
-@JsonClass(generateAdapter = true)
-data class PropertyDefinition(
-    val type: String,
-    val description: String,
-    val items: ItemDefinition? = null
-)
-
-@JsonClass(generateAdapter = true)
-data class ItemDefinition(
-    val type: String,
-    val properties: Map<String, PropertyDefinition>? = null,
-    val required: List<String>? = null
+    val parameters: Map<String, Any?>
 )
 
 @JsonClass(generateAdapter = true)
@@ -66,7 +50,8 @@ data class Choice(
 data class ResponseMessage(
     val role: String,
     val content: String?,
-    val tool_calls: List<ToolCall>?
+    val tool_calls: List<ToolCall>?,
+    val reasoning_content: String? = null
 )
 
 @JsonClass(generateAdapter = true)
