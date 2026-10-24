@@ -10,5 +10,8 @@
 - [第四阶段跨日与长期接续验收](docs/validation/第四阶段验收.md)
 - [动态档案与分析方法验收](docs/validation/动态档案验收.md)
 - [与聊天助手制作自定义分析方法](docs/analysis-methods/README.md)
+- [第五阶段 Astra 独立开发交接](docs/design/Astra独立开发交接.md)
+- [给 Astra 的启动提示词](docs/design/Astra启动提示词.md)
+- [美术与动效参考资料](docs/design/美术与动效参考.md)
 
 现有示例和演示状态不代表真实AI分析，运行密钥在应用设置中配置，不提交源码。
