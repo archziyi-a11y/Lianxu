@@ -11,6 +11,7 @@
 - [动态档案与分析方法验收](docs/validation/动态档案验收.md)
 - [与聊天助手制作自定义分析方法](docs/analysis-methods/README.md)
 - [第五阶段 Astra 独立开发交接](docs/design/Astra独立开发交接.md)
+- [两页职责与画板使用场景（最新补充）](specs/当前规格/08-两页职责与主动输入场景.md)
 - [给 Astra 的启动提示词](docs/design/Astra启动提示词.md)
 - [美术与动效参考资料](docs/design/美术与动效参考.md)
 
