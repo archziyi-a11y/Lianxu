@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "manifest": {
+    "id": "user.my-weight-series",
+    "version": 1,
+    "title": "我的体重观察",
+    "category": "身体",
+    "question": "根据已有记录观察体重变化",
+    "operator": "series",
+    "windows": [
+      "accumulated",
+      "current_phase",
+      "7d",
+      "28d",
+      "90d"
+    ],
+    "eligibility": {
+      "minPoints": 1,
+      "minDays": 0,
+      "minPerGroup": 4,
+      "minEffect": 0.05
+    },
+    "parameters": {
+      "rollingDays": 7
+    },
+    "refresh": "on_effective_change",
+    "metric": "weight"
+  },
+  "guide": "观察已记录的体重变化。仅在已有数据支持的范围内解释，不根据体重单独推算肌肉增长。可以显示最新值、时间序列及其来源范围。"
+}

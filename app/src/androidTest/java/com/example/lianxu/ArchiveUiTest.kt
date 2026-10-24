@@ -2,6 +2,9 @@ package com.example.lianxu
 
 import android.app.Application
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.graphics.asAndroidBitmap
+import java.io.File
+import android.graphics.Bitmap
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.lifecycle.ViewModelStore
@@ -26,6 +29,7 @@ class ArchiveUiTest {
         val store=ViewModelStore().apply { put("archive",vm) }
         try {
             rule.setContent { MaterialTheme { ArchiveScreen(viewModel=vm) } }
+            rule.onNodeWithText("全部记录").performScrollTo().performClick()
             rule.onNodeWithText("补记训练、饮食或测量").performClick()
             rule.onNodeWithText("记录说明").performTextInput("今天练胸四组，状态一般")
             rule.onNodeWithText("保存").performClick()
@@ -39,4 +43,27 @@ class ArchiveUiTest {
             assertEquals("三组，后来补充了说明",runBlocking { db.recordDao().allTrainings().single().rawSummary })
         }finally{store.clear();db.close()}
     }
+    @Test fun priorityAndArchiveAreAvailableWithoutAnnotationOrSend() {
+        val context=InstrumentationRegistry.getInstrumentation().targetContext
+        val db=Room.inMemoryDatabaseBuilder(context,AppDatabase::class.java).build()
+        runBlocking { com.example.lianxu.data.repository.HistoryRepository(db).add("measurement","",java.time.LocalDate.now(),"body_fat",18f) }
+        val vm=ArchiveViewModel(context.applicationContext as Application,db);val store=ViewModelStore().apply { put("archive",vm) }
+        try {
+            rule.setContent { MaterialTheme { ArchiveScreen(viewModel=vm) } }
+            rule.waitUntil(20000) { rule.onAllNodesWithText("体脂率变化").fetchSemanticsNodes().isNotEmpty() }
+            rule.onRoot().captureToImage().asAndroidBitmap().let { bitmap->File(context.filesDir,"archive-ui.png").outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG,100,it) } }
+            rule.onNodeWithText("体脂率变化").performTouchInput { longClick() }
+            rule.onNodeWithText("优先展示 体脂率变化").performClick()
+            rule.waitUntil(10000) { runBlocking { db.archiveDao().placements().firstOrNull()?.placement=="priority" } }
+            rule.waitUntil(10000) { rule.onAllNodesWithText("优先展示").fetchSemanticsNodes().isNotEmpty() }
+            rule.onNodeWithText("体脂率变化").performTouchInput { longClick() }
+            rule.onNodeWithText("归档 体脂率变化").performClick()
+            rule.waitUntil(10000) { runBlocking { db.archiveDao().placements().firstOrNull()?.placement=="archive" } }
+            rule.waitUntil(10000) { rule.onAllNodesWithText("体脂率变化").fetchSemanticsNodes().isEmpty() }
+            rule.onNodeWithText("身体").performScrollTo().performClick()
+            rule.onNodeWithText("体脂率变化").assertIsDisplayed()
+            assertEquals(1,runBlocking { db.measurementDao().all().size })
+        }finally{store.clear();db.close()}
+    }
+
 }

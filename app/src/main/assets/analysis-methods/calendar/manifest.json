@@ -1,0 +1,25 @@
+{
+  "id": "builtin.calendar",
+  "version": 1,
+  "title": "训练节奏",
+  "category": "训练",
+  "question": "根据已有记录观察训练节奏",
+  "operator": "calendar",
+  "windows": [
+    "accumulated",
+    "current_phase",
+    "7d",
+    "28d",
+    "90d"
+  ],
+  "eligibility": {
+    "minPoints": 1,
+    "minDays": 0,
+    "minPerGroup": 4,
+    "minEffect": 0.05
+  },
+  "parameters": {
+    "rollingDays": 7
+  },
+  "refresh": "on_effective_change"
+}

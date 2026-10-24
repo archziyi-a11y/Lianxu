@@ -20,20 +20,51 @@ import com.example.lianxu.data.repository.*
 import com.example.lianxu.data.entity.*
 import org.json.JSONObject
 import androidx.room.withTransaction
+
+import com.example.lianxu.archive.*
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
+@OptIn(FlowPreview::class)
 class ArchiveViewModel @JvmOverloads constructor(application: Application, database: AppDatabase? = null) : AndroidViewModel(application) {
     private val _uiState = MutableStateFlow(ArchiveUiState())
     val uiState = _uiState.asStateFlow()
     private val db = database ?: AppDatabase.getDatabase(application)
     private val repository = AppRepository(db)
+    private val archive=ArchiveRepository(application,db)
+    private val selectedScope=MutableStateFlow("current_phase")
+    private val _dashboard=MutableStateFlow(ArchiveDashboardState())
+    val dashboard=_dashboard.asStateFlow()
+    fun clearMessage(){_message.value=null}
+    fun selectScope(scope:String){selectedScope.value=scope}
+    fun place(key:String,placement:String)=work { archive.placement(key,placement) }
+    fun importMethod(raw:String,onSaved:()->Unit={})=work { archive.methods.importPackage(raw);archive.refresh();_message.value="方法已导入，将按适用条件运行";onSaved() }
+    fun copyMethodPrompt(onReady:(String)->Unit)=work { onReady(archive.methods.authoringPrompt());_message.value="制作提示词已复制" }
+    fun enableMethod(id:String,enabled:Boolean)=work {
+        val old=archive.db.archiveDao().methods().single { it.id==id };archive.db.archiveDao().putMethod(old.copy(enabled=enabled,updatedAt=System.currentTimeMillis()));archive.refresh()
+    }
+    private suspend fun showDashboard(){
+        val topics=db.archiveDao().topics().filter { it.state=="current" }
+        val scopes=topics.map { it.scopeKey }.distinct().sortedBy { listOf("current_phase","accumulated","7d","28d","90d").indexOf(it) }
+        val scope=selectedScope.value.takeIf { it in scopes } ?: scopes.firstOrNull()
+        val cards=archive.cards(scope);val catalog=archive.cards(scope,all=true)
+        val all=(cards+catalog).distinctBy { it.card.id };val resolver=ComponentResolver(db)
+        val sources=topics.associate { topic->
+            val c=db.collaborationDao().calculation(topic.calculationId);val r=c?.let { JSONObject(it.result) }
+            val refs=c?.let { org.json.JSONArray(it.inputRefs) }
+            topic.id to "${topic.title} · 方法版本${topic.methodVersion}\n${r?.optString("start")} 至 ${r?.optString("end")}\n依据${refs?.length() ?: 0}条来源，${r?.optInt("sampleCount") ?: 0}个观测\n${r?.optString("summary").orEmpty()}"
+        }
+        val data=repository.archiveFlow.first()
+        val overview=listOfNotNull(data.goal?.let { when(it.kind){"gain"->"增肌阶段";"cut"->"减脂阶段";else->"维持阶段"} },data.weight?.let { "${it.value} kg" }).joinToString(" · ")
+        _dashboard.value=ArchiveDashboardState(cards,catalog,topics,db.archiveDao().methods(),scopes,scope ?: "accumulated",all.associate { it.card.id to resolver.resolve(it.card) },sources,overview,topics.maxOfOrNull { it.updatedAt } ?: 0)
+    }
     private var nutrition: NutritionBoardRepository? = null
     private var dirty = false
     private var weightDirty = false
     private val history = HistoryRepository(db)
     val records = history.items.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
-    val assessments = db.collaborationDao().watchAnalyses().map { rows -> rows.filter { it.kind == "assessment" } }
+    val assessments = db.collaborationDao().watchAnalyses().map { rows -> rows.filter { it.kind in listOf("assessment","archive_local","archive_ai") } }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     val days = combine(db.collaborationDao().watchBoards(),db.collaborationDao().watchDrafts(),db.collaborationDao().watchTasks(),db.collaborationDao().watchPlans()) { boards,drafts,tasks,plans ->
         boards.sortedByDescending { HistoryRepository.day(it.dateContext) }.map { board ->
@@ -55,7 +86,7 @@ class ArchiveViewModel @JvmOverloads constructor(application: Application, datab
         val board=DayLifecycle(db).ensureCurrent()
         val service=nutrition ?: NutritionBoardRepository.create(getApplication(),db).also { nutrition=it }
         service.refresh(board.id)
-        val analysis=if(item==null)PhaseAssessmentRepository(db).refresh(today()) else null
+        val analysis=if(item==null)db.collaborationDao().allAnalyses().firstOrNull { it.kind=="archive_local" && it.freshness=="current" } else null
         val ref=item?.let { com.example.lianxu.data.model.EntityRef(it.type,it.id,it.revision) }
             ?: analysis?.let { com.example.lianxu.data.model.EntityRef("analysis",it.id,it.revision) }
         val cardId="${board.id}:archive:${item?.id ?: "phase"}"
@@ -82,18 +113,18 @@ class ArchiveViewModel @JvmOverloads constructor(application: Application, datab
         }
         onReady()
     }
-    fun refreshAssessment()=work { PhaseAssessmentRepository(db).refresh(today()); _message.value="阶段记录已整理" }
+    fun refreshAssessment()=work { archive.refresh(); _message.value="阶段记录已整理" }
     fun addRecord(type: String,text: String,date: String,metric: String,value: String,onSaved:()->Unit={})=work {
         lastMutation=history.add(type,text,LocalDate.parse(date),metric,value.takeIf(String::isNotBlank)?.toFloatOrNull());canUndo.value=true
-        PhaseAssessmentRepository(db).refresh(today());_message.value="已保存在本机";onSaved()
+        archive.refresh();_message.value="已保存在本机";onSaved()
     }
     fun changeRecord(item: HistoryItem,text: String,value: String,delete: Boolean=false,onSaved:()->Unit={})=work {
         lastMutation=history.change(item,text.takeIf(String::isNotBlank),value.toFloatOrNull(),delete);canUndo.value=true
-        PhaseAssessmentRepository(db).refresh(today());_message.value=if(delete)"记录已移除，可撤销" else "已更新";onSaved()
+        archive.refresh();_message.value=if(delete)"记录已移除，可撤销" else "已更新";onSaved()
     }
-    fun undo()=work { lastMutation?.let { history.undo(it) };lastMutation=null;canUndo.value=false;PhaseAssessmentRepository(db).refresh(today());_message.value="已撤销" }
+    fun undo()=work { lastMutation?.let { history.undo(it) };lastMutation=null;canUndo.value=false;archive.refresh();_message.value="已撤销" }
     fun exportBackup(uri: Uri)=work { requireNotNull(getApplication<Application>().contentResolver.openOutputStream(uri)).use { BackupRepository(getApplication(),db).export(it) };_message.value="备份已导出，未包含密钥" }
-    fun restoreBackup(uri: Uri)=work { requireNotNull(getApplication<Application>().contentResolver.openInputStream(uri)).use { BackupRepository(getApplication(),db).restore(it) };lastMutation=null;canUndo.value=false;dirty=false;weightDirty=false;showSaved(repository.archiveFlow.first());_message.value="记录与附件已恢复，密钥设置保留" }
+    fun restoreBackup(uri: Uri)=work { requireNotNull(getApplication<Application>().contentResolver.openInputStream(uri)).use { BackupRepository(getApplication(),db).restore(it) };archive.methods.installBuiltins();archive.refresh();lastMutation=null;canUndo.value=false;dirty=false;weightDirty=false;showSaved(repository.archiveFlow.first());_message.value="记录与附件已恢复，密钥设置保留" }
     private fun work(block: suspend () -> Unit) {
         if(_busy.value)return
         _busy.value=true
@@ -103,9 +134,11 @@ class ArchiveViewModel @JvmOverloads constructor(application: Application, datab
 
     init {
         viewModelScope.launch {
-            combine(repository.trainings,repository.intakes,repository.knowledge) { _,_,_ -> Unit }.collect {
-                runCatching { PhaseAssessmentRepository(db).refresh(today()) }
-            }
+            archive.methods.installBuiltins()
+            db.invalidationTracker.createFlow("profiles","goal_phases","measurements","training_sessions","intake_entries","knowledge_notes","calculations","archive_methods",emitInitialState=true).debounce(150).collect { archive.refresh() }
+        }
+        viewModelScope.launch {
+            combine(db.archiveDao().watchTopics(),db.archiveDao().watchPlacements(),db.archiveDao().watchPresentation(),selectedScope,db.archiveDao().watchMethods()){_,_,_,_,_->Unit}.collect { showDashboard() }
         }
         viewModelScope.launch {
             try { repository.archiveFlow.collect { if (!dirty) showSaved(it) } }
@@ -120,7 +153,7 @@ class ArchiveViewModel @JvmOverloads constructor(application: Application, datab
         val service = nutrition ?: NutritionBoardRepository.create(getApplication(), db).also { nutrition = it }
         val boardId = DayLifecycle(db).ensureCurrent().id
         val result = service.refresh(boardId)
-        PhaseAssessmentRepository(db).refresh(LocalDate.now(zone))
+        archive.refresh()
         val manual = p?.manualTargets?.let { DomainJson.decode<NutrientValues>(it) }
         _uiState.value = ArchiveUiState(data.weight?.value?.toString() ?: "", p?.heightCm?.toString() ?: "",
             p?.birthDate ?: "", p?.formulaSex ?: "", p?.activityFactor?.toString() ?: "1.6",
@@ -188,3 +221,10 @@ data class ArchiveUiState(
 )
 
 data class ArchivedDay(val board: Board,val pending: String,val taskStatus: String?,val meals: String)
+
+data class ArchiveDashboardState(
+ val cards:List<ArchiveDisplay> = emptyList(),val catalog:List<ArchiveDisplay> = emptyList(),
+ val topics:List<ArchiveTopicEntity> = emptyList(),val methods:List<ArchiveMethodEntity> = emptyList(),
+ val scopes:List<String> = emptyList(),val scope:String="accumulated",
+ val resolved:Map<String,List<ResolvedComponent>> = emptyMap(),val sources:Map<String,String> = emptyMap(),val overview:String="",val updatedAt:Long=0
+)

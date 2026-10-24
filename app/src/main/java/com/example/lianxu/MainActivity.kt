@@ -12,6 +12,7 @@ import com.example.lianxu.ui.theme.LianxuTheme
 class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
+        com.example.lianxu.archive.ArchiveRuntime.resume(this)
         lifecycleScope.launch {
             runCatching { com.example.lianxu.timer.RestTimerRepository(this@MainActivity).resumeIfNeeded() }
         }

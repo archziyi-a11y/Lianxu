@@ -10,13 +10,14 @@ import java.util.Locale
 data class ChartPoint(val label: String, val value: Double)
 data class ResolvedComponent(val id: String, val type: String, val label: String, val text: String,
     val actions: List<CardAction> = emptyList(), val options: List<ChoiceOption> = emptyList(),
-    val selectedKey: String? = null, val points: List<ChartPoint> = emptyList(), val attachmentPath: String? = null)
+    val selectedKey: String? = null, val points: List<ChartPoint> = emptyList(), val attachmentPath: String? = null, val chartKind:String="line",val unit:String="kg",val caption:String="")
 
 class ComponentResolver(private val db: AppDatabase) {
     suspend fun resolve(card: DashboardCard): List<ResolvedComponent> = card.blocks.map { block ->
         val c = block.content
         var points = emptyList<ChartPoint>()
         var attachment: String? = null
+        var chartKind="line";var unit=c.unit ?: "kg";var caption=""
         val text = when (block.type) {
             "metric" -> {
                 val calc = c.calculationId?.let { db.collaborationDao().calculation(it) }
@@ -58,8 +59,11 @@ class ComponentResolver(private val db: AppDatabase) {
             "choice" -> c.options.firstOrNull { it.key == c.selectedKey }?.label.orEmpty()
             "trend" -> {
                 val result = c.calculationId?.let { db.collaborationDao().calculation(it) }?.let { JSONObject(it.result) }
+                chartKind=result?.optString("chartKind","line") ?: "line"
+                unit=c.unit ?: result?.optString("unit","kg") ?: "kg"
+                caption=result?.takeIf { it.has("start") }?.let { "${it.optString("start")} — ${it.optString("end")} · ${it.optInt("sampleCount")}个观测" }.orEmpty()
                 val array = result?.optJSONArray("points") ?: JSONArray()
-                points = (0 until array.length()).map { i -> array.getJSONObject(i).let { ChartPoint(it.getString("date"), it.getDouble("value")) } }
+                points = (0 until array.length()).map { i -> array.getJSONObject(i).let { ChartPoint(it.optString("label",it.optString("date")), it.getDouble("value")) } }
                 result?.optString("summary").orEmpty()
             }
             "image" -> {
@@ -69,7 +73,7 @@ class ComponentResolver(private val db: AppDatabase) {
             else -> "不支持的组件"
         }
         ResolvedComponent(block.componentId, block.type, c.label.orEmpty(), text, block.actions, c.options,
-            c.selectedKey, points, attachment)
+            c.selectedKey, points, attachment, chartKind, unit, caption)
     }
     suspend fun readable(card: DashboardCard): String = if (card.blocks.isEmpty()) card.value else
         resolve(card).joinToString("\n") { listOf(it.label, it.text).filter(String::isNotBlank).joinToString(": ") }

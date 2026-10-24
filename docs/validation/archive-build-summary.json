@@ -1,0 +1,19 @@
+{
+  "buildSucceeded": true,
+  "apk": "app/build/outputs/apk/debug/app-debug.apk",
+  "sha256": "e8f98c9f517cde14ad5ed3c8e2a9f44ce54bede31e47a293ec7f32e15ebd49a0",
+  "jvmSuites": [
+    {
+      "name": "com.example.lianxu.CalculationRulesTest",
+      "tests": "16",
+      "failures": "0",
+      "errors": "0"
+    },
+    {
+      "name": "com.example.lianxu.ExampleUnitTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0"
+    }
+  ]
+}

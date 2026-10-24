@@ -135,6 +135,9 @@ class AgentRunner(private val context: Context, private val db: AppDatabase, pri
             .put("relevantRecords", relevant).put("currentBoard", board).put("baseRevisions", work.basisRefs())
             .put("currentPlan", b.getJSONArray("plans").objects().firstOrNull { it.getString("dateContext") == work.dateContext })
             .put("mealProgress", b.optJSONArray("mealProgress"))
+            .put("archiveInsights", JSONArray(db.archiveDao().topics().filter { it.state=="current" && it.scopeKey in listOf("current_phase","accumulated") && validity.usable(com.example.lianxu.data.model.EntityRef("calculation",it.calculationId),true) }.take(16).map { topic->
+                JSONObject().put("topicKey",topic.id).put("title",topic.title).put("methodVersion",topic.methodVersion).put("calculationId",topic.calculationId).put("result",db.collaborationDao().calculation(topic.calculationId)?.let { JSONObject(it.result) })
+            }))
             .put("phaseAssessments", JSONArray(b.getJSONArray("analyses").objects().filter { it.getString("kind")=="assessment" && it.getString("freshness")=="current" && validity.refsUsable(it.getString("inputRefs")) }.takeLast(4)))
             .put("calculations", JSONArray(b.getJSONArray("calculations").objects().filter { validity.refsUsable(it.getString("inputRefs")) }.takeLast(12).map { JSONObject(it.toString()).also { item -> item.remove("inputSnapshot") } })).put("constraints", JSONObject().put("date", work.date).put("preserveLockedAndEaten", true))
         val parts = mutableListOf<Map<String, Any>>(mapOf("type" to "text", "text" to context.toString()))

@@ -1,0 +1,25 @@
+{
+  "id": "builtin.phase",
+  "version": 1,
+  "title": "阶段摘要",
+  "category": "阶段",
+  "question": "根据已有记录观察阶段摘要",
+  "operator": "phase_summary",
+  "windows": [
+    "accumulated",
+    "current_phase",
+    "7d",
+    "28d",
+    "90d"
+  ],
+  "eligibility": {
+    "minPoints": 2,
+    "minDays": 1,
+    "minPerGroup": 4,
+    "minEffect": 0.05
+  },
+  "parameters": {
+    "rollingDays": 7
+  },
+  "refresh": "on_effective_change"
+}

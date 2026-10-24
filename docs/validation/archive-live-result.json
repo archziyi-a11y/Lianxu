@@ -1,0 +1,415 @@
+{
+  "status": "passed",
+  "realApi": true,
+  "model": "deepseek-flash",
+  "requests": 4,
+  "tools": 8,
+  "factSourcesUnchanged": true,
+  "cardCount": 6,
+  "cards": [
+    {
+      "topics": [
+        "builtin.calendar|sessions|7d"
+      ],
+      "card": {
+        "id": "archive-ai:bc57e8e8361a30334c1309113fbf3d5859faf77ebfc19a4cc8e6613d900ecae2",
+        "title": "近7天训练节奏",
+        "value": "",
+        "span": "MEDIUM",
+        "revision": 1,
+        "isAnnotationMode": false,
+        "blocks": [
+          {
+            "componentId": "0-0",
+            "type": "trend",
+            "content": {
+              "label": "训练日",
+              "calculationId": "archive-calc:fff47a86ab645fd4bbab899634892a158eb71a7fd2f651a6004ad171e7fa5225",
+              "unit": "次",
+              "entityRefs": [],
+              "options": []
+            },
+            "actions": []
+          },
+          {
+            "componentId": "0-1",
+            "type": "text",
+            "content": {
+              "contentRef": {
+                "entityRef": {
+                  "type": "analysis",
+                  "id": "archive-ai:0181c19b7d7285e150e4b859565e8d2fce52ebae2954487caef6ae14f678173f",
+                  "revision": 1
+                },
+                "fieldPath": "summaryText"
+              },
+              "entityRefs": [],
+              "options": []
+            },
+            "actions": []
+          }
+        ],
+        "entityRefs": [],
+        "managedBy": "assistant"
+      }
+    },
+    {
+      "topics": [
+        "builtin.progress|bench_press|barbell|total|unspecified|8|7d"
+      ],
+      "card": {
+        "id": "archive-ai:96e99a7ad4583b383db2360c864da7cf0b9220b75894dc16870a2b186cadd79e",
+        "title": "杠铃卧推 · 8次",
+        "value": "",
+        "span": "MEDIUM",
+        "revision": 1,
+        "isAnnotationMode": false,
+        "blocks": [
+          {
+            "componentId": "1-0",
+            "type": "metric",
+            "content": {
+              "label": "最新负重",
+              "calculationId": "archive-calc:3477d9ed95bf11c2b9359dac25ecfe841047341355b104eb5700670e3a14823f",
+              "resultPath": "latest",
+              "unit": "kg",
+              "entityRefs": [],
+              "options": []
+            },
+            "actions": []
+          },
+          {
+            "componentId": "1-1",
+            "type": "trend",
+            "content": {
+              "label": "负重变化",
+              "calculationId": "archive-calc:3477d9ed95bf11c2b9359dac25ecfe841047341355b104eb5700670e3a14823f",
+              "unit": "kg",
+              "entityRefs": [],
+              "options": []
+            },
+            "actions": []
+          },
+          {
+            "componentId": "1-2",
+            "type": "text",
+            "content": {
+              "contentRef": {
+                "entityRef": {
+                  "type": "analysis",
+                  "id": "archive-ai:0646c37c39c426e38411306b438ec5ec9726d6652e7383cb502fb481978c5310",
+                  "revision": 1
+                },
+                "fieldPath": "summaryText"
+              },
+              "entityRefs": [],
+              "options": []
+            },
+            "actions": []
+          }
+        ],
+        "entityRefs": [],
+        "managedBy": "assistant"
+      }
+    },
+    {
+      "topics": [
+        "builtin.distribution|sets|7d"
+      ],
+      "card": {
+        "id": "archive-ai:78db434ccdf26602b56e93ca5f7ac946651074ce554ca27245f59a77946d7992",
+        "title": "训练分布（组数）",
+        "value": "",
+        "span": "MEDIUM",
+        "revision": 1,
+        "isAnnotationMode": false,
+        "blocks": [
+          {
+            "componentId": "2-0",
+            "type": "trend",
+            "content": {
+              "label": "已知组数",
+              "calculationId": "archive-calc:8592d4769410797f164f49646ed103fe4dde2ae8b5227f34139ece58cd5cfa41",
+              "unit": "组",
+              "entityRefs": [],
+              "options": []
+            },
+            "actions": []
+          },
+          {
+            "componentId": "2-1",
+            "type": "text",
+            "content": {
+              "contentRef": {
+                "entityRef": {
+                  "type": "analysis",
+                  "id": "archive-ai:51e392c2665fa517d63c9285f82dbf91a7657ec25dc3cc6483012c3b1cad9e3f",
+                  "revision": 1
+                },
+                "fieldPath": "summaryText"
+              },
+              "entityRefs": [],
+              "options": []
+            },
+            "actions": []
+          }
+        ],
+        "entityRefs": [],
+        "managedBy": "assistant"
+      }
+    },
+    {
+      "topics": [
+        "builtin.weight-trend|weight|current_phase",
+        "builtin.weight-series|weight|current_phase"
+      ],
+      "card": {
+        "id": "archive-ai:8d83e4458aead72eb213e210ab84423c399a0f4c439bbffc70fa80e9b5ab3c2a",
+        "title": "体重与趋势",
+        "value": "",
+        "span": "MEDIUM",
+        "revision": 1,
+        "isAnnotationMode": false,
+        "blocks": [
+          {
+            "componentId": "3-0",
+            "type": "metric",
+            "content": {
+              "label": "7日滚动均值",
+              "calculationId": "archive-calc:4426c37ac2d7b4413874b611d4ef8fabbbe2b0ccae8ef261dd126f89f88682c6",
+              "resultPath": "latest",
+              "unit": "kg",
+              "entityRefs": [],
+              "options": []
+            },
+            "actions": []
+          },
+          {
+            "componentId": "3-1",
+            "type": "trend",
+            "content": {
+              "label": "实测体重",
+              "calculationId": "archive-calc:06b42137d8784fa71957350f3af39cdedc60f29c3f15409bb085df56131a5c2c",
+              "unit": "kg",
+              "entityRefs": [],
+              "options": []
+            },
+            "actions": []
+          },
+          {
+            "componentId": "3-2",
+            "type": "text",
+            "content": {
+              "contentRef": {
+                "entityRef": {
+                  "type": "analysis",
+                  "id": "archive-ai:770158c8af245a563c3494dce5a7a0acc732951b60d733259ec6c0a3a9c04124",
+                  "revision": 1
+                },
+                "fieldPath": "summaryText"
+              },
+              "entityRefs": [],
+              "options": []
+            },
+            "actions": []
+          }
+        ],
+        "entityRefs": [],
+        "managedBy": "assistant"
+      }
+    },
+    {
+      "topics": [
+        "builtin.phase|phase|current_phase"
+      ],
+      "card": {
+        "id": "archive-ai:408a55cbcc7107ecfa99fc990ab023e8ba07c668162731c04d7374f4c4f31e70",
+        "title": "阶段记录概览",
+        "value": "",
+        "span": "LARGE",
+        "revision": 1,
+        "isAnnotationMode": false,
+        "blocks": [
+          {
+            "componentId": "4-0",
+            "type": "metric",
+            "content": {
+              "label": "本阶段训练次数",
+              "calculationId": "archive-calc:a53778400088b0a74a38d97f049d8888c1b475f51fa0e4bd5055d550a9c05066",
+              "resultPath": "trainingCount",
+              "unit": "条",
+              "entityRefs": [],
+              "options": []
+            },
+            "actions": []
+          },
+          {
+            "componentId": "4-1",
+            "type": "metric",
+            "content": {
+              "label": "本阶段测量次数",
+              "calculationId": "archive-calc:a53778400088b0a74a38d97f049d8888c1b475f51fa0e4bd5055d550a9c05066",
+              "resultPath": "measurementCount",
+              "unit": "条",
+              "entityRefs": [],
+              "options": []
+            },
+            "actions": []
+          },
+          {
+            "componentId": "4-2",
+            "type": "text",
+            "content": {
+              "contentRef": {
+                "entityRef": {
+                  "type": "analysis",
+                  "id": "archive-ai:46b762c5efcb5601f3aac69b1b382684b2ef4f3d9f172159d32011e089fbe215",
+                  "revision": 1
+                },
+                "fieldPath": "summaryText"
+              },
+              "entityRefs": [],
+              "options": []
+            },
+            "actions": []
+          }
+        ],
+        "entityRefs": [],
+        "managedBy": "assistant"
+      }
+    },
+    {
+      "topics": [
+        "builtin.nutrition|energy|current_phase"
+      ],
+      "card": {
+        "id": "archive-ai:4f5e34b9eb8a7bc5c121f6f3cfbac798821750494c95a2e2e65bdfe1db166528",
+        "title": "营养规划目标",
+        "value": "",
+        "span": "LARGE",
+        "revision": 1,
+        "isAnnotationMode": false,
+        "blocks": [
+          {
+            "componentId": "5-0",
+            "type": "metric",
+            "content": {
+              "label": "每日目标能量",
+              "calculationId": "archive-calc:0e14553095761c973dcd310b16878b8590df2250260f9d1850c312d4343919ed",
+              "resultPath": "latest",
+              "unit": "kcal",
+              "entityRefs": [],
+              "options": []
+            },
+            "actions": []
+          },
+          {
+            "componentId": "5-1",
+            "type": "text",
+            "content": {
+              "contentRef": {
+                "entityRef": {
+                  "type": "analysis",
+                  "id": "archive-ai:2057fdaa559f9a1e9669ff522688bf5b2bc1b0ae399a11225fae8d935b59bcaf",
+                  "revision": 1
+                },
+                "fieldPath": "summaryText"
+              },
+              "entityRefs": [],
+              "options": []
+            },
+            "actions": []
+          }
+        ],
+        "entityRefs": [],
+        "managedBy": "assistant"
+      }
+    }
+  ],
+  "analyses": [
+    {
+      "id": "archive-ai:0181c19b7d7285e150e4b859565e8d2fce52ebae2954487caef6ae14f678173f",
+      "revision": 1,
+      "kind": "archive_ai",
+      "rangeStart": "2026-10-18",
+      "rangeEnd": "2026-10-24",
+      "inputRefs": "[{\"type\":\"training\",\"id\":\"t4\",\"revision\":1},{\"type\":\"training\",\"id\":\"t2\",\"revision\":1},{\"type\":\"training\",\"id\":\"t0\",\"revision\":1}]",
+      "summaryText": "10\/18–10\/24内3个训练日、3次记录，分别落在10\/20、10\/22、10\/24；本阶段整体为4个训练日。",
+      "blocks": "[]",
+      "calculationIds": "[\"archive-calc:fff47a86ab645fd4bbab899634892a158eb71a7fd2f651a6004ad171e7fa5225\"]",
+      "freshness": "current",
+      "createdAt": 1792812866544,
+      "updatedAt": 1792812866544
+    },
+    {
+      "id": "archive-ai:0646c37c39c426e38411306b438ec5ec9726d6652e7383cb502fb481978c5310",
+      "revision": 1,
+      "kind": "archive_ai",
+      "rangeStart": "2026-10-18",
+      "rangeEnd": "2026-10-24",
+      "inputRefs": "[{\"type\":\"training\",\"id\":\"t4\",\"revision\":1},{\"type\":\"training\",\"id\":\"t2\",\"revision\":1},{\"type\":\"training\",\"id\":\"t0\",\"revision\":1}]",
+      "summaryText": "同动作、器械、侧别、次数和负重口径比较，近7天3次记录分别为69、71、73kg；本阶段自61kg起共4次记录。",
+      "blocks": "[]",
+      "calculationIds": "[\"archive-calc:3477d9ed95bf11c2b9359dac25ecfe841047341355b104eb5700670e3a14823f\"]",
+      "freshness": "current",
+      "createdAt": 1792812866544,
+      "updatedAt": 1792812866544
+    },
+    {
+      "id": "archive-ai:51e392c2665fa517d63c9285f82dbf91a7657ec25dc3cc6483012c3b1cad9e3f",
+      "revision": 1,
+      "kind": "archive_ai",
+      "rangeStart": "2026-10-18",
+      "rangeEnd": "2026-10-24",
+      "inputRefs": "[{\"type\":\"training\",\"id\":\"t4\",\"revision\":1},{\"type\":\"training\",\"id\":\"t2\",\"revision\":1},{\"type\":\"training\",\"id\":\"t0\",\"revision\":1}]",
+      "summaryText": "按已知组数统计，近7天为胸部9组；本阶段累计12组。无法可靠映射的动作保留动作名。",
+      "blocks": "[]",
+      "calculationIds": "[\"archive-calc:8592d4769410797f164f49646ed103fe4dde2ae8b5227f34139ece58cd5cfa41\"]",
+      "freshness": "current",
+      "createdAt": 1792812866544,
+      "updatedAt": 1792812866544
+    },
+    {
+      "id": "archive-ai:770158c8af245a563c3494dce5a7a0acc732951b60d733259ec6c0a3a9c04124",
+      "revision": 1,
+      "kind": "archive_ai",
+      "rangeStart": "2026-10-04",
+      "rangeEnd": "2026-10-24",
+      "inputRefs": "[{\"type\":\"measurement\",\"id\":\"5b4e5423-4f74-4da8-bcd0-e99b9459dc77\",\"revision\":1},{\"type\":\"measurement\",\"id\":\"weight13\",\"revision\":1},{\"type\":\"measurement\",\"id\":\"weight12\",\"revision\":1},{\"type\":\"measurement\",\"id\":\"weight11\",\"revision\":1},{\"type\":\"measurement\",\"id\":\"weight4\",\"revision\":1},{\"type\":\"measurement\",\"id\":\"weight2\",\"revision\":1},{\"type\":\"measurement\",\"id\":\"weight0\",\"revision\":1},{\"type\":\"goal\",\"id\":\"8547ca52-0f7e-4972-bb46-97ae80429fb2\",\"revision\":1}]",
+      "summaryText": "本阶段7个测量日，实测体重由70kg变为最新值；7日滚动均值相邻两段对比见趋势。",
+      "blocks": "[]",
+      "calculationIds": "[\"archive-calc:06b42137d8784fa71957350f3af39cdedc60f29c3f15409bb085df56131a5c2c\"]",
+      "freshness": "current",
+      "createdAt": 1792812866544,
+      "updatedAt": 1792812866544
+    },
+    {
+      "id": "archive-ai:46b762c5efcb5601f3aac69b1b382684b2ef4f3d9f172159d32011e089fbe215",
+      "revision": 1,
+      "kind": "archive_ai",
+      "rangeStart": "2026-10-04",
+      "rangeEnd": "2026-10-24",
+      "inputRefs": "[{\"type\":\"training\",\"id\":\"t12\",\"revision\":1},{\"type\":\"training\",\"id\":\"t4\",\"revision\":1},{\"type\":\"training\",\"id\":\"t2\",\"revision\":1},{\"type\":\"training\",\"id\":\"t0\",\"revision\":1},{\"type\":\"measurement\",\"id\":\"5b4e5423-4f74-4da8-bcd0-e99b9459dc77\",\"revision\":1},{\"type\":\"measurement\",\"id\":\"weight0\",\"revision\":1},{\"type\":\"measurement\",\"id\":\"weight2\",\"revision\":1},{\"type\":\"measurement\",\"id\":\"weight4\",\"revision\":1},{\"type\":\"measurement\",\"id\":\"weight11\",\"revision\":1},{\"type\":\"measurement\",\"id\":\"weight12\",\"revision\":1},{\"type\":\"measurement\",\"id\":\"weight13\",\"revision\":1},{\"type\":\"goal\",\"id\":\"8547ca52-0f7e-4972-bb46-97ae80429fb2\",\"revision\":1}]",
+      "summaryText": "10\/04–10\/24：4次训练、7次测量、0条饮食记录；近7天为3次训练、3次测量、0条饮食记录。",
+      "blocks": "[]",
+      "calculationIds": "[\"archive-calc:a53778400088b0a74a38d97f049d8888c1b475f51fa0e4bd5055d550a9c05066\"]",
+      "freshness": "current",
+      "createdAt": 1792812866544,
+      "updatedAt": 1792812866544
+    },
+    {
+      "id": "archive-ai:2057fdaa559f9a1e9669ff522688bf5b2bc1b0ae399a11225fae8d935b59bcaf",
+      "revision": 1,
+      "kind": "archive_ai",
+      "rangeStart": "2026-10-04",
+      "rangeEnd": "2026-10-24",
+      "inputRefs": "[{\"type\":\"calculation\",\"id\":\"14e20866-f17f-37cc-a900-e60ad0339bbd\",\"revision\":1},{\"type\":\"goal\",\"id\":\"8547ca52-0f7e-4972-bb46-97ae80429fb2\",\"revision\":1}]",
+      "summaryText": "已保存的每日营养目标属于规划，不是实际摄入；因该阶段无饮食记录，无法与摄入对照。",
+      "blocks": "[]",
+      "calculationIds": "[\"archive-calc:0e14553095761c973dcd310b16878b8590df2250260f9d1850c312d4343919ed\"]",
+      "freshness": "current",
+      "createdAt": 1792812866544,
+      "updatedAt": 1792812866544
+    }
+  ]
+}

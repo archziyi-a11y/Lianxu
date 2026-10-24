@@ -1,0 +1,25 @@
+{
+  "id": "builtin.nutrition",
+  "version": 1,
+  "title": "营养规划变化",
+  "category": "营养",
+  "question": "根据已有记录观察营养规划变化",
+  "operator": "nutrition_history",
+  "windows": [
+    "accumulated",
+    "current_phase",
+    "7d",
+    "28d",
+    "90d"
+  ],
+  "eligibility": {
+    "minPoints": 1,
+    "minDays": 0,
+    "minPerGroup": 4,
+    "minEffect": 0.05
+  },
+  "parameters": {
+    "rollingDays": 7
+  },
+  "refresh": "on_effective_change"
+}

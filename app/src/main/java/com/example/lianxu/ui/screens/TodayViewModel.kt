@@ -158,7 +158,7 @@ class TodayViewModel(application: Application) : AndroidViewModel(application) {
     }
     fun saveApiKey(key: String) {
         viewModelScope.launch {
-            try { settings.saveApiKey(key); _notice.value = "设置已保存" }
+            try { settings.saveApiKey(key); com.example.lianxu.archive.ArchiveRuntime.resume(getApplication()); _notice.value = "设置已保存" }
             catch (error: Exception) { _notice.value = "密钥保存失败，请重试" }
         }
     }

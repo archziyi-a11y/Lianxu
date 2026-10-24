@@ -1,0 +1,21 @@
+{
+  "id": "builtin.phase-compare",
+  "version": 1,
+  "title": "阶段对比",
+  "category": "阶段",
+  "question": "根据已有记录观察阶段对比",
+  "operator": "phase_compare",
+  "windows": [
+    "accumulated"
+  ],
+  "eligibility": {
+    "minPoints": 4,
+    "minDays": 14,
+    "minPerGroup": 4,
+    "minEffect": 0.05
+  },
+  "parameters": {
+    "rollingDays": 7
+  },
+  "refresh": "on_effective_change"
+}

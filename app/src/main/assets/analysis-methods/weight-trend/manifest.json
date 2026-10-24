@@ -1,0 +1,26 @@
+{
+  "id": "builtin.weight-trend",
+  "version": 1,
+  "title": "体重趋势",
+  "category": "身体",
+  "question": "根据已有记录观察体重趋势",
+  "operator": "rolling_mean",
+  "windows": [
+    "accumulated",
+    "current_phase",
+    "7d",
+    "28d",
+    "90d"
+  ],
+  "eligibility": {
+    "minPoints": 6,
+    "minDays": 13,
+    "minPerGroup": 4,
+    "minEffect": 0.05
+  },
+  "parameters": {
+    "rollingDays": 7
+  },
+  "refresh": "on_effective_change",
+  "metric": "weight"
+}

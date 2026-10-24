@@ -21,7 +21,7 @@ import java.util.zip.*
 class BackupRepository(private val context: Context, private val db: AppDatabase) {
     companion object {
         val tables = listOf("profiles","goal_phases","knowledge_notes","training_sessions","intake_entries","measurements","turns","boards","cards","drafts","attachments",
-            "input_bundles","tasks","board_snapshots","calculations","analyses","day_plans","nutrition_policies","mutation_receipts","entity_snapshots","agent_cache","meal_progress","rest_timers")
+            "input_bundles","tasks","board_snapshots","calculations","analyses","day_plans","nutrition_policies","mutation_receipts","entity_snapshots","agent_cache","meal_progress","rest_timers","archive_methods","archive_topics","archive_placements","archive_presentations","archive_jobs")
         private fun hash(bytes: ByteArray)=MessageDigest.getInstance("SHA-256").digest(bytes).joinToString("") { "%02x".format(it.toInt() and 255) }
         private fun key(id: String)=hash(id.toByteArray())
     }
@@ -81,9 +81,16 @@ class BackupRepository(private val context: Context, private val db: AppDatabase
                 }
             }
             val manifest=JSONObject(requireNotNull(manifestBytes) { "备份缺少清单" }.toString(Charsets.UTF_8))
-            require(manifest.getString("format")=="lianxu-backup" && manifest.getInt("version")==1 && manifest.getInt("schemaVersion")==db.openHelper.readableDatabase.version) { "备份版本不匹配" }
+            val savedVersion=manifest.getInt("schemaVersion");val currentVersion=db.openHelper.readableDatabase.version
+            require(manifest.getString("format")=="lianxu-backup" && manifest.getInt("version")==1 && (savedVersion==currentVersion || savedVersion==5 && currentVersion==6)) { "备份版本不匹配" }
             val bytes=requireNotNull(dataBytes) { "备份缺少记录" }; require(hash(bytes)==manifest.getString("dataSha256")) { "备份记录校验失败" }
-            val data=JSONObject(bytes.toString(Charsets.UTF_8)); require(data.keys().asSequence().toSet()==tables.toSet()) { "备份表不完整" }
+            val data=JSONObject(bytes.toString(Charsets.UTF_8))
+            if(savedVersion==5 && currentVersion==6){
+                val added=setOf("archive_methods","archive_topics","archive_placements","archive_presentations","archive_jobs")
+                require(data.keys().asSequence().toSet()==tables.toSet()-added){"旧版备份表不完整"}
+                added.forEach { data.put(it,JSONArray()) }
+            }
+            require(data.keys().asSequence().toSet()==tables.toSet()) { "备份表不完整" }
             val files=manifest.getJSONArray("attachments"); val attachments=data.getJSONArray("attachments")
             require(files.length()==attachments.length() && staged.size==files.length()) { "备份附件数量不匹配" }
             val fileIds=mutableSetOf<String>()
@@ -106,6 +113,7 @@ class BackupRepository(private val context: Context, private val db: AppDatabase
             }
             db.withTransaction {
                 check(db.collaborationDao().unfinishedTasks().isEmpty()) { "请先等待或取消正在处理的补充，再恢复备份" }
+                check(db.archiveDao().job()?.status!="running") { "请等待档案分析完成，再恢复备份" }
                 check(db.collaborationDao().timer()?.status!="running") { "请先结束计时，再恢复备份" }
                 val sql=db.openHelper.writableDatabase
                 for(table in tables) {
@@ -120,6 +128,7 @@ class BackupRepository(private val context: Context, private val db: AppDatabase
                         val row=rows.getJSONObject(i)
                         if(table=="tasks" && row.getString("status") in listOf("queued","running","staged","applying"))row.put("status","failed").put("lastError","备份中的任务已中断，输入保留，可重试")
                         if(table=="turns" && row.getString("status") in listOf("queued","running","staged","applying"))row.put("status","failed")
+                        if(table=="archive_jobs" && row.getString("status")=="running")row.put("status","pending")
                         if(table=="rest_timers" && row.getString("status")=="running")row.put("status","cancelled")
                         val values=ContentValues()
                         row.keys().forEach { column -> when(val value=row.get(column)) {
@@ -139,6 +148,14 @@ class BackupRepository(private val context: Context, private val db: AppDatabase
         val boards=ids("boards"); val turns=ids("turns");val inputs=ids("input_bundles"); val snapshots=ids("board_snapshots")
         val calculations=ids("calculations"); val analyses=ids("analyses"); val attachments=ids("attachments")
         tables.forEach(::ids)
+        rows("archive_methods").forEach { com.example.lianxu.archive.MethodRegistry.parse(it.getString("packageJson")) }
+        val methodIds=ids("archive_methods")
+        rows("archive_topics").forEach { require(it.getString("methodId") in methodIds && it.getString("calculationId") in calculations);require(it.isNull("analysisId") || it.getString("analysisId") in analyses) }
+        val topicIds=ids("archive_topics")
+        rows("archive_presentations").forEach { presentation-> org.json.JSONArray(presentation.getString("cardsJson")).let { a->for(i in 0 until a.length()){
+            val entry=a.getJSONObject(i);val keys=entry.getJSONArray("topics");for(j in 0 until keys.length())require(keys.getString(j) in topicIds)
+            val card=DomainJson.decode<DashboardCard>(entry.getJSONObject("card").toString());card.blocks.forEach { block->require(block.content.calculationId?.let { it in calculations } != false);require(block.content.contentRef?.entityRef?.id?.let { it in analyses } != false) }
+        } } }
         rows("cards").forEach { require(it.getString("boardId") in boards); val card=DomainJson.decode<DashboardCard>(it.getString("data")); require(card.id==it.getString("id"));
             card.blocks.forEach { block -> require(block.content.calculationId?.let { id -> id in calculations } != false); require(block.content.contentRef?.entityRef?.let { ref -> ref.type!="analysis" || ref.id in analyses } != false);require(block.content.attachmentId?.let { id -> id in attachments } != false) }
         }

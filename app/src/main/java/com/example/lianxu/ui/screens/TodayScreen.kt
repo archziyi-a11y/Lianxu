@@ -342,7 +342,7 @@ fun DashboardCardItem(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun ComponentView(block: ResolvedComponent, largeMetric: Boolean, onAction: (CardAction, String?) -> Unit, onChoice: (String) -> Unit) {
+internal fun ComponentView(block: ResolvedComponent, largeMetric: Boolean, onAction: (CardAction, String?) -> Unit, onChoice: (String) -> Unit) {
     val context = LocalContext.current
     Column(modifier = Modifier.fillMaxWidth().padding(top = 8.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
         when (block.type) {
@@ -359,24 +359,7 @@ private fun ComponentView(block: ResolvedComponent, largeMetric: Boolean, onActi
                     }
                 }
             }
-            "trend" -> {
-                val color = MaterialTheme.colorScheme.primary
-                if (block.points.isNotEmpty()) {
-                    Canvas(modifier = Modifier.fillMaxWidth().height(100.dp).semantics {
-                        contentDescription = block.points.joinToString { "${it.label}: ${it.value}kg" }
-                    }) {
-                        val low = block.points.minOf { it.value }; val high = block.points.maxOf { it.value }
-                        val spread = (high - low).coerceAtLeast(.2)
-                        val coordinates = block.points.mapIndexed { i, point -> Offset(
-                            if (block.points.size == 1) size.width / 2 else i.toFloat() / (block.points.size - 1) * size.width,
-                            size.height - 8f - ((point.value - low) / spread).toFloat() * (size.height - 16f)) }
-                        coordinates.zipWithNext().forEach { (a, b) -> drawLine(color, a, b, 3f) }
-                        coordinates.forEach { drawCircle(color, 4f, it) }
-                    }
-                    Text("${block.points.first().label} — ${block.points.last().label}", style = MaterialTheme.typography.labelSmall)
-                }
-                Text(block.text, style = MaterialTheme.typography.bodyMedium)
-            }
+            "trend" -> { ArchiveChart(block) }
             "image" -> {
                 block.attachmentPath?.let { AsyncImage(model = File(context.filesDir, it), contentDescription = block.text,
                     modifier = Modifier.fillMaxWidth().heightIn(max = 240.dp)) }

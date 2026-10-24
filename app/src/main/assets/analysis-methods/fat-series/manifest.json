@@ -1,0 +1,26 @@
+{
+  "id": "builtin.fat-series",
+  "version": 1,
+  "title": "体脂率变化",
+  "category": "身体",
+  "question": "根据已有记录观察体脂率变化",
+  "operator": "series",
+  "windows": [
+    "accumulated",
+    "current_phase",
+    "7d",
+    "28d",
+    "90d"
+  ],
+  "eligibility": {
+    "minPoints": 1,
+    "minDays": 0,
+    "minPerGroup": 4,
+    "minEffect": 0.05
+  },
+  "parameters": {
+    "rollingDays": 7
+  },
+  "refresh": "on_effective_change",
+  "metric": "body_fat"
+}

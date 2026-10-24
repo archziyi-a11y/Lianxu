@@ -1,0 +1,25 @@
+{
+  "id": "builtin.training-weight",
+  "version": 1,
+  "title": "训练与体重变化",
+  "category": "发现",
+  "question": "根据已有记录观察训练与体重变化",
+  "operator": "training_weight",
+  "windows": [
+    "accumulated",
+    "current_phase",
+    "7d",
+    "28d",
+    "90d"
+  ],
+  "eligibility": {
+    "minPoints": 8,
+    "minDays": 28,
+    "minPerGroup": 4,
+    "minEffect": 0.05
+  },
+  "parameters": {
+    "rollingDays": 7
+  },
+  "refresh": "on_effective_change"
+}
