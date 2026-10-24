@@ -42,6 +42,7 @@ interface GoalPhaseDao {
 
 @Dao
 interface MeasurementDao {
+    @Query("SELECT * FROM measurements WHERE id = :id") suspend fun byId(id: String): Measurement?
     @Query("SELECT * FROM measurements WHERE deletedAt IS NULL ORDER BY observed DESC, measuredAt DESC, createdAt DESC")
     suspend fun all(): List<Measurement>
 

@@ -57,3 +57,11 @@ data class EntitySnapshotEntity(@PrimaryKey val id: String, val entityType: Stri
 @Entity(tableName = "agent_cache")
 data class AgentCacheEntity(@PrimaryKey val taskId: String, val basis: String,
     val entriesJson: String, val updatedAt: Long)
+
+@Entity(tableName = "meal_progress", indices = [Index(value = ["planId", "mealId"], unique = true)])
+data class MealProgressEntity(@PrimaryKey val id: String, val planId: String, val mealId: String,
+    val dateContext: String, val state: String, val revision: Int, val updatedAt: Long)
+
+@Entity(tableName = "rest_timers")
+data class RestTimerEntity(@PrimaryKey val id: String = "rest", val deadlineWallMs: Long,
+    val deadlineElapsedMs: Long, val bootCount: Int, val status: String, val updatedAt: Long)

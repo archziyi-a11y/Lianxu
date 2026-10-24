@@ -5,6 +5,7 @@ import argparse, json, subprocess
 from pathlib import Path
 parser = argparse.ArgumentParser()
 parser.add_argument('--live', action='store_true')
+parser.add_argument('--stage', type=int, default=3)
 parser.add_argument('--class-name')
 a = parser.parse_args()
 root = Path(__file__).resolve().parents[1]
@@ -22,23 +23,23 @@ if a.live:
             name, value = line.split('=', 1)
             values[name.strip()] = value.strip().strip(chr(34)).strip(chr(39))
     key = values['DEEPSEEK_API_KEY']
-    subprocess.run([str(adb),'shell','run-as','com.example.lianxu','tee','cache/stage3-live-key'],
+    subprocess.run([str(adb),'shell','run-as','com.example.lianxu','tee',f'cache/stage{a.stage}-live-key'],
         input=key.encode(), stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, check=True)
-args = ['shell','am','instrument','-w','-r']
+args = ['shell','am','instrument','-w','-r','-e','validationStage',str(a.stage)]
 if a.live or a.class_name:
     args += ['-e','class',a.class_name or 'com.example.lianxu.LiveAgentTest']
 args += ['com.example.lianxu.test/androidx.test.runner.AndroidJUnitRunner']
 try:
     output = run(args).stdout.decode('utf-8',errors='replace').replace('\r','')
-    (report / ('stage3-live-instrumentation.txt' if a.live else 'stage3-agent-instrumentation.txt' if a.class_name else 'stage3-instrumentation.txt')).write_text(output,encoding='utf-8')
+    (report / (f'stage{a.stage}-live-instrumentation.txt' if a.live else f'stage{a.stage}-agent-instrumentation.txt' if a.class_name else f'stage{a.stage}-instrumentation.txt')).write_text(output,encoding='utf-8')
     print(output)
     if a.live:
-        data = run(['exec-out','run-as','com.example.lianxu','cat','files/stage3-live-result.json']).stdout
-        (report / 'stage3-live-result.json').write_bytes(data)
+        data = run(['exec-out','run-as','com.example.lianxu','cat',f'files/stage{a.stage}-live-result.json']).stdout
+        (report / f'stage{a.stage}-live-result.json').write_bytes(data)
         result = json.loads(data)
         print(json.dumps({k: result.get(k) for k in ['status','model','requests','tools','trainingCount','intakeCount','error']},ensure_ascii=False))
     if 'FAILURES!!!' in output or 'OK (' not in output:
         raise SystemExit(1)
 finally:
     if a.live:
-        run(['shell','run-as','com.example.lianxu','rm','-f','cache/stage3-live-key'])
+        run(['shell','run-as','com.example.lianxu','rm','-f',f'cache/stage{a.stage}-live-key'])

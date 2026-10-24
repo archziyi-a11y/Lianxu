@@ -55,6 +55,7 @@ fun TodayScreen(modifier: Modifier = Modifier, viewModel: TodayViewModel = viewM
     val taskProgress by viewModel.taskProgress.collectAsState()
     val isPlanning by viewModel.isPlanning.collectAsState()
     val notice by viewModel.notice.collectAsState()
+    val boardDate by viewModel.boardDate.collectAsState()
     val isImporting by viewModel.isImporting.collectAsState()
     val demoMode by viewModel.demoMode.collectAsState()
     val profileSummary by viewModel.profileSummary.collectAsState()
@@ -187,6 +188,8 @@ fun TodayScreen(modifier: Modifier = Modifier, viewModel: TodayViewModel = viewM
                 if (demoMode) Text("AI未配置 · 本地营养规划可用", color = MaterialTheme.colorScheme.secondary)
                 if (isPlanning) Text("正在更新营养与餐食…")
                 if (isImporting) Text("正在保存图片…")
+                if(boardDate.isNotBlank())Text(boardDate,style=MaterialTheme.typography.labelSmall,modifier=Modifier.padding(horizontal=16.dp))
+                RestTimerControls()
                 notice?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
             }
             Box(modifier = Modifier.weight(1f)) {

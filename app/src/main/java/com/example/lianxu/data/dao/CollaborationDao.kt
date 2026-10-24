@@ -6,6 +6,17 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CollaborationDao {
+    @Query("SELECT * FROM meal_progress") suspend fun allMealProgress(): List<MealProgressEntity>
+    @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun putMealProgress(value: MealProgressEntity)
+    @Query("SELECT * FROM rest_timers WHERE id = 'rest'") suspend fun timer(): RestTimerEntity?
+    @Query("SELECT * FROM rest_timers WHERE id = 'rest'") fun watchTimer(): Flow<RestTimerEntity?>
+    @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun putTimer(value: RestTimerEntity)
+    @Query("SELECT * FROM boards WHERE deletedAt IS NULL ORDER BY updatedAt DESC") suspend fun allBoards(): List<Board>
+    @Query("SELECT * FROM boards WHERE deletedAt IS NULL ORDER BY updatedAt DESC") fun watchBoards(): Flow<List<Board>>
+    @Query("SELECT * FROM analyses ORDER BY updatedAt DESC") fun watchAnalyses(): Flow<List<AnalysisEntity>>
+    @Query("SELECT * FROM day_plans ORDER BY updatedAt DESC") fun watchPlans(): Flow<List<DayPlanEntity>>
+    @Query("SELECT * FROM tasks ORDER BY updatedAt DESC") fun watchTasks(): Flow<List<TaskEntity>>
+
     @Query("SELECT * FROM calculations") suspend fun allCalculations(): List<CalculationEntity>
     @Query("SELECT * FROM analyses") suspend fun allAnalyses(): List<AnalysisEntity>
     @Query("SELECT * FROM day_plans") suspend fun allPlans(): List<DayPlanEntity>
@@ -19,6 +30,7 @@ interface CollaborationDao {
     @Query("SELECT * FROM cards WHERE boardId = :boardId ORDER BY rowid") suspend fun cards(boardId: String): List<Card>
     @Query("DELETE FROM cards WHERE boardId = :boardId") suspend fun removeCards(boardId: String)
     @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun putCards(values: List<Card>)
+    @Query("SELECT * FROM drafts") fun watchDrafts(): Flow<List<DraftEntity>>
     @Query("SELECT * FROM drafts WHERE boardId = :boardId") suspend fun draft(boardId: String): DraftEntity?
     @Query("SELECT * FROM drafts WHERE boardId = :boardId") fun watchDraft(boardId: String): Flow<DraftEntity?>
     @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun putDraft(value: DraftEntity)
@@ -49,6 +61,7 @@ interface CollaborationDao {
     @Query("SELECT * FROM nutrition_policies ORDER BY startsOn DESC, createdAt DESC LIMIT 1") suspend fun latestPolicy(): NutritionPolicyEntity?
     @Query("SELECT * FROM nutrition_policies WHERE startsOn <= :date ORDER BY startsOn DESC, createdAt DESC LIMIT 1") suspend fun policyOn(date: String): NutritionPolicyEntity?
     @Insert(onConflict = OnConflictStrategy.ABORT) suspend fun putEntitySnapshot(value: EntitySnapshotEntity)
+    @Query("SELECT * FROM entity_snapshots WHERE id = :id") suspend fun snapshotById(id: String): EntitySnapshotEntity?
     @Query("SELECT * FROM entity_snapshots WHERE entityType = :type AND entityId = :id AND revision = :revision")
     suspend fun entitySnapshot(type: String, id: String, revision: Int): EntitySnapshotEntity?
     @Query("SELECT * FROM day_plans WHERE dateContext = :context LIMIT 1") suspend fun planForDate(context: String): DayPlanEntity?
@@ -59,6 +72,7 @@ interface CollaborationDao {
 
 @Dao
 interface RecordDao {
+    @Query("SELECT * FROM knowledge_notes WHERE id = :id") suspend fun knowledgeById(id: String): KnowledgeNote?
     @Update suspend fun updateTraining(value: TrainingSession)
     @Update suspend fun updateIntake(value: IntakeEntry)
     @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun putKnowledge(value: KnowledgeNote)

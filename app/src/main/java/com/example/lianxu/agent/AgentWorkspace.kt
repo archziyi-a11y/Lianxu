@@ -55,6 +55,7 @@ class AgentWorkspace private constructor(val context: Context, val real: AppData
         basis.getJSONArray("plans").objects().forEach { d.putPlan(DomainJson.decode(it.toString())) }
         basis.getJSONArray("calculations").objects().forEach { d.putCalculation(DomainJson.decode(it.toString())) }
         basis.getJSONArray("analyses").objects().forEach { d.putAnalysis(DomainJson.decode(it.toString())) }
+        basis.optJSONArray("mealProgress")?.objects()?.forEach { d.putMealProgress(DomainJson.decode(it.toString())) }
         basis.getJSONArray("policies").objects().forEach { d.putPolicy(DomainJson.decode(it.toString())) }
         basis.getJSONArray("snapshots").objects().forEach { d.putEntitySnapshot(DomainJson.decode(it.toString())) }
         basis.getJSONArray("attachments").objects().forEach { d.putAttachment(DomainJson.decode(it.toString())) }
@@ -245,7 +246,7 @@ class AgentWorkspace private constructor(val context: Context, val real: AppData
                     val refs = payload.optJSONArray("inputRefs") ?: currentRefs()
                     validateRefs(refs, allowHistorical = true)
                     val calcs = payload.optJSONArray("calculationIds") ?: JSONArray()
-                    calcs.strings().forEach { require(dao.calculation(it) != null) { "NOT_FOUND: calculation" } }
+                    calcs.strings().forEach { require(com.example.lianxu.data.repository.SourceValidator(overlay).usable(EntityRef("calculation",it), true)) { "NOT_FOUND: calculation or current source" } }
                     require(payload.getString("summaryText").isNotBlank())
                     require(payload.optString("kind", "reply") in listOf("reply", "assessment"))
                     dao.putAnalysis(AnalysisEntity(objectId, 1, payload.optString("kind", "reply"), start, end, refs.toString(), payload.getString("summaryText"),
@@ -255,12 +256,21 @@ class AgentWorkspace private constructor(val context: Context, val real: AppData
                     type = "knowledge"; payload.shape("kind", "text", "effectiveFrom", "effectiveUntil", "status", "expectedRevision")
                     val existing = overlay.recordDao().allKnowledge().find { it.id == objectId }
                     old = existing?.let { JSONObject(DomainJson.encode(it)) }
+                    val protected = overlay.recordDao().allKnowledge().filter { note -> note.status == "current" && note.kind == payload.getString("kind") &&
+                        runCatching { JSONObject(note.origin).optBoolean("corrected") }.getOrDefault(false) }
+                    if (protected.isNotEmpty()) {
+                        val lastCorrection = protected.maxOf { it.updatedAt }
+                        val freshEvidence = overlay.recordDao().allTrainings().any { it.updatedAt > lastCorrection } || overlay.recordDao().allIntakes().any { it.updatedAt > lastCorrection } ||
+                            overlay.measurementDao().all().any { it.updatedAt > lastCorrection }
+                        val directlyAddressed = annotations.objects().any { annotation -> protected.any { note -> annotation.getJSONObject("targetSnapshot").toString().contains(note.id) } }
+                        require(freshEvidence || directlyAddressed) { "OUT_OF_SCOPE: user-corrected knowledge requires new evidence or a direct correction" }
+                    }
                     if (existing != null) require(target?.getInt("revision") == existing.revision)
                     val start = payload.optString("effectiveFrom", date); require(start <= date); LocalDate.parse(start)
                     val end = payload.nullString("effectiveUntil"); end?.let { require(LocalDate.parse(it) >= LocalDate.parse(start)) }
                     require(payload.getString("text").isNotBlank())
                     overlay.recordDao().putKnowledge(KnowledgeNote(objectId, (existing?.revision ?: 0) + 1, payload.getString("kind"), payload.getString("text"),
-                        JSONObject(origin).put("kind", "assistant").put("inputRefs", currentRefs()).toString(), start, end, payload.optString("status", "current"), existing?.supersedesId, existing?.createdAt ?: now, now))
+                        JSONObject(origin).put("kind", "assistant").put("inputRefs", JSONArray(currentRefs().objects().filter { it.getString("type") in listOf("training","intake","measurement","goal") })).toString(), start, end, payload.optString("status", "current"), existing?.supersedesId, existing?.createdAt ?: now, now))
                 }
                 "replace_plan_meal" -> {
                     type = "plan"; payload.shape("mealId", "meal", "calculationId", "meals")
@@ -268,12 +278,13 @@ class AgentWorkspace private constructor(val context: Context, val real: AppData
                     require(plan.dateContext == dateContext && plan.state == "current")
                     old = JSONObject(DomainJson.encode(plan))
                     val meals = DomainJson.decode<MealsDocument>(plan.meals).meals
-                    val eatenSlots = overlay.recordDao().allIntakes().filter { recordDate(it.dateContext) == date }.mapNotNull { it.mealKey }.toSet()
+                    val recordedSlots = overlay.recordDao().allIntakes().filter { recordDate(it.dateContext) == date }.mapNotNull { it.mealKey }.toSet()
+                    val closed = closedMealIds(meals, recordedSlots, dao.allMealProgress().filter { it.planId == plan.id }.associate { it.mealId to it.state })
                     val changes = payload.optJSONArray("meals")?.objects() ?: listOf(payload)
                     require(changes.map { it.getString("mealId") }.distinct().size == changes.size)
                     val replacements = changes.associate { item ->
                         val mid = item.getString("mealId")
-                        val before = meals.single { it.mealId == mid }; require(!before.locked && before.slotKey !in eatenSlots) { "OUT_OF_SCOPE: preserved/eaten meal" }
+                        val before = meals.single { it.mealId == mid }; require(!before.locked && before.mealId !in closed) { "OUT_OF_SCOPE: preserved/eaten meal" }
                         val calc = requireNotNull(dao.calculation(item.getString("calculationId")))
                         require(calc.type == "meal_candidates" && calc.id in toolCalculations)
                         val exact = JSONObject(calc.result).getJSONArray("meals").objects().single { it.getString("mealId") == mid }
@@ -303,7 +314,7 @@ class AgentWorkspace private constructor(val context: Context, val real: AppData
                 else -> error("OUT_OF_SCOPE: unknown operation $kind")
             }
             old?.let { snapshot(type, it) }
-            if (type !in listOf("analysis", "plan")) { dao.invalidateAnalyses(); dao.invalidatePlans() }
+            if (type !in listOf("analysis", "plan")) { invalidateDerived(overlay) }
         }
     }
     private fun mergeRecord(type: String, id: String, fields: JSONObject, old: JSONObject?, target: JSONObject?, update: Boolean, now: Long, origin: String, profile: Boolean = false): JSONObject {
@@ -322,18 +333,19 @@ class AgentWorkspace private constructor(val context: Context, val real: AppData
         add("measurement", overlay.measurementDao().all().map { JSONObject(DomainJson.encode(it)) })
         add("training", overlay.recordDao().allTrainings().map { JSONObject(DomainJson.encode(it)) })
         add("intake", overlay.recordDao().allIntakes().map { JSONObject(DomainJson.encode(it)) })
+        add("meal_progress", dao.allMealProgress().map { JSONObject(DomainJson.encode(it)) })
         add("plan", dao.allPlans().map { JSONObject(DomainJson.encode(it)) })
-        add("knowledge", overlay.recordDao().allKnowledge().map { JSONObject(DomainJson.encode(it)) })
+        add("knowledge", overlay.recordDao().allKnowledge().filter { it.status=="current" && SourceValidator(overlay).usable(EntityRef("knowledge",it.id,it.revision)) }.map { JSONObject(DomainJson.encode(it)) })
     }
     suspend fun validateRefs(refs: JSONArray, allowHistorical: Boolean = false) {
         val available = currentRefs().objects().associateBy { "${it.getString("type")}:${it.getString("id")}" }
         refs.objects().forEach { ref ->
             val type = ref.getString("type"); val id = ref.getString("id")
             when (type) {
-                "calculation" -> require(dao.calculation(id) != null)
+                "calculation" -> require(com.example.lianxu.data.repository.SourceValidator(overlay).usable(EntityRef("calculation",id), allowHistorical)) { "NOT_FOUND: valid calculation source" }
                 "analysis" -> require(dao.analysis(id)?.revision == ref.optInt("revision", 1))
                 "policy" -> require(dao.allPolicies().any { it.id == id && it.revision == ref.optInt("revision", 1) })
-                else -> require(available["$type:$id"]?.getInt("revision") == ref.optInt("revision", 1) || allowHistorical && dao.entitySnapshot(type, id, ref.optInt("revision", 1)) != null) { "VERSION_CONFLICT: $type/$id" }
+                else -> require(available["$type:$id"]?.getInt("revision") == ref.optInt("revision", 1) || allowHistorical && type != "knowledge" && available.containsKey("$type:$id") && dao.entitySnapshot(type, id, ref.optInt("revision", 1)) != null) { "VERSION_CONFLICT: $type/$id" }
             }
         }
     }
@@ -352,6 +364,7 @@ class AgentWorkspace private constructor(val context: Context, val real: AppData
                 .put("trainings", JSONArray(db.recordDao().allTrainings().map { JSONObject(DomainJson.encode(it)) }))
                 .put("intakes", JSONArray(db.recordDao().allIntakes().map { JSONObject(DomainJson.encode(it)) }))
                 .put("knowledge", JSONArray(db.recordDao().allKnowledge().map { JSONObject(DomainJson.encode(it)) }))
+                .put("mealProgress", JSONArray(dao.allMealProgress().map { JSONObject(DomainJson.encode(it)) }))
                 .put("plans", JSONArray(dao.allPlans().map { JSONObject(DomainJson.encode(it)) }))
                 .put("calculations", JSONArray(dao.allCalculations().map { JSONObject(DomainJson.encode(it)) }))
                 .put("analyses", JSONArray(dao.allAnalyses().map { JSONObject(DomainJson.encode(it)) }))

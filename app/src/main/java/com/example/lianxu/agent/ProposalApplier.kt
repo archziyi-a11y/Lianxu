@@ -39,6 +39,7 @@ class ProposalApplier(private val work: AgentWorkspace) {
         require(operations.objects().map { it.getString("operationId") }.distinct().size == operations.length())
         val targets = operations.objects().mapNotNull { it.optJSONObject("targetRef")?.let { t -> "${t.getString("type")}:${t.getString("id")}" } }
         require(targets.distinct().size == targets.size) { "DUPLICATE_OPERATION: target" }
+        val observedCardVersions = work.dao.cards(work.submission.task.boardId).associate { row -> row.id to DomainJson.decode<DashboardCard>(row.data).revision }
         work.applyOperations(JSONArray(extra))
         work.nutrition.refresh(work.submission.task.boardId, preserveComposition = false)
         val now = System.currentTimeMillis()
@@ -50,7 +51,7 @@ class ProposalApplier(private val work: AgentWorkspace) {
         val generated = cards.associateBy { it.id }
         cards = work.submission.cards.map { generated[it.id] ?: it.copy(annotationText = null, annotationImageUri = null, attachmentId = null, isAnnotationMode = false, annotationAnchor = null) } + cards.filter { c -> work.submission.cards.none { it.id == c.id } }
         val patch = proposal.optJSONObject("boardPatch")
-        if (patch != null) cards = patch(cards, patch)
+        if (patch != null) cards = patch(cards, patch, observedCardVersions)
         val blocks = proposal.optJSONArray("blocks")
         if (blocks != null && blocks.length() > 0) {
             val parsed = blocks.objects().map { parseBlock(bindCardRefs(work.resolve(it)) as JSONObject) }
@@ -81,7 +82,7 @@ class ProposalApplier(private val work: AgentWorkspace) {
     }
     private suspend fun validateBaseRefs(refs: JSONArray) {
         val basis = work.basis
-        val types = mapOf("profile" to "profile", "goal" to "goals", "measurement" to "measurements", "training" to "trainings", "intake" to "intakes", "knowledge" to "knowledge", "plan" to "plans", "analysis" to "analyses", "calculation" to "calculations", "policy" to "policies")
+        val types = mapOf("profile" to "profile", "goal" to "goals", "measurement" to "measurements", "training" to "trainings", "intake" to "intakes", "knowledge" to "knowledge", "plan" to "plans", "meal_progress" to "mealProgress", "analysis" to "analyses", "calculation" to "calculations", "policy" to "policies")
         refs.objects().forEach { ref ->
             val key = requireNotNull(types[ref.getString("type")])
             val items = if (key == "profile") listOfNotNull(basis.optJSONObject(key)) else basis.getJSONArray(key).objects()
@@ -89,7 +90,7 @@ class ProposalApplier(private val work: AgentWorkspace) {
             if (!inBasis) work.validateRefs(JSONArray().put(work.resolve(ref)), allowHistorical = true)
         }
     }
-    private suspend fun patch(initial: List<DashboardCard>, patch: JSONObject): List<DashboardCard> {
+    private suspend fun patch(initial: List<DashboardCard>, patch: JSONObject, observed: Map<String, Int>): List<DashboardCard> {
         patch.shape("upsertCards", "removeCardIds", "orderedCardIds")
         val upserts = patch.optJSONArray("upsertCards")?.objects().orEmpty()
         val removals = patch.optJSONArray("removeCardIds")?.strings().orEmpty()
@@ -104,7 +105,7 @@ class ProposalApplier(private val work: AgentWorkspace) {
             val original = work.submission.cards.find { it.id == id }
             val preview = initial.find { it.id == id }
             val old = preview ?: original
-            if (existingId != null) require(old != null && raw.optInt("revision", -1) in listOfNotNull(original?.revision, preview?.revision)) { "VERSION_CONFLICT: card/$id expected ${listOfNotNull(original?.revision, preview?.revision)}" }
+            if (existingId != null) require(old != null && raw.optInt("revision", -1) in listOfNotNull(original?.revision, observed[id], preview?.revision)) { "VERSION_CONFLICT: card/$id expected ${listOfNotNull(original?.revision, observed[id], preview?.revision)}" }
             val value = bindCardRefs(work.resolve(raw)) as JSONObject
             val card = DashboardCard(id, value.getString("title"), span = when (value.getInt("span")) { 2 -> CardSpan.SMALL; 3 -> CardSpan.MEDIUM; 6 -> CardSpan.LARGE; else -> error("INVALID_RANGE: span") },
                 revision = (old?.revision ?: 0) + 1, managedBy = "assistant", blocks = value.getJSONArray("blocks").objects().map { parseBlock(it) },
@@ -114,8 +115,8 @@ class ProposalApplier(private val work: AgentWorkspace) {
         }
         val ordered = patch.optJSONArray("orderedCardIds")?.strings().orEmpty().map { work.mapping[it] ?: it }
         if (ordered.isEmpty()) return cards
-        require(ordered.distinct().size == ordered.size && ordered.toSet() == cards.map { it.id }.toSet()) { "INVALID_SHAPE: incomplete card order" }
-        return ordered.map { id -> cards.single { it.id == id } }
+        require(ordered.distinct().size == ordered.size && cards.map { it.id }.containsAll(ordered)) { "INVALID_SHAPE: unknown or duplicate card order" }
+        return ordered.map { id -> cards.single { it.id == id } } + cards.filter { it.id !in ordered }
     }
     private suspend fun bindCardRefs(value: Any?): Any? = when (value) {
         is JSONArray -> JSONArray().also { out -> (0 until value.length()).forEach { out.put(bindCardRefs(value.get(it))) } }
@@ -166,7 +167,7 @@ class ProposalApplier(private val work: AgentWorkspace) {
         }
         block.entityRef?.let { work.validateRefs(JSONArray().put(JSONObject(DomainJson.encode(it)))) }
         block.actions.forEach { action ->
-            require(action.kind in listOf("replace_meal", "scale_meal", "mark_eaten", "lock_meal", "change_scene", "open_source")) { "OUT_OF_SCOPE: action" }
+            require(action.kind in listOf("replace_meal", "scale_meal", "mark_eaten", "lock_meal", "change_scene", "open_source", "skip_meal", "reopen_meal")) { "OUT_OF_SCOPE: action" }
             work.validateRefs(JSONArray().put(JSONObject(DomainJson.encode(action.targetRef))))
         }
     }
@@ -181,7 +182,7 @@ class ProposalApplier(private val work: AgentWorkspace) {
         val db = work.real; val d = db.collaborationDao()
         if (d.receipt(work.submission.turn.submissionId, "apply-board") != null) return@withTransaction
         val latest = AgentWorkspace.capture(db, work.submission)
-        for (key in listOf("profile", "goals", "measurements", "trainings", "intakes", "knowledge", "plans", "policies"))
+        for (key in listOf("profile", "goals", "measurements", "trainings", "intakes", "knowledge", "plans", "policies", "mealProgress"))
             if (canonical(latest.opt(key)) != canonical(work.basis.opt(key))) throw SourceConflict("VERSION_CONFLICT: $key changed during processing")
         if (d.board(work.submission.task.boardId)?.revision != work.submission.boardRevision) throw SourceConflict("VERSION_CONFLICT: board")
         val overlay = work.overlay; val od = work.dao
@@ -215,7 +216,7 @@ class ProposalApplier(private val work: AgentWorkspace) {
 }
 
 internal fun AgentWorkspace.basisRefs(): JSONArray = JSONArray().also { refs ->
-    val keys = mapOf("goals" to "goal", "measurements" to "measurement", "trainings" to "training", "intakes" to "intake", "knowledge" to "knowledge", "plans" to "plan", "policies" to "policy")
+    val keys = mapOf("goals" to "goal", "measurements" to "measurement", "trainings" to "training", "intakes" to "intake", "knowledge" to "knowledge", "plans" to "plan", "mealProgress" to "meal_progress", "policies" to "policy")
     basis.optJSONObject("profile")?.let { refs.put(JSONObject().put("type", "profile").put("id", it.getString("id")).put("revision", it.getInt("revision"))) }
     keys.forEach { (key, type) -> basis.getJSONArray(key).objects().forEach { refs.put(JSONObject().put("type", type).put("id", it.getString("id")).put("revision", it.getInt("revision"))) } }
 }

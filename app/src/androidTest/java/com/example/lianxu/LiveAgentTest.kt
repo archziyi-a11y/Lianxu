@@ -27,7 +27,8 @@ import java.time.ZoneId
 class LiveAgentTest {
     @Test fun actualFlashImageAndMultiCardRoundTrip() = runBlocking {
         val inst = InstrumentationRegistry.getInstrumentation(); val context = inst.targetContext
-        val keyFile = File(context.cacheDir,"stage3-live-key")
+        val stage = InstrumentationRegistry.getArguments().getString("validationStage") ?: "3"
+        val keyFile = File(context.cacheDir,"stage$stage-live-key")
         assumeTrue("Live API test requires private opt-in key file", keyFile.isFile)
         val key = keyFile.readText().trim(); keyFile.delete(); require(key.isNotEmpty())
         val db = Room.inMemoryDatabaseBuilder(context,AppDatabase::class.java).build()
@@ -38,11 +39,12 @@ class LiveAgentTest {
             AppRepository(db).saveArchive(175f,"1996-01-01","male",1.6f,70f,"gain",date)
             val store=BoardStore(db); val id=store.open(emptyList(),date,ZoneId.of("Asia/Shanghai"))
             val repo=NutritionBoardRepository.create(context,db); repo.refresh(id)
+            val originalMeals = DomainJson.decode<MealsDocument>(requireNotNull(db.collaborationDao().planForDate(requireNotNull(db.collaborationDao().board(id)).dateContext)).meals).meals
             val data=inst.context.assets.open("training-chest.jpg").use { it.readBytes() }; image.writeBytes(data)
             val sha=MessageDigest.getInstance("SHA-256").digest(data).joinToString("") { "%02x".format(it.toInt() and 255) }
             db.collaborationDao().putAttachment(AttachmentEntity("live-photo","attachments/stage3-live-photo","image/jpeg",sha,data.size.toLong(),System.currentTimeMillis()))
             store.edit(id) { cards -> cards.map { when { it.id.endsWith(":training-input") -> it.copy(isAnnotationMode=true,attachmentId="live-photo",annotationText="今天按这张图完成胸部训练，上斜哑铃卧推实际只有3组，其余组数和次数范围按图，重量没记。请直接保存这些实际训练信息。")
-                it.id.endsWith(":intake-input") -> it.copy(isAnnotationMode=true,annotationText="午餐吃了200g熟米饭，只记录了这部分，不表示全天吃够。根据这些训练和摄入更新今天剩余饮食参考，做一张解释卡和营养指标组合。")
+                it.id.endsWith(":intake-input") -> it.copy(isAnnotationMode=true,annotationText="午餐吃了200g熟米饭，只记录了这部分，不表示全天吃够。根据这些训练和摄入更新今天剩余饮食参考，只调整还没过去的晚餐，不改早餐或已吃的午餐。做一张解释卡和营养指标组合。")
                 else -> it } } }
             val submission=store.prepare(id); taskId = submission.task.id
             val runner=AgentRunner(context,db,repo.catalog,DeepSeekAgentClient(key))
@@ -56,19 +58,23 @@ class LiveAgentTest {
             assertEquals("completed",db.collaborationDao().turn(submission.turn.id)!!.status)
             val cards=store.watchCards(id).first()
             assertTrue(cards.any { it.blocks.any { b -> b.content.contentRef?.entityRef?.type=="analysis" } })
-            val report=JSONObject().put("model","deepseek-flash").put("realApi",true).put("requests",runner.requestCount).put("tools",runner.toolCount)
+            val finalMeals=DomainJson.decode<MealsDocument>(requireNotNull(db.collaborationDao().planForDate(requireNotNull(db.collaborationDao().board(id)).dateContext)).meals).meals
+            val breakfast=originalMeals.first { it.slotKey=="breakfast" }
+            assertEquals("Past breakfast must remain unchanged",breakfast,finalMeals.first { it.mealId==breakfast.mealId })
+            assertEquals(1,trainings.size); assertEquals(1,intakes.size)
+            val report=JSONObject().put("status","passed").put("pastBreakfastUnchanged",true).put("model","deepseek-flash").put("realApi",true).put("requests",runner.requestCount).put("tools",runner.toolCount)
                 .put("imageSha256",sha).put("summary",summary).put("trainingCount",trainings.size).put("intakeCount",intakes.size)
                 .put("trainings",JSONArray(trainings.map { JSONObject(DomainJson.encode(it)) })).put("intakes",JSONArray(intakes.map { JSONObject(DomainJson.encode(it)) }))
                 .put("cards",JSONArray(cards.map { JSONObject(DomainJson.encode(it)) }))
                 .put("trace",db.collaborationDao().agentCache(submission.task.id)?.let { JSONArray(it.entriesJson) })
-            File(context.filesDir,"stage3-live-result.json").writeText(report.toString(2))
+            File(context.filesDir,"stage$stage-live-result.json").writeText(report.toString(2))
             // Configure the actual app through the same encrypted settings path, never a build constant.
             SettingsManager(context).saveApiKey(key)
             Unit
         } catch (error: Throwable) {
             val report=JSONObject().put("status","failed").put("error",error.message)
                 .put("trace",taskId?.let { db.collaborationDao().agentCache(it)?.entriesJson }?.let { JSONArray(it) })
-            File(context.filesDir,"stage3-live-result.json").writeText(report.toString(2))
+            File(context.filesDir,"stage$stage-live-result.json").writeText(report.toString(2))
             throw error
         } finally { image.delete(); db.close() }
     }

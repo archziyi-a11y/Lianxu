@@ -73,8 +73,7 @@ class AppRepository(private val db: AppDatabase) {
         } else {
             goals.endOtherPhases(current.id, date.toString(), now)
         }
-        db.collaborationDao().invalidateAnalyses()
-        db.collaborationDao().invalidatePlans()
+        invalidateDerived(db)
     }
 
     private suspend fun snapshot(type: String, id: String, revision: Int, json: String) {
@@ -86,11 +85,10 @@ class AppRepository(private val db: AppDatabase) {
     suspend fun recordTraining(value: TrainingSession) = db.withTransaction {
         require(!value.title.isBlank() || !value.rawSummary.isNullOrBlank() || value.exercises != "[]")
         db.recordDao().insertTraining(value)
-        db.collaborationDao().invalidateAnalyses()
+        invalidateDerived(db)
     }
     suspend fun recordIntake(value: IntakeEntry) = db.withTransaction {
         db.recordDao().insertIntake(value)
-        db.collaborationDao().invalidateAnalyses()
-        db.collaborationDao().invalidatePlans()
+        invalidateDerived(db)
     }
 }

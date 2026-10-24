@@ -114,7 +114,14 @@ class AgentRunner(private val context: Context, private val db: AppDatabase, pri
             remaining -= items.size; relevant.put(key, JSONArray(items))
         }
         work.detailCount = 200 - remaining
-        val board = JSONArray(work.submission.cards.map { card ->
+        val validity = SourceValidator(db)
+        val usableCards = work.submission.cards.filter { card ->
+            card.entityRefs.all { validity.usable(it) } && card.blocks.all { block ->
+                (block.content.calculationId?.let { validity.usable(com.example.lianxu.data.model.EntityRef("calculation", it)) } ?: true) &&
+                (block.content.contentRef?.let { validity.usable(it.entityRef) } ?: true) && block.content.entityRefs.all { validity.usable(it) }
+            }
+        }
+        val board = JSONArray(usableCards.map { card ->
             JSONObject(DomainJson.encode(card.copy(annotationText = null, attachmentId = null, annotationImageUri = null, annotationAnchor = null)))
                 .put("readableContent", ComponentResolver(db).readable(card))
         })
@@ -123,10 +130,13 @@ class AgentRunner(private val context: Context, private val db: AppDatabase, pri
             .put("annotations", work.annotations).put("inputParts", b.getJSONObject("input").getString("rawText"))
             .put("currentProfile", b.optJSONObject("profile")).put("activeGoal", b.getJSONArray("goals").objects().firstOrNull { it.getString("startsOn") <= work.date && (it.isNull("endsOn") || it.getString("endsOn") > work.date) })
             .put("activeNutritionPolicy", b.getJSONArray("policies").objects().filter { it.getString("startsOn") <= work.date }.maxByOrNull { it.getString("startsOn") })
-            .put("activeKnowledge", JSONArray(b.getJSONArray("knowledge").objects().filter { it.getString("status") == "current" && it.getString("effectiveFrom") <= work.date && (it.isNull("effectiveUntil") || it.getString("effectiveUntil") >= work.date) }))
+            .put("activeKnowledge", JSONArray(b.getJSONArray("knowledge").objects().filter { it.getString("status") == "current" && it.getString("effectiveFrom") <= work.date && (it.isNull("effectiveUntil") || it.getString("effectiveUntil") >= work.date) &&
+                runCatching { JSONObject(it.getString("origin")).optJSONArray("inputRefs")?.toString() }.getOrNull()?.let { refs -> validity.refsUsable(refs) } != false }))
             .put("relevantRecords", relevant).put("currentBoard", board).put("baseRevisions", work.basisRefs())
             .put("currentPlan", b.getJSONArray("plans").objects().firstOrNull { it.getString("dateContext") == work.dateContext })
-            .put("calculations", JSONArray(b.getJSONArray("calculations").objects().takeLast(12).map { JSONObject(it.toString()).also { item -> item.remove("inputSnapshot") } })).put("constraints", JSONObject().put("date", work.date).put("preserveLockedAndEaten", true))
+            .put("mealProgress", b.optJSONArray("mealProgress"))
+            .put("phaseAssessments", JSONArray(b.getJSONArray("analyses").objects().filter { it.getString("kind")=="assessment" && it.getString("freshness")=="current" && validity.refsUsable(it.getString("inputRefs")) }.takeLast(4)))
+            .put("calculations", JSONArray(b.getJSONArray("calculations").objects().filter { validity.refsUsable(it.getString("inputRefs")) }.takeLast(12).map { JSONObject(it.toString()).also { item -> item.remove("inputSnapshot") } })).put("constraints", JSONObject().put("date", work.date).put("preserveLockedAndEaten", true))
         val parts = mutableListOf<Map<String, Any>>(mapOf("type" to "text", "text" to context.toString()))
         var bytes = 0L
         for (item in b.getJSONArray("attachments").objects()) {

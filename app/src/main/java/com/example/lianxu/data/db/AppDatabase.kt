@@ -24,10 +24,10 @@ import com.example.lianxu.data.entity.*
         Board::class,
         Card::class, DraftEntity::class, AttachmentEntity::class, InputBundleEntity::class,
         TaskEntity::class, BoardSnapshotEntity::class, CalculationEntity::class,
-        AnalysisEntity::class, DayPlanEntity::class, NutritionPolicyEntity::class, MutationReceiptEntity::class, EntitySnapshotEntity::class, AgentCacheEntity::class
+        AnalysisEntity::class, DayPlanEntity::class, NutritionPolicyEntity::class, MutationReceiptEntity::class, EntitySnapshotEntity::class, AgentCacheEntity::class, MealProgressEntity::class, RestTimerEntity::class
     ],
-    version = 4,
-    autoMigrations = [AutoMigration(from = 1, to = 2), AutoMigration(from = 2, to = 3), AutoMigration(from = 3, to = 4)],
+    version = 5,
+    autoMigrations = [AutoMigration(from = 1, to = 2), AutoMigration(from = 2, to = 3), AutoMigration(from = 3, to = 4), AutoMigration(from = 4, to = 5)],
     exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {

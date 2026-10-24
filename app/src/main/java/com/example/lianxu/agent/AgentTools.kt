@@ -30,8 +30,8 @@ class AgentTools(val work: AgentWorkspace) {
             "intake" -> db.recordDao().allIntakes().map { JSONObject(DomainJson.encode(it)) }
             "goal" -> db.goalPhaseDao().getGoalPhasesFlow().first().map { JSONObject(DomainJson.encode(it)) }
             "plan" -> d.allPlans().map { JSONObject(DomainJson.encode(it)) }
-            "knowledge" -> db.recordDao().allKnowledge().map { JSONObject(DomainJson.encode(it)) }
-            "analysis" -> d.allAnalyses().map { JSONObject(DomainJson.encode(it)) }
+            "knowledge" -> db.recordDao().allKnowledge().filter { it.status=="current" && com.example.lianxu.data.repository.SourceValidator(db).usable(EntityRef("knowledge",it.id,it.revision)) }.map { JSONObject(DomainJson.encode(it)) }
+            "analysis" -> d.allAnalyses().filter { it.freshness == "current" && com.example.lianxu.data.repository.SourceValidator(db).refsUsable(it.inputRefs) }.map { JSONObject(DomainJson.encode(it)) }
             "turn" -> work.real.collaborationDao().turns(work.submission.task.boardId).map { JSONObject(DomainJson.encode(it)).also { t -> t.put("dateContext", it.dateContext) } }
             else -> error("OUT_OF_SCOPE: entityType")
         }
@@ -126,7 +126,7 @@ class AgentTools(val work: AgentWorkspace) {
                 val target = DomainJson.decode<NutritionResult>(requireNotNull(d.calculation(plan.targetCalculationId)).result)
                 val meals = DomainJson.decode<MealsDocument>(plan.meals).meals
                 val intake = db.recordDao().allIntakes().filter { AgentWorkspace.recordDate(it.dateContext) == work.date }
-                val eaten = meals.filter { meal -> intake.any { it.mealKey == meal.slotKey } }.map { it.mealId }.toSet()
+                val eaten = closedMealIds(meals, intake.mapNotNull { it.mealKey }.toSet(), d.allMealProgress().filter { it.planId == plan.id }.associate { it.mealId to it.state })
                 val scope = input.getString("scope"); require(scope in listOf("day", "meal"))
                 val key = input.nullString("mealKey")
                 val mid = if (scope == "meal") meals.firstOrNull { it.slotKey == key || it.mealId == key }?.mealId ?: error("MISSING_INPUT: mealKey must be one of ${meals.map { it.slotKey }}") else null
@@ -138,7 +138,7 @@ class AgentTools(val work: AgentWorkspace) {
                 val slots = profile?.mealSlots?.let { JSONArray(it) }?.objects()?.map { MealSlot(it.getString("key"), it.getString("label"), it.getDouble("ratio")) }?.takeIf { it.isNotEmpty() } ?: planner.defaultSlots
                 val proposed = meals.map { if (!it.locked && it.mealId !in eaten && (mid == null || mid == it.mealId)) it.copy(scene = scene) else it }
                 val search = planner.search(target.targets, slots, scene, exclusions, proposed, mid, mid?.let { id -> meals.single { it.mealId == id }.recipeId }, eaten, work.nutrition.intakeTotals(intake).knownSubtotal)
-                result = JSONObject(DomainJson.encode(search)).put("planRef", JSONObject(DomainJson.encode(EntityRef("plan", plan.id, plan.revision))))
+                result = JSONObject(DomainJson.encode(search)).put("closedMealIds",JSONArray(eaten.toList())).put("editableMealIds",JSONArray(meals.filter { it.mealId !in eaten && !it.locked }.map { it.mealId })).put("planRef", JSONObject(DomainJson.encode(EntityRef("plan", plan.id, plan.revision))))
             }
             else -> error("OUT_OF_SCOPE: calculation operation")
         }

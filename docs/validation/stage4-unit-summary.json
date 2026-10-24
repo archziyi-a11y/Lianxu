@@ -1,0 +1,14 @@
+[
+  {
+    "suite": "com.example.lianxu.CalculationRulesTest",
+    "tests": 16,
+    "failures": 0,
+    "errors": 0
+  },
+  {
+    "suite": "com.example.lianxu.ExampleUnitTest",
+    "tests": 1,
+    "failures": 0,
+    "errors": 0
+  }
+]

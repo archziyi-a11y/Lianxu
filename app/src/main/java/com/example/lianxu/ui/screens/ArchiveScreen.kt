@@ -1,42 +1,121 @@
 package com.example.lianxu.ui.screens
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.lianxu.data.repository.*
 import com.example.lianxu.engine.*
-import com.example.lianxu.data.repository.ComponentResolver
+import android.net.Uri
+import java.time.LocalDate
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class,ExperimentalLayoutApi::class)
 @Composable
-fun ArchiveScreen(
-    modifier: Modifier = Modifier,
-    viewModel: ArchiveViewModel = viewModel()
-) {
+fun ArchiveScreen(modifier: Modifier=Modifier,viewModel: ArchiveViewModel=viewModel(),onRetry: (String)->Unit={},onShowToday:()->Unit={}) {
     val uiState by viewModel.uiState.collectAsState()
-    val scrollState = rememberScrollState()
-
-    Scaffold(
-        topBar = {
-            TopAppBar(title = { Text("档案与目标设置") })
+    val records by viewModel.records.collectAsState()
+    val assessments by viewModel.assessments.collectAsState()
+    val days by viewModel.days.collectAsState()
+    val message by viewModel.message.collectAsState()
+    val busy by viewModel.busy.collectAsState()
+    val canUndo by viewModel.canUndo.collectAsState()
+    var section by rememberSaveable { mutableStateOf("记录") }
+    var add by remember { mutableStateOf(false) }
+    var addType by remember { mutableStateOf("training") }
+    var editing by remember { mutableStateOf<HistoryItem?>(null) }
+    var restoreUri by remember { mutableStateOf<Uri?>(null) }
+    var expanded by remember { mutableStateOf<String?>(null) }
+    var recordLimit by rememberSaveable { mutableIntStateOf(100) }
+    var recordDate by rememberSaveable { mutableStateOf("") }
+    val export=rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/zip")) { uri -> uri?.let { viewModel.exportBackup(it) } }
+    val restore=rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { restoreUri=it }
+    restoreUri?.let { uri -> AlertDialog(onDismissRequest={restoreUri=null},title={Text("恢复这份备份？")},text={Text("这会替换本机的记录、附件和看板。当前密钥保留，正在处理的任务或计时需先结束。")},
+        confirmButton={TextButton(onClick={restoreUri=null;viewModel.restoreBackup(uri)}){Text("恢复备份")}},dismissButton={TextButton(onClick={restoreUri=null}){Text("取消")}}) }
+    if(add || editing!=null) RecordDialog(editing,busy,message,addType,onDismiss={add=false;editing=null},onSave={type,text,date,metric,value ->
+        val selected=editing
+        if(selected==null)viewModel.addRecord(type,text,date,metric,value) { add=false;editing=null } else viewModel.changeRecord(selected,text,value,onSaved={add=false;editing=null})
+    })
+    Scaffold(topBar={TopAppBar(title={Text("档案")})}) { padding ->
+        LazyColumn(modifier.fillMaxSize().padding(padding),contentPadding=PaddingValues(16.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
+            item { FlowRow(horizontalArrangement=Arrangement.spacedBy(8.dp)) { listOf("记录","阶段","历日","资料","备份").forEach { label ->
+                FilterChip(selected=section==label,onClick={section=label},label={Text(label)})
+            } } }
+            message?.let { item { Text(it,style=MaterialTheme.typography.bodyMedium) } }
+            if(canUndo)item { TextButton(onClick=viewModel::undo,enabled=!busy) { Text("撤销上次修改") } }
+            when(section) {
+                "资料" -> item { Column(verticalArrangement=Arrangement.spacedBy(16.dp)) { ProfileForm(viewModel,uiState) } }
+                "记录" -> {
+                    item { Button(onClick={addType="training";add=true},enabled=!busy,modifier=Modifier.fillMaxWidth()) { Text("补记训练、饮食或测量") } }
+                    if(records.isEmpty())item { Text("已有的训练、摄入和测量会保存在这里，可离线补记。") }
+                    item { OutlinedTextField(value=recordDate,onValueChange={recordDate=it},label={Text("按日期查找，可留空")},singleLine=true,modifier=Modifier.fillMaxWidth()) }
+                    items(records.filter { recordDate.isBlank() || it.date.startsWith(recordDate) }.take(recordLimit),key={"${it.type}:${it.id}"}) { item -> Card(Modifier.fillMaxWidth()) { Column(Modifier.padding(16.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
+                        Text("${item.date} · ${item.title}",style=MaterialTheme.typography.titleSmall)
+                        Text(item.detail)
+                        Row { TextButton(onClick={editing=item},enabled=!busy){Text(if(item.type in listOf("training","intake"))"修改说明" else "修改")}
+                            TextButton(onClick={viewModel.bringToBoard(item,onShowToday)},enabled=!busy){Text("带到看板")}
+                            TextButton(onClick={viewModel.changeRecord(item,"","",true)},enabled=!busy){Text("删除")}
+                        }
+                    } } }
+                    if(records.count { recordDate.isBlank() || it.date.startsWith(recordDate) }>recordLimit)item { TextButton(onClick={recordLimit+=100}){Text("加载更早记录")} }
+                }
+                "阶段" -> {
+                    item { Row { Button(onClick=viewModel::refreshAssessment,enabled=!busy) { Text("整理近28天") };TextButton(onClick={viewModel.bringToBoard(onReady=onShowToday)},enabled=!busy){Text("带到看板分析")} } }
+                    if(assessments.isEmpty())item { Text("录入训练、体重或摄入后，按实际资料整理阶段变化。") }
+                    items(assessments.take(12),key={it.id}) { analysis -> Card { Column(Modifier.padding(16.dp)) { Text(analysis.summaryText);Text(if(analysis.freshness=="current")"当前依据" else "历史评价 · 依据已有更新",style=MaterialTheme.typography.labelSmall) } } }
+                    item { Text("长期认识",style=MaterialTheme.typography.titleMedium);TextButton(onClick={addType="knowledge";add=true}) { Text("补充长期习惯或纠正") } }
+                    items(records.filter { it.type=="knowledge" },key={"note:${it.id}"}) { note -> Card { Column(Modifier.padding(16.dp)) { Text(note.detail);TextButton(onClick={editing=note}){Text("纠正这项认识")};TextButton(onClick={viewModel.changeRecord(note,"","",true)}){Text("移除")} } } }
+                }
+                "历日" -> {
+                    if(days.isEmpty())item { Text("每天的看板和未完成补充会保存在这里。") }
+                    items(days,key={it.board.id}) { day -> Card(Modifier.fillMaxWidth()) { Column(Modifier.padding(16.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
+                        Text("${HistoryRepository.day(day.board.dateContext)} · ${if(day.board.status=="active")"今日" else "已归档"}",style=MaterialTheme.typography.titleSmall)
+                        if(day.pending.isNotBlank()) { Text("待处理补充：${day.pending}");TextButton(onClick={onRetry(day.board.id)},enabled=!busy && day.taskStatus !in listOf("running","staged","applying")){Text("按原日期处理补充")} }
+                        TextButton(onClick={expanded=if(expanded==day.board.id)null else day.board.id}) { Text(if(expanded==day.board.id)"收起方案" else "查看当日方案") }
+                        if(expanded==day.board.id)Text(day.meals.ifEmpty { "当天未生成餐食方案" })
+                    } } }
+                }
+                "备份" -> item { Column(verticalArrangement=Arrangement.spacedBy(12.dp)) {
+                    Text("导出包含记录、轮次、看板与原始附件，密钥单独保存在设备中。")
+                    Button(onClick={export.launch("Lianxu-${LocalDate.now()}.zip")},enabled=!busy){Text("导出本地备份")}
+                    OutlinedButton(onClick={restore.launch(arrayOf("application/zip","application/octet-stream"))},enabled=!busy){Text("从备份恢复")}
+                } }
+            }
+            item { Spacer(Modifier.height(24.dp)) }
         }
-    ) { padding ->
-        Column(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(16.dp)
-                .verticalScroll(scrollState),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
+    }
+}
+
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun RecordDialog(item: HistoryItem?,busy: Boolean,message: String?,defaultType: String,onDismiss:()->Unit,onSave:(String,String,String,String,String)->Unit) {
+    var type by remember { mutableStateOf(item?.type ?: defaultType) }
+    var text by remember { mutableStateOf(if(item?.type=="measurement")"" else item?.detail.orEmpty()) }
+    var date by remember { mutableStateOf(item?.date ?: LocalDate.now().toString()) }
+    var metric by remember { mutableStateOf(item?.takeIf { it.type=="measurement" }?.let { org.json.JSONObject(it.raw).getString("metric") } ?: "weight") }
+    var value by remember { mutableStateOf(item?.takeIf { it.type=="measurement" }?.let { org.json.JSONObject(it.raw).getDouble("value").toString() }.orEmpty()) }
+    AlertDialog(onDismissRequest=onDismiss,title={Text(if(item==null)"离线补记" else "修改")},text={Column(verticalArrangement=Arrangement.spacedBy(8.dp)) {
+        if(item==null)FlowRow { listOf("training" to "训练","intake" to "饮食","measurement" to "测量","knowledge" to "长期认识").forEach { (key,label) -> FilterChip(selected=type==key,onClick={type=key},label={Text(label)}) } }
+        if(item==null)OutlinedTextField(value=date,onValueChange={date=it},label={Text("记录日期 YYYY-MM-DD")})
+        if(type=="measurement") {
+            if(item==null)FlowRow { listOf("weight" to "体重 kg","body_fat" to "体脂 %","waist" to "腰围 cm").forEach { (key,label) -> FilterChip(selected=metric==key,onClick={metric=key},label={Text(label)}) } }
+            OutlinedTextField(value=value,onValueChange={value=it},label={Text("${HistoryRepository.label(metric)}数值")},keyboardOptions=KeyboardOptions(keyboardType=KeyboardType.Decimal))
+        } else OutlinedTextField(value=text,onValueChange={text=it},label={Text(if(type=="knowledge")"长期习惯或纠正" else "记录说明")},minLines=3)
+        message?.let { Text(it,style=MaterialTheme.typography.bodySmall) }
+    }},confirmButton={TextButton(enabled=!busy,onClick={onSave(type,text,date,metric,value)}){Text("保存")}},dismissButton={TextButton(onClick=onDismiss){Text("取消")}})
+}
+
+@Composable
+private fun ProfileForm(viewModel: ArchiveViewModel,uiState: ArchiveUiState) {
             OutlinedTextField(
                 value = uiState.weightStr,
                 onValueChange = { viewModel.onWeightChange(it) },
@@ -130,6 +209,5 @@ fun ArchiveScreen(
                     }
                 }
             }
-        }
-    }
+
 }

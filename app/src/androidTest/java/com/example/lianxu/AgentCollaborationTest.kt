@@ -209,7 +209,32 @@ class AgentCollaborationTest {
         }
     } }
 
-    @Test fun recordedRealFlashRoundTripReplaysThroughCurrentTransactions() = runBlocking { scenario { db,repo,s ->
+    @Test fun cardRevisionFromStagedPreviewRemainsValidAfterFinalMealCalculation() = runBlocking { scenario { db,repo,s ->
+        AgentWorkspace.open(context,db,s,repo.catalog).use { w ->
+            w.stage(JSONArray().put(training(w)))
+            val preview=w.dao.cards(s.task.boardId).map { DomainJson.decode<DashboardCard>(it.data) }.single { it.id.endsWith(":meal:dinner") }
+            val plan=w.dao.planForDate(w.dateContext)!!
+            val candidate=AgentTools(w).execute("calculate",JSONObject().put("operation","meal_candidates").put("stageId",w.stageId)
+                .put("input",JSONObject().put("date",w.date).put("scope","meal").put("mealKey","dinner").put("scene","home")))
+            val meals=candidate.getJSONObject("result").getJSONArray("meals")
+            val dinner=(0 until meals.length()).map { meals.getJSONObject(it) }.single { it.getString("mealId")=="dinner" }
+            val op=operation(w,"replace-dinner","replace_plan_meal",JSONObject().put("mealId","dinner").put("meal",dinner).put("calculationId",candidate.getString("calculationId")))
+                .put("targetRef",JSONObject().put("type","plan").put("id",plan.id).put("revision",plan.revision))
+            val patch=JSONObject().put("cardId",preview.id).put("revision",preview.revision).put("title","调整后的晚餐").put("span",6)
+                .put("blocks",JSONArray().put(JSONObject().put("componentId","meal").put("type","list").put("content",JSONObject().put("entityRefs",JSONArray().put(JSONObject(DomainJson.encode(EntityRef("plan",plan.id,plan.revision))))).put("mealId","dinner"))))
+            val p=proposal(w,JSONArray().put(op)).put("boardPatch",JSONObject().put("upsertCards",JSONArray().put(patch)).put("orderedCardIds",JSONArray().put(preview.id)))
+            val a=ProposalApplier(w)
+            val bad=JSONObject(p.toString());bad.getJSONObject("boardPatch").put("orderedCardIds",JSONArray().put("nonexistent-card"))
+            expectFailure { a.finish(bad) }
+            val cards=a.finish(p);a.commit(cards,p)
+            assertEquals(preview.id,cards.first().id);assertTrue(cards.size>=s.cards.size)
+            val final=cards.single { it.id==preview.id }
+            assertTrue(final.revision>preview.revision)
+            assertEquals(db.collaborationDao().plan(plan.id)!!.revision,final.blocks.single().content.entityRefs.single().revision)
+        }
+    } }
+
+    @Test fun recordedLegacyProposalCannotReplaceAPastMeal() = runBlocking { scenario { db,repo,s ->
         val fixture=JSONObject(InstrumentationRegistry.getInstrumentation().context.assets.open("flash-round-trip.json").bufferedReader().use { it.readText() })
         val trace=fixture.getJSONArray("trace")
         val replacements=mutableMapOf<String,String>()
@@ -266,15 +291,10 @@ class AgentCollaborationTest {
                 step++; ResponseMessage("assistant",null,listOf(ToolCall("finish","function",ToolCallFunction("finish_proposal",p.toString()))))
             }
         }
-        AgentRunner(context,db,repo.catalog,client).run(s)
-        assertEquals(1,db.recordDao().allTrainings().size); assertEquals(1,db.recordDao().allIntakes().size)
-        val exercises=JSONArray(db.recordDao().allTrainings().single().exercises)
-        val incline=(0 until exercises.length()).map { DomainJson.decode<RecordedExercise>(exercises.getJSONObject(it).toString()) }.single { it.name.contains("上斜") }
-        assertEquals(3.0,incline.summarySets.value!!,0.0); assertNull(incline.loadKg.value)
-        val before=BoardStore(db).watchCards(s.task.boardId).first().filter { it.managedBy=="assistant" }.associate { it.id to it.blocks.map { block -> block.type } }
-        repo.refresh(s.task.boardId)
-        val after=BoardStore(db).watchCards(s.task.boardId).first().filter { it.managedBy=="assistant" }.associate { it.id to it.blocks.map { block -> block.type } }
-        assertEquals(before,after)
+        expectFailure { AgentRunner(context,db,repo.catalog,client).run(s) }
+        assertTrue(db.recordDao().allTrainings().isEmpty()); assertTrue(db.recordDao().allIntakes().isEmpty())
+        assertNull(db.collaborationDao().receipt(s.turn.submissionId,"apply-board"))
+        assertTrue(BoardStore(db).watchCards(s.task.boardId).first().any { it.annotationText!=null })
     } }
 
 }

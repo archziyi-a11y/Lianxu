@@ -15,6 +15,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,6 +24,8 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun MainScreen() {
+    val todayModel: TodayViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+    val scope=rememberCoroutineScope()
     val pagerState = rememberPagerState(pageCount = { 2 })
 
     Scaffold(
@@ -43,8 +47,8 @@ fun MainScreen() {
                 .padding(innerPadding)
         ) { page ->
             when (page) {
-                0 -> TodayScreen()
-                1 -> ArchiveScreen()
+                0 -> TodayScreen(viewModel=todayModel)
+                1 -> ArchiveScreen(onRetry=todayModel::retryArchived,onShowToday={scope.launch { pagerState.animateScrollToPage(0) }})
             }
         }
     }

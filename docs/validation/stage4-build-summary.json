@@ -1,0 +1,25 @@
+{
+  "verifiedAt": "2026-10-24T09:31:46.724339+08:00",
+  "buildTasks": [
+    "assembleDebug",
+    "assembleDebugAndroidTest",
+    "testDebugUnitTest"
+  ],
+  "buildSucceeded": true,
+  "apk": "app/build/outputs/apk/debug/app-debug.apk",
+  "sha256": "0d0c75e1dcb3a80d46ab0f42d750788a2e21d93e5faf964eb0b7b88100dab700",
+  "unitSuites": [
+    {
+      "name": "com.example.lianxu.CalculationRulesTest",
+      "tests": 16,
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "name": "com.example.lianxu.ExampleUnitTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0
+    }
+  ]
+}

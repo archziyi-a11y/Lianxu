@@ -1,0 +1,10 @@
+{
+  "device": "emulator-5554",
+  "seconds": 20,
+  "startedThroughUI": true,
+  "nativeCountdownNotification": true,
+  "displayAsleepDuringCountdown": true,
+  "completedWhileDisplayOff": true,
+  "completedStateAfterWake": true,
+  "bodyFixturesWritten": false
+}

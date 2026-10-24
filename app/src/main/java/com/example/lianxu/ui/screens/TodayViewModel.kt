@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -56,39 +57,43 @@ class TodayViewModel(application: Application) : AndroidViewModel(application) {
     val demoMode = _demoMode.asStateFlow()
     private val _profileSummary = MutableStateFlow("尚未补充身体资料")
     val profileSummary = _profileSummary.asStateFlow()
-    private var activeTask: kotlinx.coroutines.Job? = null
+    private val tasks = mutableMapOf<String, kotlinx.coroutines.Job>()
+    private val _boardDate = MutableStateFlow("")
+    val boardDate = _boardDate.asStateFlow()
     private val _taskProgress = MutableStateFlow<String?>(null)
     val taskProgress = _taskProgress.asStateFlow()
-    fun cancelSubmission() { activeTask?.cancel() }
+    fun cancelSubmission() { tasks[boardId]?.cancel() }
 
     init {
         viewModelScope.launch {
             try {
                 store.recoverInterrupted()
-                // Transitional placeholders carry no fabricated health metrics.
-                val zone = AppRepository(db).getProfile()?.preferredZoneId?.let { ZoneId.of(it) } ?: ZoneId.systemDefault()
-                val id = store.open(listOf(
-                    DashboardCard(id = "training-input", title = "训练记录", value = "长按补充今天的训练", span = CardSpan.MEDIUM),
-                    DashboardCard(id = "intake-input", title = "饮食补充", value = "可选：补充实际摄入", span = CardSpan.MEDIUM),
-                    DashboardCard(id = "assistant-input", title = "当日建议", value = "正在整理今日信息", span = CardSpan.LARGE)), LocalDate.now(zone), zone)
-                boardId = id
                 val repository = NutritionBoardRepository.create(application, db)
                 nutrition = repository
-                launch {
-                    val records = AppRepository(db)
-                    combine(records.archiveFlow, records.trainings, records.intakes) { _, _, _ -> Unit }.collect {
-                        _isPlanning.value = true
-                        try { writes.withLock { repository.refresh(id) } }
-                        catch (error: CancellationException) { throw error }
-                        catch (error: Exception) { _notice.value = "今日规划未完成，原方案保留为上次结果：${error.message}" }
-                        finally { _isPlanning.value = false }
+                com.example.lianxu.data.repository.DayLifecycle(db).watch().collectLatest { current ->
+                    boardId = current.id
+                    _boardDate.value = JSONObject(current.dateContext).getString("date")
+                    _isProcessing.value = tasks[current.id]?.isActive == true
+                    _notice.value = null
+                    kotlinx.coroutines.coroutineScope {
+                        launch {
+                            val records = AppRepository(db)
+                            combine(records.archiveFlow, records.trainings, records.intakes, records.knowledge) { _, _, _, _ -> Unit }.collect {
+                                _isPlanning.value = true
+                                try { writes.withLock { repository.refresh(current.id) } }
+                                catch (error: CancellationException) { throw error }
+                                catch (error: Exception) { _notice.value = "今日规划未完成：${error.message}" }
+                                finally { _isPlanning.value = false }
+                            }
+                        }
+                        combine(store.watchCards(current.id), db.collaborationDao().watchAnalyses()) { cards, _ -> cards }.collect { cards ->
+                            val resolver = ComponentResolver(db)
+                            _resolved.value = cards.associate { it.id to resolver.resolve(it) }
+                            _cards.value = cards
+                        }
                     }
                 }
-                store.watchCards(id).collect { cards ->
-                    val resolver = ComponentResolver(db)
-                    _resolved.value = cards.associate { it.id to resolver.resolve(it) }
-                    _cards.value = cards
-                }
+
             } catch (error: CancellationException) { throw error
             } catch (error: Exception) { _notice.value = "载入失败，原数据保留：${error.message}" }
         }
@@ -162,7 +167,7 @@ class TodayViewModel(application: Application) : AndroidViewModel(application) {
         if (_isProcessing.value || _isImporting.value) return
         _isProcessing.value = true
         _notice.value = null
-        activeTask = viewModelScope.launch {
+        tasks[id] = viewModelScope.launch {
             var submission: Submission? = null
             try {
                 val frozen = writes.withLock { store.prepare(id) }
@@ -170,8 +175,9 @@ class TodayViewModel(application: Application) : AndroidViewModel(application) {
                 val key = settings.apiKeyFlow.first()
                 val repository = requireNotNull(nutrition)
                 val runner = com.example.lianxu.agent.AgentRunner(getApplication(), db, repository.catalog,
-                    key?.takeIf { it.isNotBlank() }?.let { com.example.lianxu.agent.DeepSeekAgentClient(it) }) { _taskProgress.value = it }
-                _notice.value = runner.run(frozen)
+                    key?.takeIf { it.isNotBlank() }?.let { com.example.lianxu.agent.DeepSeekAgentClient(it) }) { if (boardId == id) _taskProgress.value = it }
+                val result = runner.run(frozen)
+                if (boardId == id) _notice.value = result
 
             } catch (error: CancellationException) {
                 val completed = kotlinx.coroutines.withContext(kotlinx.coroutines.NonCancellable) {
@@ -179,17 +185,34 @@ class TodayViewModel(application: Application) : AndroidViewModel(application) {
                     if (!applied) submission?.let { store.fail(it, "处理已停止，输入已保留") }
                     applied
                 }
-                _notice.value = if (completed) "本轮已保存完成" else if (error is kotlinx.coroutines.TimeoutCancellationException) "处理超时，输入已保留，可重试" else "处理已取消，输入已保留"
+                if (boardId == id) _notice.value = if (completed) "本轮已保存完成" else if (error is kotlinx.coroutines.TimeoutCancellationException) "处理超时，输入已保留，可重试" else "处理已取消，输入已保留"
                 if (error !is kotlinx.coroutines.TimeoutCancellationException) throw error
             } catch (error: Exception) {
                 val message = if (error is retrofit2.HttpException) "服务请求失败（${error.code()}），输入已保留，可重试"
                     else "处理未完成，输入已保留：${error.message ?: "请重试"}"
                 submission?.let { runCatching { store.fail(it, message) } }
-                _notice.value = message
-            } finally { _isProcessing.value = false; _taskProgress.value = null }
+                if (boardId == id) _notice.value = message
+            } finally { tasks.remove(id); if (boardId == id) { _isProcessing.value = false; _taskProgress.value = null } }
         }
     }
 
+    fun retryArchived(board: String) {
+        if (tasks[board]?.isActive == true) return
+        tasks[board] = viewModelScope.launch {
+            var frozen: Submission? = null
+            try {
+                frozen = writes.withLock { store.prepare(board) }
+                val key = settings.apiKeyFlow.first()
+                com.example.lianxu.agent.AgentRunner(getApplication(), db, requireNotNull(nutrition).catalog,
+                    key?.takeIf(String::isNotBlank)?.let { com.example.lianxu.agent.DeepSeekAgentClient(it) }).run(frozen)
+                _notice.value = "旧日补充已按原日期处理，可在档案查看"
+            } catch (error: Exception) {
+                kotlinx.coroutines.withContext(kotlinx.coroutines.NonCancellable) { frozen?.let { store.fail(it, error.message ?: "已停止") } }
+                if (error is CancellationException) throw error
+                _notice.value = "旧日输入已保留：${error.message}"
+            } finally { tasks.remove(board) }
+        }
+    }
     fun performAction(action: CardAction, value: String? = null) {
         val id = boardId ?: return
         val repository = nutrition ?: return

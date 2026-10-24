@@ -1,0 +1,1687 @@
+{
+  "status": "failed",
+  "error": "VERSION_CONFLICT: plan\/f704f7fa-b8fc-3f7c-8c35-ef4b7904c597",
+  "trace": [
+    {
+      "name": "stage_records",
+      "arguments": "{\"operations\": [{\"operationId\": \"op-training-1\", \"kind\": \"create_training\", \"clientRef\": \"tr-chest-1024\", \"payload\": {\"dateContext\": \"2026-10-24\", \"kind\": \"strength\", \"title\": \"胸部训练（胸肌强化日）\", \"exercises\": [{\"entryId\": \"e-bench-press\", \"name\": \"杠铃卧推\", \"canonicalKey\": \"barbell_bench_press\", \"equipment\": \"barbell\", \"summarySets\": {\"kind\": \"exact\", \"value\": 4}, \"repsPerSet\": {\"kind\": \"range\", \"min\": 8, \"max\": 12, \"unit\": \"reps\"}, \"loadKg\": {\"kind\": \"unknown\"}, \"loadBasis\": \"unknown\", \"sets\": []}, {\"entryId\": \"e-incline-db-press\", \"name\": \"上斜哑铃卧推\", \"canonicalKey\": \"incline_dumbbell_press\", \"equipment\": \"dumbbell\", \"summarySets\": {\"kind\": \"exact\", \"value\": 3}, \"repsPerSet\": {\"kind\": \"range\", \"min\": 8, \"max\": 12, \"unit\": \"reps\"}, \"loadKg\": {\"kind\": \"unknown\"}, \"loadBasis\": \"unknown\", \"sets\": []}, {\"entryId\": \"e-pec-deck\", \"name\": \"夹胸器械夹胸\", \"canonicalKey\": \"pec_deck_fly\", \"equipment\": \"machine\", \"summarySets\": {\"kind\": \"exact\", \"value\": 3}, \"repsPerSet\": {\"kind\": \"range\", \"min\": 10, \"max\": 15, \"unit\": \"reps\"}, \"loadKg\": {\"kind\": \"unknown\"}, \"loadBasis\": \"unknown\", \"sets\": []}, {\"entryId\": \"e-db-fly\", \"name\": \"哑铃飞鸟\", \"canonicalKey\": \"dumbbell_fly\", \"equipment\": \"dumbbell\", \"summarySets\": {\"kind\": \"exact\", \"value\": 3}, \"repsPerSet\": {\"kind\": \"range\", \"min\": 12, \"max\": 15, \"unit\": \"reps\"}, \"loadKg\": {\"kind\": \"unknown\"}, \"loadBasis\": \"unknown\", \"sets\": []}, {\"entryId\": \"e-pushup\", \"name\": \"俯卧撑\", \"canonicalKey\": \"push_up\", \"equipment\": \"bodyweight\", \"summarySets\": {\"kind\": \"exact\", \"value\": 3}, \"repsPerSet\": {\"kind\": \"range\", \"min\": 15, \"max\": 20, \"unit\": \"reps\"}, \"loadKg\": {\"kind\": \"unknown\"}, \"loadBasis\": \"bodyweight\", \"sets\": []}], \"rawSummary\": \"按图片计划完成胸部训练（胸大肌整体发展）。杠铃卧推4×8-12；上斜哑铃卧推实际只有3组（原计划4组），次数范围8-12；夹胸器械夹胸3×10-15；哑铃飞鸟3×12-15；俯卧撑3×15-20。重量未记录。\"}, \"relatedAnnotationIds\": [\"2c5ebf92-f92c-4058-ae37-d5fdd1a32220\"], \"reason\": \"用户明确按图片完成胸部训练并说明上斜哑铃卧推实际3组，直接保存实际训练记录，重量未知保留原文\"}, {\"operationId\": \"op-intake-lunch-1\", \"kind\": \"create_intake\", \"clientRef\": \"intake-lunch-1024\", \"payload\": {\"dateContext\": \"2026-10-24\", \"mealKey\": \"lunch\", \"mode\": \"items\", \"items\": [{\"foodRef\": \"usda-sr-168878\", \"grams\": 200}], \"completeness\": \"partial\", \"rawDescription\": \"午餐吃了200g熟米饭，仅记录这部分，不表示全天吃够\"}, \"relatedAnnotationIds\": [\"54728867-86f9-4985-ba7b-fd5521d5d1e6\"], \"reason\": \"用户记录午餐熟米饭200g，仅记录这一部分\"}]}",
+      "result": {
+        "ok": true,
+        "data": {
+          "stageId": "a8ff0d7a-ea11-34db-acaa-65b1d4ca6042",
+          "previewRefs": [
+            {
+              "type": "profile",
+              "id": "c4de8e3a-4e30-47ea-b798-315d1c622e86",
+              "revision": 1
+            },
+            {
+              "type": "goal",
+              "id": "c91a045e-3509-49fe-9ade-d9c74e053292",
+              "revision": 1
+            },
+            {
+              "type": "measurement",
+              "id": "438ce058-a4f2-4a3c-99f7-0d6ce85dd431",
+              "revision": 1
+            },
+            {
+              "type": "training",
+              "id": "2e253002-fab9-3d90-bfd1-473632094430",
+              "revision": 1
+            },
+            {
+              "type": "intake",
+              "id": "4792f086-db0d-3a99-9d2f-044c30ae7818",
+              "revision": 1
+            },
+            {
+              "type": "plan",
+              "id": "f704f7fa-b8fc-3f7c-8c35-ef4b7904c597",
+              "revision": 2
+            }
+          ],
+          "clientRefs": {
+            "tr-chest-1024": "2e253002-fab9-3d90-bfd1-473632094430",
+            "intake-lunch-1024": "4792f086-db0d-3a99-9d2f-044c30ae7818"
+          },
+          "board": [
+            {
+              "id": "dfdeb4a3-4678-39e4-98a5-433e541214b2:target:energyKcal",
+              "title": "能量",
+              "value": "",
+              "span": "SMALL",
+              "revision": 1,
+              "isAnnotationMode": false,
+              "blocks": [
+                {
+                  "componentId": "target-energyKcal",
+                  "type": "metric",
+                  "content": {
+                    "label": "能量",
+                    "calculationId": "42acf9f4-53ae-3282-a99d-d430ebb65ae5",
+                    "resultPath": "targets.energyKcal",
+                    "unit": "kcal",
+                    "entityRefs": [],
+                    "options": []
+                  },
+                  "actions": [
+                    {
+                      "actionId": "target-source",
+                      "label": "依据",
+                      "kind": "open_source",
+                      "targetRef": {
+                        "type": "calculation",
+                        "id": "42acf9f4-53ae-3282-a99d-d430ebb65ae5",
+                        "revision": 1
+                      }
+                    }
+                  ]
+                }
+              ],
+              "entityRefs": [],
+              "managedBy": "local"
+            },
+            {
+              "id": "dfdeb4a3-4678-39e4-98a5-433e541214b2:target:proteinG",
+              "title": "蛋白质",
+              "value": "",
+              "span": "SMALL",
+              "revision": 1,
+              "isAnnotationMode": false,
+              "blocks": [
+                {
+                  "componentId": "target-proteinG",
+                  "type": "metric",
+                  "content": {
+                    "label": "蛋白质",
+                    "calculationId": "42acf9f4-53ae-3282-a99d-d430ebb65ae5",
+                    "resultPath": "targets.proteinG",
+                    "unit": "g",
+                    "entityRefs": [],
+                    "options": []
+                  },
+                  "actions": []
+                }
+              ],
+              "entityRefs": [],
+              "managedBy": "local"
+            },
+            {
+              "id": "dfdeb4a3-4678-39e4-98a5-433e541214b2:target:carbohydrateG",
+              "title": "碳水",
+              "value": "",
+              "span": "SMALL",
+              "revision": 1,
+              "isAnnotationMode": false,
+              "blocks": [
+                {
+                  "componentId": "target-carbohydrateG",
+                  "type": "metric",
+                  "content": {
+                    "label": "碳水",
+                    "calculationId": "42acf9f4-53ae-3282-a99d-d430ebb65ae5",
+                    "resultPath": "targets.carbohydrateG",
+                    "unit": "g",
+                    "entityRefs": [],
+                    "options": []
+                  },
+                  "actions": []
+                }
+              ],
+              "entityRefs": [],
+              "managedBy": "local"
+            },
+            {
+              "id": "dfdeb4a3-4678-39e4-98a5-433e541214b2:target:fatG",
+              "title": "脂肪",
+              "value": "",
+              "span": "MEDIUM",
+              "revision": 1,
+              "isAnnotationMode": false,
+              "blocks": [
+                {
+                  "componentId": "target-fatG",
+                  "type": "metric",
+                  "content": {
+                    "label": "脂肪",
+                    "calculationId": "42acf9f4-53ae-3282-a99d-d430ebb65ae5",
+                    "resultPath": "targets.fatG",
+                    "unit": "g",
+                    "entityRefs": [],
+                    "options": []
+                  },
+                  "actions": []
+                }
+              ],
+              "entityRefs": [],
+              "managedBy": "local"
+            },
+            {
+              "id": "dfdeb4a3-4678-39e4-98a5-433e541214b2:target:fiberG",
+              "title": "膳食纤维",
+              "value": "",
+              "span": "MEDIUM",
+              "revision": 1,
+              "isAnnotationMode": false,
+              "blocks": [
+                {
+                  "componentId": "target-fiberG",
+                  "type": "metric",
+                  "content": {
+                    "label": "膳食纤维",
+                    "calculationId": "42acf9f4-53ae-3282-a99d-d430ebb65ae5",
+                    "resultPath": "targets.fiberG",
+                    "unit": "g",
+                    "entityRefs": [],
+                    "options": []
+                  },
+                  "actions": []
+                }
+              ],
+              "entityRefs": [],
+              "managedBy": "local"
+            },
+            {
+              "id": "dfdeb4a3-4678-39e4-98a5-433e541214b2:guidance",
+              "title": "今日参考",
+              "value": "",
+              "span": "LARGE",
+              "revision": 2,
+              "isAnnotationMode": false,
+              "blocks": [
+                {
+                  "componentId": "guidance",
+                  "type": "text",
+                  "content": {
+                    "contentRef": {
+                      "entityRef": {
+                        "type": "analysis",
+                        "id": "79b4a478-b16d-37ba-b759-094e6b576685",
+                        "revision": 1
+                      },
+                      "fieldPath": "summaryText"
+                    },
+                    "entityRefs": [],
+                    "options": []
+                  },
+                  "actions": []
+                }
+              ],
+              "entityRefs": [
+                {
+                  "type": "analysis",
+                  "id": "79b4a478-b16d-37ba-b759-094e6b576685",
+                  "revision": 1
+                }
+              ],
+              "managedBy": "local"
+            },
+            {
+              "id": "dfdeb4a3-4678-39e4-98a5-433e541214b2:meal:breakfast",
+              "title": "早餐 · 燕麦牛奶香蕉 · 不再安排",
+              "value": "",
+              "span": "LARGE",
+              "revision": 2,
+              "isAnnotationMode": false,
+              "blocks": [
+                {
+                  "componentId": "foods-breakfast",
+                  "type": "list",
+                  "content": {
+                    "entityRefs": [
+                      {
+                        "type": "plan",
+                        "id": "f704f7fa-b8fc-3f7c-8c35-ef4b7904c597",
+                        "revision": 2
+                      }
+                    ],
+                    "mealId": "breakfast",
+                    "options": []
+                  },
+                  "entityRef": {
+                    "type": "plan",
+                    "id": "f704f7fa-b8fc-3f7c-8c35-ef4b7904c597",
+                    "revision": 2
+                  },
+                  "actions": [
+                    {
+                      "actionId": "reopen-breakfast",
+                      "label": "仍需安排这餐",
+                      "kind": "reopen_meal",
+                      "targetRef": {
+                        "type": "plan",
+                        "id": "f704f7fa-b8fc-3f7c-8c35-ef4b7904c597",
+                        "revision": 2
+                      },
+                      "mealId": "breakfast"
+                    }
+                  ]
+                },
+                {
+                  "componentId": "scene-breakfast",
+                  "type": "choice",
+                  "content": {
+                    "label": "用餐场景",
+                    "entityRefs": [],
+                    "options": [
+                      {
+                        "key": "home",
+                        "label": "自己做"
+                      },
+                      {
+                        "key": "canteen",
+                        "label": "食堂"
+                      },
+                      {
+                        "key": "takeout",
+                        "label": "外食"
+                      }
+                    ],
+                    "selectedKey": "home"
+                  },
+                  "entityRef": {
+                    "type": "plan",
+                    "id": "f704f7fa-b8fc-3f7c-8c35-ef4b7904c597",
+                    "revision": 2
+                  },
+                  "actions": []
+                },
+                {
+                  "componentId": "source-breakfast",
+                  "type": "text",
+                  "content": {
+                    "text": "按所列生熟状态与可食重量核算；额外调味及用油另计。",
+                    "entityRefs": [],
+                    "options": []
+                  },
+                  "entityRef": {
+                    "type": "plan",
+                    "id": "f704f7fa-b8fc-3f7c-8c35-ef4b7904c597",
+                    "revision": 2
+                  },
+                  "actions": [
+                    {
+                      "actionId": "source-breakfast",
+                      "label": "查看依据",
+                      "kind": "open_source",
+                      "targetRef": {
+                        "type": "plan",
+                        "id": "f704f7fa-b8fc-3f7c-8c35-ef4b7904c597",
+                        "revision": 2
+                      },
+                      "mealId": "breakfast"
+                    }
+                  ]
+                }
+              ],
+              "entityRefs": [
+                {
+                  "type": "plan",
+                  "id": "f704f7fa-b8fc-3f7c-8c35-ef4b7904c597",
+                  "revision": 2
+                }
+              ],
+              "managedBy": "local"
+            },
+            {
+              "id": "dfdeb4a3-4678-39e4-98a5-433e541214b2:meal:lunch",
+              "title": "午餐 · 米饭扁豆豆腐 · 已记录",
+              "value": "",
+              "span": "LARGE",
+              "revision": 2,
+              "isAnnotationMode": false,
+              "blocks": [
+                {
+                  "componentId": "foods-lunch",
+                  "type": "list",
+                  "content": {
+                    "entityRefs": [
+                      {
+                        "type": "plan",
+                        "id": "f704f7fa-b8fc-3f7c-8c35-ef4b7904c597",
+                        "revision": 2
+                      }
+                    ],
+                    "mealId": "lunch",
+                    "options": []
+                  },
+                  "entityRef": {
+                    "type": "plan",
+                    "id": "f704f7fa-b8fc-3f7c-8c35-ef4b7904c597",
+                    "revision": 2
+                  },
+                  "actions": []
+                },
+                {
+                  "componentId": "scene-lunch",
+                  "type": "choice",
+                  "content": {
+                    "label": "用餐场景",
+                    "entityRefs": [],
+                    "options": [
+                      {
+                        "key": "home",
+                        "label": "自己做"
+                      },
+                      {
+                        "key": "canteen",
+                        "label": "食堂"
+                      },
+                      {
+                        "key": "takeout",
+                        "label": "外食"
+                      }
+                    ],
+                    "selectedKey": "home"
+                  },
+                  "entityRef": {
+                    "type": "plan",
+                    "id": "f704f7fa-b8fc-3f7c-8c35-ef4b7904c597",
+                    "revision": 2
+                  },
+                  "actions": []
+                },
+                {
+                  "componentId": "source-lunch",
+                  "type": "text",
+                  "content": {
+                    "text": "按所列生熟状态与可食重量核算；额外调味及用油另计。",
+                    "entityRefs": [],
+                    "options": []
+                  },
+                  "entityRef": {
+                    "type": "plan",
+                    "id": "f704f7fa-b8fc-3f7c-8c35-ef4b7904c597",
+                    "revision": 2
+                  },
+                  "actions": [
+                    {
+                      "actionId": "source-lunch",
+                      "label": "查看依据",
+                      "kind": "open_source",
+                      "targetRef": {
+                        "type": "plan",
+                        "id": "f704f7fa-b8fc-3f7c-8c35-ef4b7904c597",
+                        "revision": 2
+                      },
+                      "mealId": "lunch"
+                    }
+                  ]
+                }
+              ],
+              "entityRefs": [
+                {
+                  "type": "plan",
+                  "id": "f704f7fa-b8fc-3f7c-8c35-ef4b7904c597",
+                  "revision": 2
+                }
+              ],
+              "managedBy": "local"
+            },
+            {
+              "id": "dfdeb4a3-4678-39e4-98a5-433e541214b2:meal:dinner",
+              "title": "晚餐 · 鸡蛋面牛肉蔬菜",
+              "value": "",
+              "span": "LARGE",
+              "revision": 2,
+              "isAnnotationMode": false,
+              "blocks": [
+                {
+                  "componentId": "foods-dinner",
+                  "type": "list",
+                  "content": {
+                    "entityRefs": [
+                      {
+                        "type": "plan",
+                        "id": "f704f7fa-b8fc-3f7c-8c35-ef4b7904c597",
+                        "revision": 2
+                      }
+                    ],
+                    "mealId": "dinner",
+                    "options": []
+                  },
+                  "entityRef": {
+                    "type": "plan",
+                    "id": "f704f7fa-b8fc-3f7c-8c35-ef4b7904c597",
+                    "revision": 2
+                  },
+                  "actions": [
+                    {
+                      "actionId": "skip-dinner",
+                      "label": "这餐不再安排",
+                      "kind": "skip_meal",
+                      "targetRef": {
+                        "type": "plan",
+                        "id": "f704f7fa-b8fc-3f7c-8c35-ef4b7904c597",
+                        "revision": 2
+                      },
+                      "mealId": "dinner"
+                    },
+                    {
+                      "actionId": "replace-dinner",
+                      "label": "换一餐",
+                      "kind": "replace_meal",
+                      "targetRef": {
+                        "type": "plan",
+                        "id": "f704f7fa-b8fc-3f7c-8c35-ef4b7904c597",
+                        "revision": 2
+                      },
+                      "mealId": "dinner"
+                    },
+                    {
+                      "actionId": "less-dinner",
+                      "label": "少一档",
+                      "kind": "scale_meal",
+                      "targetRef": {
+                        "type": "plan",
+                        "id": "f704f7fa-b8fc-3f7c-8c35-ef4b7904c597",
+                        "revision": 2
+                      },
+                      "mealId": "dinner",
+                      "value": "-0.25"
+                    },
+                    {
+                      "actionId": "more-dinner",
+                      "label": "多一档",
+                      "kind": "scale_meal",
+                      "targetRef": {
+                        "type": "plan",
+                        "id": "f704f7fa-b8fc-3f7c-8c35-ef4b7904c597",
+                        "revision": 2
+                      },
+                      "mealId": "dinner",
+                      "value": "0.25"
+                    },
+                    {
+                      "actionId": "eat-dinner",
+                      "label": "记为已吃",
+                      "kind": "mark_eaten",
+                      "targetRef": {
+                        "type": "plan",
+                        "id": "f704f7fa-b8fc-3f7c-8c35-ef4b7904c597",
+                        "revision": 2
+                      },
+                      "mealId": "dinner"
+                    },
+                    {
+                      "actionId": "lock-dinner",
+                      "label": "保留这餐",
+                      "kind": "lock_meal",
+                      "targetRef": {
+                        "type": "plan",
+                        "id": "f704f7fa-b8fc-3f7c-8c35-ef4b7904c597",
+                        "revision": 2
+                      },
+                      "mealId": "dinner"
+                    }
+                  ]
+                },
+                {
+                  "componentId": "scene-dinner",
+                  "type": "choice",
+                  "content": {
+                    "label": "用餐场景",
+                    "entityRefs": [],
+                    "options": [
+                      {
+                        "key": "home",
+                        "label": "自己做"
+                      },
+                      {
+                        "key": "canteen",
+                        "label": "食堂"
+                      },
+                      {
+                        "key": "takeout",
+                        "label": "外食"
+                      }
+                    ],
+                    "selectedKey": "home"
+                  },
+                  "entityRef": {
+                    "type": "plan",
+                    "id": "f704f7fa-b8fc-3f7c-8c35-ef4b7904c597",
+                    "revision": 2
+                  },
+                  "actions": [
+                    {
+                      "actionId": "scene-dinner",
+                      "label": "场景",
+                      "kind": "change_scene",
+                      "targetRef": {
+                        "type": "plan",
+                        "id": "f704f7fa-b8fc-3f7c-8c35-ef4b7904c597",
+                        "revision": 2
+                      },
+                      "mealId": "dinner"
+                    }
+                  ]
+                },
+                {
+                  "componentId": "source-dinner",
+                  "type": "text",
+                  "content": {
+                    "text": "按所列生熟状态与可食重量核算；额外调味及用油另计。",
+                    "entityRefs": [],
+                    "options": []
+                  },
+                  "entityRef": {
+                    "type": "plan",
+                    "id": "f704f7fa-b8fc-3f7c-8c35-ef4b7904c597",
+                    "revision": 2
+                  },
+                  "actions": [
+                    {
+                      "actionId": "source-dinner",
+                      "label": "查看依据",
+                      "kind": "open_source",
+                      "targetRef": {
+                        "type": "plan",
+                        "id": "f704f7fa-b8fc-3f7c-8c35-ef4b7904c597",
+                        "revision": 2
+                      },
+                      "mealId": "dinner"
+                    }
+                  ]
+                }
+              ],
+              "entityRefs": [
+                {
+                  "type": "plan",
+                  "id": "f704f7fa-b8fc-3f7c-8c35-ef4b7904c597",
+                  "revision": 2
+                }
+              ],
+              "managedBy": "local"
+            },
+            {
+              "id": "dfdeb4a3-4678-39e4-98a5-433e541214b2:plan-total",
+              "title": "餐食规划合计",
+              "value": "",
+              "span": "LARGE",
+              "revision": 2,
+              "isAnnotationMode": false,
+              "blocks": [
+                {
+                  "componentId": "plan-energyKcal",
+                  "type": "metric",
+                  "content": {
+                    "label": "能量",
+                    "calculationId": "e2a00567-66e2-3686-9ede-49d847f60d02",
+                    "resultPath": "planned.total.energyKcal",
+                    "unit": "kcal",
+                    "entityRefs": [],
+                    "options": []
+                  },
+                  "actions": []
+                },
+                {
+                  "componentId": "plan-proteinG",
+                  "type": "metric",
+                  "content": {
+                    "label": "蛋白质",
+                    "calculationId": "e2a00567-66e2-3686-9ede-49d847f60d02",
+                    "resultPath": "planned.total.proteinG",
+                    "unit": "g",
+                    "entityRefs": [],
+                    "options": []
+                  },
+                  "actions": []
+                },
+                {
+                  "componentId": "plan-carbohydrateG",
+                  "type": "metric",
+                  "content": {
+                    "label": "碳水",
+                    "calculationId": "e2a00567-66e2-3686-9ede-49d847f60d02",
+                    "resultPath": "planned.total.carbohydrateG",
+                    "unit": "g",
+                    "entityRefs": [],
+                    "options": []
+                  },
+                  "actions": []
+                },
+                {
+                  "componentId": "plan-fatG",
+                  "type": "metric",
+                  "content": {
+                    "label": "脂肪",
+                    "calculationId": "e2a00567-66e2-3686-9ede-49d847f60d02",
+                    "resultPath": "planned.total.fatG",
+                    "unit": "g",
+                    "entityRefs": [],
+                    "options": []
+                  },
+                  "actions": []
+                },
+                {
+                  "componentId": "plan-fiberG",
+                  "type": "metric",
+                  "content": {
+                    "label": "膳食纤维",
+                    "calculationId": "e2a00567-66e2-3686-9ede-49d847f60d02",
+                    "resultPath": "planned.total.fiberG",
+                    "unit": "g",
+                    "entityRefs": [],
+                    "options": []
+                  },
+                  "actions": []
+                }
+              ],
+              "entityRefs": [
+                {
+                  "type": "plan",
+                  "id": "f704f7fa-b8fc-3f7c-8c35-ef4b7904c597",
+                  "revision": 2
+                }
+              ],
+              "managedBy": "local"
+            },
+            {
+              "id": "dfdeb4a3-4678-39e4-98a5-433e541214b2:intake-total",
+              "title": "已记录与目标差额",
+              "value": "",
+              "span": "LARGE",
+              "revision": 1,
+              "isAnnotationMode": false,
+              "blocks": [
+                {
+                  "componentId": "intake-energyKcal",
+                  "type": "metric",
+                  "content": {
+                    "label": "已核算能量",
+                    "calculationId": "e2a00567-66e2-3686-9ede-49d847f60d02",
+                    "resultPath": "intake.knownSubtotal.energyKcal",
+                    "unit": "kcal",
+                    "entityRefs": [],
+                    "options": []
+                  },
+                  "actions": []
+                },
+                {
+                  "componentId": "remaining-energyKcal",
+                  "type": "metric",
+                  "content": {
+                    "label": "目标减已知能量",
+                    "calculationId": "e2a00567-66e2-3686-9ede-49d847f60d02",
+                    "resultPath": "remaining.energyKcal",
+                    "unit": "kcal",
+                    "entityRefs": [],
+                    "options": []
+                  },
+                  "actions": []
+                },
+                {
+                  "componentId": "intake-proteinG",
+                  "type": "metric",
+                  "content": {
+                    "label": "已核算蛋白质",
+                    "calculationId": "e2a00567-66e2-3686-9ede-49d847f60d02",
+                    "resultPath": "intake.knownSubtotal.proteinG",
+                    "unit": "g",
+                    "entityRefs": [],
+                    "options": []
+                  },
+                  "actions": []
+                },
+                {
+                  "componentId": "remaining-proteinG",
+                  "type": "metric",
+                  "content": {
+                    "label": "目标减已知蛋白质",
+                    "calculationId": "e2a00567-66e2-3686-9ede-49d847f60d02",
+                    "resultPath": "remaining.proteinG",
+                    "unit": "g",
+                    "entityRefs": [],
+                    "options": []
+                  },
+                  "actions": []
+                },
+                {
+                  "componentId": "intake-carbohydrateG",
+                  "type": "metric",
+                  "content": {
+                    "label": "已核算碳水",
+                    "calculationId": "e2a00567-66e2-3686-9ede-49d847f60d02",
+                    "resultPath": "intake.knownSubtotal.carbohydrateG",
+                    "unit": "g",
+                    "entityRefs": [],
+                    "options": []
+                  },
+                  "actions": []
+                },
+                {
+                  "componentId": "remaining-carbohydrateG",
+                  "type": "metric",
+                  "content": {
+                    "label": "目标减已知碳水",
+                    "calculationId": "e2a00567-66e2-3686-9ede-49d847f60d02",
+                    "resultPath": "remaining.carbohydrateG",
+                    "unit": "g",
+                    "entityRefs": [],
+                    "options": []
+                  },
+                  "actions": []
+                },
+                {
+                  "componentId": "intake-fatG",
+                  "type": "metric",
+                  "content": {
+                    "label": "已核算脂肪",
+                    "calculationId": "e2a00567-66e2-3686-9ede-49d847f60d02",
+                    "resultPath": "intake.knownSubtotal.fatG",
+                    "unit": "g",
+                    "entityRefs": [],
+                    "options": []
+                  },
+                  "actions": []
+                },
+                {
+                  "componentId": "remaining-fatG",
+                  "type": "metric",
+                  "content": {
+                    "label": "目标减已知脂肪",
+                    "calculationId": "e2a00567-66e2-3686-9ede-49d847f60d02",
+                    "resultPath": "remaining.fatG",
+                    "unit": "g",
+                    "entityRefs": [],
+                    "options": []
+                  },
+                  "actions": []
+                },
+                {
+                  "componentId": "intake-fiberG",
+                  "type": "metric",
+                  "content": {
+                    "label": "已核算膳食纤维",
+                    "calculationId": "e2a00567-66e2-3686-9ede-49d847f60d02",
+                    "resultPath": "intake.knownSubtotal.fiberG",
+                    "unit": "g",
+                    "entityRefs": [],
+                    "options": []
+                  },
+                  "actions": []
+                },
+                {
+                  "componentId": "remaining-fiberG",
+                  "type": "metric",
+                  "content": {
+                    "label": "目标减已知膳食纤维",
+                    "calculationId": "e2a00567-66e2-3686-9ede-49d847f60d02",
+                    "resultPath": "remaining.fiberG",
+                    "unit": "g",
+                    "entityRefs": [],
+                    "options": []
+                  },
+                  "actions": []
+                }
+              ],
+              "entityRefs": [],
+              "managedBy": "local"
+            },
+            {
+              "id": "dfdeb4a3-4678-39e4-98a5-433e541214b2:training-input",
+              "title": "训练记录",
+              "value": "长按补充今天的训练或上传图片",
+              "span": "MEDIUM",
+              "revision": 1,
+              "isAnnotationMode": false,
+              "blocks": [],
+              "entityRefs": [],
+              "managedBy": "local"
+            },
+            {
+              "id": "dfdeb4a3-4678-39e4-98a5-433e541214b2:intake-input",
+              "title": "饮食补充",
+              "value": "可选：记录实际吃了什么",
+              "span": "MEDIUM",
+              "revision": 1,
+              "isAnnotationMode": false,
+              "blocks": [],
+              "entityRefs": [],
+              "managedBy": "local"
+            },
+            {
+              "id": "dfdeb4a3-4678-39e4-98a5-433e541214b2:weight-trend",
+              "title": "体重记录",
+              "value": "",
+              "span": "LARGE",
+              "revision": 1,
+              "isAnnotationMode": false,
+              "blocks": [
+                {
+                  "componentId": "weight-series",
+                  "type": "trend",
+                  "content": {
+                    "calculationId": "a9b582be-28f6-31e3-916a-b2f996b80cf5",
+                    "entityRefs": [],
+                    "options": []
+                  },
+                  "actions": []
+                }
+              ],
+              "entityRefs": [],
+              "managedBy": "local"
+            },
+            {
+              "id": "dfdeb4a3-4678-39e4-98a5-433e541214b2:training-summary",
+              "title": "训练摘要",
+              "value": "",
+              "span": "LARGE",
+              "revision": 1,
+              "isAnnotationMode": false,
+              "blocks": [
+                {
+                  "componentId": "training-summary",
+                  "type": "text",
+                  "content": {
+                    "contentRef": {
+                      "entityRef": {
+                        "type": "analysis",
+                        "id": "83d8daa0-ff2d-38ed-80e5-f22fbfc9fa72",
+                        "revision": 1
+                      },
+                      "fieldPath": "summaryText"
+                    },
+                    "entityRefs": [],
+                    "options": []
+                  },
+                  "actions": []
+                }
+              ],
+              "entityRefs": [],
+              "managedBy": "local"
+            }
+          ],
+          "errors": [],
+          "nextAction": "事实已暂存。calculate之后直接finish_proposal(stageId)，operations只需新增分析或餐食替换，应用原样展开本stage全部记录。不要为了加入分析而重新stage_records。"
+        },
+        "error": null
+      }
+    },
+    {
+      "name": "calculate",
+      "arguments": "{\"operation\": \"intake_totals\", \"input\": {\"date\": \"2026-10-24\"}, \"stageId\": \"a8ff0d7a-ea11-34db-acaa-65b1d4ca6042\"}",
+      "result": {
+        "ok": true,
+        "data": {
+          "calculationId": "b8d44c37-2644-31dd-a158-ef19903da423",
+          "result": {
+            "knownSubtotal": {
+              "energyKcal": 260,
+              "proteinG": 5.38,
+              "carbohydrateG": 56.34,
+              "fatG": 0.56,
+              "fiberG": 0.8
+            },
+            "total": {
+              "energyKcal": 260,
+              "proteinG": 5.38,
+              "carbohydrateG": 56.34,
+              "fatG": 0.56,
+              "fiberG": 0.8
+            },
+            "missingItemIds": {
+              "energyKcal": [],
+              "proteinG": [],
+              "carbohydrateG": [],
+              "fatG": [],
+              "fiberG": []
+            }
+          },
+          "inputRefs": [
+            {
+              "type": "profile",
+              "id": "c4de8e3a-4e30-47ea-b798-315d1c622e86",
+              "revision": 1
+            },
+            {
+              "type": "goal",
+              "id": "c91a045e-3509-49fe-9ade-d9c74e053292",
+              "revision": 1
+            },
+            {
+              "type": "measurement",
+              "id": "438ce058-a4f2-4a3c-99f7-0d6ce85dd431",
+              "revision": 1
+            },
+            {
+              "type": "training",
+              "id": "2e253002-fab9-3d90-bfd1-473632094430",
+              "revision": 1
+            },
+            {
+              "type": "intake",
+              "id": "4792f086-db0d-3a99-9d2f-044c30ae7818",
+              "revision": 1
+            },
+            {
+              "type": "plan",
+              "id": "f704f7fa-b8fc-3f7c-8c35-ef4b7904c597",
+              "revision": 2
+            }
+          ],
+          "methodVersion": "fitness-policy-0.1",
+          "stageId": "a8ff0d7a-ea11-34db-acaa-65b1d4ca6042"
+        },
+        "error": null
+      }
+    },
+    {
+      "name": "calculate",
+      "arguments": "{\"operation\": \"meal_candidates\", \"input\": {\"date\": \"2026-10-24\", \"scope\": \"meal\", \"mealKey\": \"dinner\", \"scene\": \"home\", \"planRef\": {\"type\": \"plan\", \"id\": \"f704f7fa-b8fc-3f7c-8c35-ef4b7904c597\", \"revision\": 2}}, \"stageId\": \"a8ff0d7a-ea11-34db-acaa-65b1d4ca6042\"}",
+      "result": {
+        "ok": true,
+        "data": {
+          "calculationId": "91f92fe8-5fbd-339d-8ce0-6b6249eef63e",
+          "result": {
+            "meals": [
+              {
+                "mealId": "breakfast",
+                "slotKey": "breakfast",
+                "label": "早餐",
+                "scene": "home",
+                "recipeId": "recipe-oats-milk-banana-home",
+                "title": "燕麦牛奶香蕉",
+                "factor": 1.25,
+                "items": [
+                  {
+                    "foodId": "usda-sr-173904",
+                    "grams": 125,
+                    "name": "干燕麦片（未强化）",
+                    "state": "raw",
+                    "nutrientsPer100g": {
+                      "energyKcal": 379,
+                      "proteinG": 13.15,
+                      "carbohydrateG": 67.7,
+                      "fatG": 6.52,
+                      "fiberG": 10.1
+                    },
+                    "sourceId": "173904",
+                    "sourceVersion": "SR Legacy final 2018-04",
+                    "sourceUrl": "https:\/\/fdc.nal.usda.gov\/food-details\/173904\/nutrients"
+                  },
+                  {
+                    "foodId": "usda-sr-171267",
+                    "grams": 315,
+                    "name": "2%脂肪牛奶（强化维生素）",
+                    "state": "as_sold",
+                    "nutrientsPer100g": {
+                      "energyKcal": 50,
+                      "proteinG": 3.3,
+                      "carbohydrateG": 4.8,
+                      "fatG": 1.98,
+                      "fiberG": 0
+                    },
+                    "sourceId": "171267",
+                    "sourceVersion": "SR Legacy final 2018-04",
+                    "sourceUrl": "https:\/\/fdc.nal.usda.gov\/food-details\/171267\/nutrients"
+                  },
+                  {
+                    "foodId": "usda-sr-173944",
+                    "grams": 190,
+                    "name": "香蕉（生，可食部）",
+                    "state": "raw",
+                    "nutrientsPer100g": {
+                      "energyKcal": 89,
+                      "proteinG": 1.09,
+                      "carbohydrateG": 22.84,
+                      "fatG": 0.33,
+                      "fiberG": 2.6
+                    },
+                    "sourceId": "173944",
+                    "sourceVersion": "SR Legacy final 2018-04",
+                    "sourceUrl": "https:\/\/fdc.nal.usda.gov\/food-details\/173944\/nutrients"
+                  },
+                  {
+                    "foodId": "usda-sr-173806",
+                    "grams": 20,
+                    "name": "干烤花生（无盐）",
+                    "state": "as_sold",
+                    "nutrientsPer100g": {
+                      "energyKcal": 587,
+                      "proteinG": 24.35,
+                      "carbohydrateG": 21.26,
+                      "fatG": 49.66,
+                      "fiberG": 8.4
+                    },
+                    "sourceId": "173806",
+                    "sourceVersion": "SR Legacy final 2018-04",
+                    "sourceUrl": "https:\/\/fdc.nal.usda.gov\/food-details\/173806\/nutrients"
+                  }
+                ],
+                "locked": false,
+                "note": "建议组合；食堂\/外卖实际份量和烹调须按需要估计，不是具体商家实测营养。"
+              },
+              {
+                "mealId": "lunch",
+                "slotKey": "lunch",
+                "label": "午餐",
+                "scene": "home",
+                "recipeId": "recipe-rice-lentils-tofu-home",
+                "title": "米饭扁豆豆腐",
+                "factor": 1,
+                "items": [
+                  {
+                    "foodId": "usda-sr-168878",
+                    "grams": 300,
+                    "name": "熟长粒白米饭（强化）",
+                    "state": "cooked",
+                    "nutrientsPer100g": {
+                      "energyKcal": 130,
+                      "proteinG": 2.69,
+                      "carbohydrateG": 28.17,
+                      "fatG": 0.28,
+                      "fiberG": 0.4
+                    },
+                    "sourceId": "168878",
+                    "sourceVersion": "SR Legacy final 2018-04",
+                    "sourceUrl": "https:\/\/fdc.nal.usda.gov\/food-details\/168878\/nutrients"
+                  },
+                  {
+                    "foodId": "usda-sr-172421",
+                    "grams": 150,
+                    "name": "水煮扁豆（无盐）",
+                    "state": "cooked",
+                    "nutrientsPer100g": {
+                      "energyKcal": 116,
+                      "proteinG": 9.02,
+                      "carbohydrateG": 20.13,
+                      "fatG": 0.38,
+                      "fiberG": 7.9
+                    },
+                    "sourceId": "172421",
+                    "sourceVersion": "SR Legacy final 2018-04",
+                    "sourceUrl": "https:\/\/fdc.nal.usda.gov\/food-details\/172421\/nutrients"
+                  },
+                  {
+                    "foodId": "usda-sr-172475",
+                    "grams": 100,
+                    "name": "硬豆腐（硫酸钙凝固）",
+                    "state": "raw",
+                    "nutrientsPer100g": {
+                      "energyKcal": 144,
+                      "proteinG": 17.27,
+                      "carbohydrateG": 2.78,
+                      "fatG": 8.72,
+                      "fiberG": 2.3
+                    },
+                    "sourceId": "172475",
+                    "sourceVersion": "SR Legacy final 2018-04",
+                    "sourceUrl": "https:\/\/fdc.nal.usda.gov\/food-details\/172475\/nutrients"
+                  },
+                  {
+                    "foodId": "usda-sr-170393",
+                    "grams": 150,
+                    "name": "胡萝卜（生）",
+                    "state": "raw",
+                    "nutrientsPer100g": {
+                      "energyKcal": 41,
+                      "proteinG": 0.93,
+                      "carbohydrateG": 9.58,
+                      "fatG": 0.24,
+                      "fiberG": 2.8
+                    },
+                    "sourceId": "170393",
+                    "sourceVersion": "SR Legacy final 2018-04",
+                    "sourceUrl": "https:\/\/fdc.nal.usda.gov\/food-details\/170393\/nutrients"
+                  },
+                  {
+                    "foodId": "usda-sr-171413",
+                    "grams": 5,
+                    "name": "橄榄油",
+                    "state": "as_sold",
+                    "nutrientsPer100g": {
+                      "energyKcal": 884,
+                      "proteinG": 0,
+                      "carbohydrateG": 0,
+                      "fatG": 100,
+                      "fiberG": 0
+                    },
+                    "sourceId": "171413",
+                    "sourceVersion": "SR Legacy final 2018-04",
+                    "sourceUrl": "https:\/\/fdc.nal.usda.gov\/food-details\/171413\/nutrients"
+                  }
+                ],
+                "locked": false,
+                "note": "建议组合；食堂\/外卖实际份量和烹调须按需要估计，不是具体商家实测营养。"
+              },
+              {
+                "mealId": "dinner",
+                "slotKey": "dinner",
+                "label": "晚餐",
+                "scene": "home",
+                "recipeId": "recipe-rice-chicken-corn-home",
+                "title": "米饭鸡胸玉米",
+                "factor": 1.25,
+                "items": [
+                  {
+                    "foodId": "usda-sr-168878",
+                    "grams": 440,
+                    "name": "熟长粒白米饭（强化）",
+                    "state": "cooked",
+                    "nutrientsPer100g": {
+                      "energyKcal": 130,
+                      "proteinG": 2.69,
+                      "carbohydrateG": 28.17,
+                      "fatG": 0.28,
+                      "fiberG": 0.4
+                    },
+                    "sourceId": "168878",
+                    "sourceVersion": "SR Legacy final 2018-04",
+                    "sourceUrl": "https:\/\/fdc.nal.usda.gov\/food-details\/168878\/nutrients"
+                  },
+                  {
+                    "foodId": "usda-sr-171477",
+                    "grams": 125,
+                    "name": "烤鸡胸肉（仅肉）",
+                    "state": "cooked",
+                    "nutrientsPer100g": {
+                      "energyKcal": 165,
+                      "proteinG": 31.02,
+                      "carbohydrateG": 0,
+                      "fatG": 3.57,
+                      "fiberG": 0
+                    },
+                    "sourceId": "171477",
+                    "sourceVersion": "SR Legacy final 2018-04",
+                    "sourceUrl": "https:\/\/fdc.nal.usda.gov\/food-details\/171477\/nutrients"
+                  },
+                  {
+                    "foodId": "usda-sr-169999",
+                    "grams": 250,
+                    "name": "水煮甜玉米（沥干，无盐）",
+                    "state": "cooked",
+                    "nutrientsPer100g": {
+                      "energyKcal": 96,
+                      "proteinG": 3.41,
+                      "carbohydrateG": 20.98,
+                      "fatG": 1.5,
+                      "fiberG": 2.4
+                    },
+                    "sourceId": "169999",
+                    "sourceVersion": "SR Legacy final 2018-04",
+                    "sourceUrl": "https:\/\/fdc.nal.usda.gov\/food-details\/169999\/nutrients"
+                  },
+                  {
+                    "foodId": "usda-sr-168409",
+                    "grams": 190,
+                    "name": "带皮黄瓜（生）",
+                    "state": "raw",
+                    "nutrientsPer100g": {
+                      "energyKcal": 15,
+                      "proteinG": 0.65,
+                      "carbohydrateG": 3.63,
+                      "fatG": 0.11,
+                      "fiberG": 0.5
+                    },
+                    "sourceId": "168409",
+                    "sourceVersion": "SR Legacy final 2018-04",
+                    "sourceUrl": "https:\/\/fdc.nal.usda.gov\/food-details\/168409\/nutrients"
+                  },
+                  {
+                    "foodId": "usda-sr-171413",
+                    "grams": 15,
+                    "name": "橄榄油",
+                    "state": "as_sold",
+                    "nutrientsPer100g": {
+                      "energyKcal": 884,
+                      "proteinG": 0,
+                      "carbohydrateG": 0,
+                      "fatG": 100,
+                      "fiberG": 0
+                    },
+                    "sourceId": "171413",
+                    "sourceVersion": "SR Legacy final 2018-04",
+                    "sourceUrl": "https:\/\/fdc.nal.usda.gov\/food-details\/171413\/nutrients"
+                  }
+                ],
+                "locked": false,
+                "note": "建议组合；食堂\/外卖实际份量和烹调须按需要估计，不是具体商家实测营养。"
+              }
+            ],
+            "totals": {
+              "knownSubtotal": {
+                "energyKcal": 1439.35,
+                "proteinG": 65.75099999999999,
+                "carbohydrateG": 239.63500000000002,
+                "fatG": 25.2135,
+                "fiberG": 9.51
+              },
+              "total": {
+                "energyKcal": 1439.35,
+                "proteinG": 65.75099999999999,
+                "carbohydrateG": 239.63500000000002,
+                "fatG": 25.2135,
+                "fiberG": 9.51
+              },
+              "missingItemIds": {
+                "energyKcal": [],
+                "proteinG": [],
+                "carbohydrateG": [],
+                "fatG": [],
+                "fiberG": []
+              }
+            },
+            "differences": {
+              "energyKcal": -1462.4500000000003,
+              "proteinG": -60.24900000000001,
+              "carbohydrateG": -178.45250000000001,
+              "fatG": -55.39205555555556,
+              "fiberG": -31.1152
+            },
+            "score": 4.826379196958899,
+            "closeToTarget": false,
+            "notes": [
+              "当前可行组合仍有差额，可更换餐食或调整份量"
+            ],
+            "closedMealIds": [
+              "breakfast",
+              "lunch"
+            ],
+            "editableMealIds": [
+              "dinner"
+            ],
+            "planRef": {
+              "type": "plan",
+              "id": "f704f7fa-b8fc-3f7c-8c35-ef4b7904c597",
+              "revision": 2
+            }
+          },
+          "inputRefs": [
+            {
+              "type": "profile",
+              "id": "c4de8e3a-4e30-47ea-b798-315d1c622e86",
+              "revision": 1
+            },
+            {
+              "type": "goal",
+              "id": "c91a045e-3509-49fe-9ade-d9c74e053292",
+              "revision": 1
+            },
+            {
+              "type": "measurement",
+              "id": "438ce058-a4f2-4a3c-99f7-0d6ce85dd431",
+              "revision": 1
+            },
+            {
+              "type": "training",
+              "id": "2e253002-fab9-3d90-bfd1-473632094430",
+              "revision": 1
+            },
+            {
+              "type": "intake",
+              "id": "4792f086-db0d-3a99-9d2f-044c30ae7818",
+              "revision": 1
+            },
+            {
+              "type": "plan",
+              "id": "f704f7fa-b8fc-3f7c-8c35-ef4b7904c597",
+              "revision": 2
+            }
+          ],
+          "methodVersion": "fitness-policy-0.1",
+          "stageId": "a8ff0d7a-ea11-34db-acaa-65b1d4ca6042"
+        },
+        "error": null
+      }
+    },
+    {
+      "name": "calculate",
+      "arguments": "{\"input\": {\"date\": \"2026-10-24\", \"scope\": \"day\", \"scene\": \"home\", \"planRef\": {\"id\": \"f704f7fa-b8fc-3f7c-8c35-ef4b7904c597\", \"revision\": 2, \"type\": \"plan\"}}, \"operation\": \"meal_candidates\", \"stageId\": \"a8ff0d7a-ea11-34db-acaa-65b1d4ca6042\"}",
+      "result": {
+        "ok": true,
+        "data": {
+          "calculationId": "ae248bc5-ed27-3258-9b30-243917aad5c5",
+          "result": {
+            "meals": [
+              {
+                "mealId": "breakfast",
+                "slotKey": "breakfast",
+                "label": "早餐",
+                "scene": "home",
+                "recipeId": "recipe-oats-milk-banana-home",
+                "title": "燕麦牛奶香蕉",
+                "factor": 1.25,
+                "items": [
+                  {
+                    "foodId": "usda-sr-173904",
+                    "grams": 125,
+                    "name": "干燕麦片（未强化）",
+                    "state": "raw",
+                    "nutrientsPer100g": {
+                      "energyKcal": 379,
+                      "proteinG": 13.15,
+                      "carbohydrateG": 67.7,
+                      "fatG": 6.52,
+                      "fiberG": 10.1
+                    },
+                    "sourceId": "173904",
+                    "sourceVersion": "SR Legacy final 2018-04",
+                    "sourceUrl": "https:\/\/fdc.nal.usda.gov\/food-details\/173904\/nutrients"
+                  },
+                  {
+                    "foodId": "usda-sr-171267",
+                    "grams": 315,
+                    "name": "2%脂肪牛奶（强化维生素）",
+                    "state": "as_sold",
+                    "nutrientsPer100g": {
+                      "energyKcal": 50,
+                      "proteinG": 3.3,
+                      "carbohydrateG": 4.8,
+                      "fatG": 1.98,
+                      "fiberG": 0
+                    },
+                    "sourceId": "171267",
+                    "sourceVersion": "SR Legacy final 2018-04",
+                    "sourceUrl": "https:\/\/fdc.nal.usda.gov\/food-details\/171267\/nutrients"
+                  },
+                  {
+                    "foodId": "usda-sr-173944",
+                    "grams": 190,
+                    "name": "香蕉（生，可食部）",
+                    "state": "raw",
+                    "nutrientsPer100g": {
+                      "energyKcal": 89,
+                      "proteinG": 1.09,
+                      "carbohydrateG": 22.84,
+                      "fatG": 0.33,
+                      "fiberG": 2.6
+                    },
+                    "sourceId": "173944",
+                    "sourceVersion": "SR Legacy final 2018-04",
+                    "sourceUrl": "https:\/\/fdc.nal.usda.gov\/food-details\/173944\/nutrients"
+                  },
+                  {
+                    "foodId": "usda-sr-173806",
+                    "grams": 20,
+                    "name": "干烤花生（无盐）",
+                    "state": "as_sold",
+                    "nutrientsPer100g": {
+                      "energyKcal": 587,
+                      "proteinG": 24.35,
+                      "carbohydrateG": 21.26,
+                      "fatG": 49.66,
+                      "fiberG": 8.4
+                    },
+                    "sourceId": "173806",
+                    "sourceVersion": "SR Legacy final 2018-04",
+                    "sourceUrl": "https:\/\/fdc.nal.usda.gov\/food-details\/173806\/nutrients"
+                  }
+                ],
+                "locked": false,
+                "note": "建议组合；食堂\/外卖实际份量和烹调须按需要估计，不是具体商家实测营养。"
+              },
+              {
+                "mealId": "lunch",
+                "slotKey": "lunch",
+                "label": "午餐",
+                "scene": "home",
+                "recipeId": "recipe-rice-lentils-tofu-home",
+                "title": "米饭扁豆豆腐",
+                "factor": 1,
+                "items": [
+                  {
+                    "foodId": "usda-sr-168878",
+                    "grams": 300,
+                    "name": "熟长粒白米饭（强化）",
+                    "state": "cooked",
+                    "nutrientsPer100g": {
+                      "energyKcal": 130,
+                      "proteinG": 2.69,
+                      "carbohydrateG": 28.17,
+                      "fatG": 0.28,
+                      "fiberG": 0.4
+                    },
+                    "sourceId": "168878",
+                    "sourceVersion": "SR Legacy final 2018-04",
+                    "sourceUrl": "https:\/\/fdc.nal.usda.gov\/food-details\/168878\/nutrients"
+                  },
+                  {
+                    "foodId": "usda-sr-172421",
+                    "grams": 150,
+                    "name": "水煮扁豆（无盐）",
+                    "state": "cooked",
+                    "nutrientsPer100g": {
+                      "energyKcal": 116,
+                      "proteinG": 9.02,
+                      "carbohydrateG": 20.13,
+                      "fatG": 0.38,
+                      "fiberG": 7.9
+                    },
+                    "sourceId": "172421",
+                    "sourceVersion": "SR Legacy final 2018-04",
+                    "sourceUrl": "https:\/\/fdc.nal.usda.gov\/food-details\/172421\/nutrients"
+                  },
+                  {
+                    "foodId": "usda-sr-172475",
+                    "grams": 100,
+                    "name": "硬豆腐（硫酸钙凝固）",
+                    "state": "raw",
+                    "nutrientsPer100g": {
+                      "energyKcal": 144,
+                      "proteinG": 17.27,
+                      "carbohydrateG": 2.78,
+                      "fatG": 8.72,
+                      "fiberG": 2.3
+                    },
+                    "sourceId": "172475",
+                    "sourceVersion": "SR Legacy final 2018-04",
+                    "sourceUrl": "https:\/\/fdc.nal.usda.gov\/food-details\/172475\/nutrients"
+                  },
+                  {
+                    "foodId": "usda-sr-170393",
+                    "grams": 150,
+                    "name": "胡萝卜（生）",
+                    "state": "raw",
+                    "nutrientsPer100g": {
+                      "energyKcal": 41,
+                      "proteinG": 0.93,
+                      "carbohydrateG": 9.58,
+                      "fatG": 0.24,
+                      "fiberG": 2.8
+                    },
+                    "sourceId": "170393",
+                    "sourceVersion": "SR Legacy final 2018-04",
+                    "sourceUrl": "https:\/\/fdc.nal.usda.gov\/food-details\/170393\/nutrients"
+                  },
+                  {
+                    "foodId": "usda-sr-171413",
+                    "grams": 5,
+                    "name": "橄榄油",
+                    "state": "as_sold",
+                    "nutrientsPer100g": {
+                      "energyKcal": 884,
+                      "proteinG": 0,
+                      "carbohydrateG": 0,
+                      "fatG": 100,
+                      "fiberG": 0
+                    },
+                    "sourceId": "171413",
+                    "sourceVersion": "SR Legacy final 2018-04",
+                    "sourceUrl": "https:\/\/fdc.nal.usda.gov\/food-details\/171413\/nutrients"
+                  }
+                ],
+                "locked": false,
+                "note": "建议组合；食堂\/外卖实际份量和烹调须按需要估计，不是具体商家实测营养。"
+              },
+              {
+                "mealId": "dinner",
+                "slotKey": "dinner",
+                "label": "晚餐",
+                "scene": "home",
+                "recipeId": "recipe-noodles-beef-vegetable-home",
+                "title": "鸡蛋面牛肉蔬菜",
+                "factor": 1.25,
+                "items": [
+                  {
+                    "foodId": "usda-sr-169762",
+                    "grams": 440,
+                    "name": "熟鸡蛋面（未强化，加盐）",
+                    "state": "cooked",
+                    "nutrientsPer100g": {
+                      "energyKcal": 138,
+                      "proteinG": 4.54,
+                      "carbohydrateG": 25.16,
+                      "fatG": 2.07,
+                      "fiberG": 1.2
+                    },
+                    "sourceId": "169762",
+                    "sourceVersion": "SR Legacy final 2018-04",
+                    "sourceUrl": "https:\/\/fdc.nal.usda.gov\/food-details\/169762\/nutrients"
+                  },
+                  {
+                    "foodId": "usda-sr-171791",
+                    "grams": 190,
+                    "name": "熟95%瘦牛肉饼（烤制）",
+                    "state": "cooked",
+                    "nutrientsPer100g": {
+                      "energyKcal": 174,
+                      "proteinG": 26.29,
+                      "carbohydrateG": 0,
+                      "fatG": 6.8,
+                      "fiberG": 0
+                    },
+                    "sourceId": "171791",
+                    "sourceVersion": "SR Legacy final 2018-04",
+                    "sourceUrl": "https:\/\/fdc.nal.usda.gov\/food-details\/171791\/nutrients"
+                  },
+                  {
+                    "foodId": "usda-sr-169252",
+                    "grams": 190,
+                    "name": "水煮白蘑菇（沥干，无盐）",
+                    "state": "cooked",
+                    "nutrientsPer100g": {
+                      "energyKcal": 28,
+                      "proteinG": 2.17,
+                      "carbohydrateG": 5.29,
+                      "fatG": 0.47,
+                      "fiberG": 2.2
+                    },
+                    "sourceId": "169252",
+                    "sourceVersion": "SR Legacy final 2018-04",
+                    "sourceUrl": "https:\/\/fdc.nal.usda.gov\/food-details\/169252\/nutrients"
+                  },
+                  {
+                    "foodId": "usda-sr-171413",
+                    "grams": 5,
+                    "name": "橄榄油",
+                    "state": "as_sold",
+                    "nutrientsPer100g": {
+                      "energyKcal": 884,
+                      "proteinG": 0,
+                      "carbohydrateG": 0,
+                      "fatG": 100,
+                      "fiberG": 0
+                    },
+                    "sourceId": "171413",
+                    "sourceVersion": "SR Legacy final 2018-04",
+                    "sourceUrl": "https:\/\/fdc.nal.usda.gov\/food-details\/171413\/nutrients"
+                  }
+                ],
+                "locked": false,
+                "note": "建议组合；食堂\/外卖实际份量和烹调须按需要估计，不是具体商家实测营养。"
+              }
+            ],
+            "totals": {
+              "knownSubtotal": {
+                "energyKcal": 1295.2,
+                "proteinG": 79.42999999999999,
+                "carbohydrateG": 177.09500000000003,
+                "fatG": 28.480999999999998,
+                "fiberG": 10.260000000000002
+              },
+              "total": {
+                "energyKcal": 1295.2,
+                "proteinG": 79.42999999999999,
+                "carbohydrateG": 177.09500000000003,
+                "fatG": 28.480999999999998,
+                "fiberG": 10.260000000000002
+              },
+              "missingItemIds": {
+                "energyKcal": [],
+                "proteinG": [],
+                "carbohydrateG": [],
+                "fatG": [],
+                "fiberG": []
+              }
+            },
+            "differences": {
+              "energyKcal": -1606.6000000000001,
+              "proteinG": -46.57000000000001,
+              "carbohydrateG": -240.9925,
+              "fatG": -52.12455555555556,
+              "fiberG": -30.365199999999998
+            },
+            "score": 4.740304466507648,
+            "closeToTarget": false,
+            "notes": [
+              "当前可行组合仍有差额，可更换餐食或调整份量"
+            ],
+            "closedMealIds": [
+              "breakfast",
+              "lunch"
+            ],
+            "editableMealIds": [
+              "dinner"
+            ],
+            "planRef": {
+              "type": "plan",
+              "id": "f704f7fa-b8fc-3f7c-8c35-ef4b7904c597",
+              "revision": 2
+            }
+          },
+          "inputRefs": [
+            {
+              "type": "profile",
+              "id": "c4de8e3a-4e30-47ea-b798-315d1c622e86",
+              "revision": 1
+            },
+            {
+              "type": "goal",
+              "id": "c91a045e-3509-49fe-9ade-d9c74e053292",
+              "revision": 1
+            },
+            {
+              "type": "measurement",
+              "id": "438ce058-a4f2-4a3c-99f7-0d6ce85dd431",
+              "revision": 1
+            },
+            {
+              "type": "training",
+              "id": "2e253002-fab9-3d90-bfd1-473632094430",
+              "revision": 1
+            },
+            {
+              "type": "intake",
+              "id": "4792f086-db0d-3a99-9d2f-044c30ae7818",
+              "revision": 1
+            },
+            {
+              "type": "plan",
+              "id": "f704f7fa-b8fc-3f7c-8c35-ef4b7904c597",
+              "revision": 2
+            }
+          ],
+          "methodVersion": "fitness-policy-0.1",
+          "stageId": "a8ff0d7a-ea11-34db-acaa-65b1d4ca6042"
+        },
+        "error": null
+      }
+    },
+    {
+      "name": "finish_proposal",
+      "arguments": "{\"contractVersion\": \"2\", \"turnId\": \"fe2d72c4-b071-4e06-a3b7-0b0d2ac9bc47\", \"taskId\": \"56306e8d-d6ca-4715-baf1-90aab3f3fa77\", \"stageId\": \"a8ff0d7a-ea11-34db-acaa-65b1d4ca6042\", \"baseRefs\": [{\"type\": \"profile\", \"id\": \"c4de8e3a-4e30-47ea-b798-315d1c622e86\", \"revision\": 1}, {\"type\": \"goal\", \"id\": \"c91a045e-3509-49fe-9ade-d9c74e053292\", \"revision\": 1}, {\"type\": \"measurement\", \"id\": \"438ce058-a4f2-4a3c-99f7-0d6ce85dd431\", \"revision\": 1}, {\"type\": \"plan\", \"id\": \"f704f7fa-b8fc-3f7c-8c35-ef4b7904c597\", \"revision\": 1}], \"operations\": [{\"operationId\": \"op-dinner-replace-1\", \"kind\": \"replace_plan_meal\", \"targetRef\": {\"type\": \"plan\", \"id\": \"f704f7fa-b8fc-3f7c-8c35-ef4b7904c597\", \"revision\": 2}, \"payload\": {\"mealId\": \"dinner\", \"calculationId\": \"ae248bc5-ed27-3258-9b30-243917aad5c5\", \"meal\": {\"mealId\": \"dinner\", \"slotKey\": \"dinner\", \"label\": \"晚餐\", \"scene\": \"home\", \"recipeId\": \"recipe-noodles-beef-vegetable-home\", \"title\": \"鸡蛋面牛肉蔬菜\", \"factor\": 1.25, \"items\": [{\"foodId\": \"usda-sr-169762\", \"grams\": 440, \"name\": \"熟鸡蛋面（未强化，加盐）\", \"state\": \"cooked\", \"nutrientsPer100g\": {\"energyKcal\": 138, \"proteinG\": 4.54, \"carbohydrateG\": 25.16, \"fatG\": 2.07, \"fiberG\": 1.2}, \"sourceId\": \"169762\", \"sourceVersion\": \"SR Legacy final 2018-04\", \"sourceUrl\": \"https:\/\/fdc.nal.usda.gov\/food-details\/169762\/nutrients\"}, {\"foodId\": \"usda-sr-171791\", \"grams\": 190, \"name\": \"熟95%瘦牛肉饼（烤制）\", \"state\": \"cooked\", \"nutrientsPer100g\": {\"energyKcal\": 174, \"proteinG\": 26.29, \"carbohydrateG\": 0, \"fatG\": 6.8, \"fiberG\": 0}, \"sourceId\": \"171791\", \"sourceVersion\": \"SR Legacy final 2018-04\", \"sourceUrl\": \"https:\/\/fdc.nal.usda.gov\/food-details\/171791\/nutrients\"}, {\"foodId\": \"usda-sr-169252\", \"grams\": 190, \"name\": \"水煮白蘑菇（沥干，无盐）\", \"state\": \"cooked\", \"nutrientsPer100g\": {\"energyKcal\": 28, \"proteinG\": 2.17, \"carbohydrateG\": 5.29, \"fatG\": 0.47, \"fiberG\": 2.2}, \"sourceId\": \"169252\", \"sourceVersion\": \"SR Legacy final 2018-04\", \"sourceUrl\": \"https:\/\/fdc.nal.usda.gov\/food-details\/169252\/nutrients\"}, {\"foodId\": \"usda-sr-171413\", \"grams\": 5, \"name\": \"橄榄油\", \"state\": \"as_sold\", \"nutrientsPer100g\": {\"energyKcal\": 884, \"proteinG\": 0, \"carbohydrateG\": 0, \"fatG\": 100, \"fiberG\": 0}, \"sourceId\": \"171413\", \"sourceVersion\": \"SR Legacy final 2018-04\", \"sourceUrl\": \"https:\/\/fdc.nal.usda.gov\/food-details\/171413\/nutrients\"}], \"locked\": false, \"note\": \"建议组合；食堂\/外卖实际份量和烹调须按需要估计，不是具体商家实测营养。\"}}, \"relatedAnnotationIds\": [\"54728867-86f9-4985-ba7b-fd5521d5d1e6\"], \"reason\": \"午餐仅记录200g熟米饭，全天摄入明显低于目标，只替换尚未过去的晚餐，早餐与已记录午餐不动\"}, {\"operationId\": \"op-analysis-1\", \"kind\": \"create_analysis\", \"clientRef\": \"analysis-1024-nutrition\", \"payload\": {\"kind\": \"reply\", \"rangeStart\": \"2026-10-24\", \"rangeEnd\": \"2026-10-24\", \"summaryText\": \"训练已按图片保存：胸部训练5个动作，其中上斜哑铃卧推按你说的实际只记3组，其余组数与次数范围照图，重量未记录，因此不做训练强度或热量消耗推断。\\n\\n饮食方面，午餐只记录了200g熟米饭（约260 kcal、蛋白5.4g、碳水56g），这只是部分记录，不代表全天吃够。按当前75→70kg、增肌目标与1.0倍活动系数估算，今日目标约2900 kcal、蛋白126g；已记录部分只占很小份额，所以剩余缺口主要靠晚餐补。\\n\\n晚餐已从「米饭豆腐菠菜」换为份量更大的「鸡蛋面牛肉蔬菜」：熟鸡蛋面440g、熟瘦牛肉190g、水煮白蘑菇190g、橄榄油5g。整份约1090 kcal、蛋白70g，主食与蛋白同时抬高，符合增肌期晚餐补足剩余能量与蛋白的思路；蔬菜与油量偏保守，若烹调需要可另加少量油，但要计入当日。\\n\\n提醒：这份晚餐按“自己做”的家常估算给出，不是商家实测；熟面条、熟肉重量按可食部计，实际吃的时候按称重或视觉份量微调即可。早餐与已记录的午餐保持不动。\", \"calculationIds\": [\"b8d44c37-2644-31dd-a158-ef19903da423\", \"ae248bc5-ed27-3258-9b30-243917aad5c5\"], \"inputRefs\": [{\"type\": \"plan\", \"id\": \"f704f7fa-b8fc-3f7c-8c35-ef4b7904c597\", \"revision\": 2}, {\"type\": \"training\", \"id\": \"2e253002-fab9-3d90-bfd1-473632094430\", \"revision\": 1}, {\"type\": \"intake\", \"id\": \"4792f086-db0d-3a99-9d2f-044c30ae7818\", \"revision\": 1}]}, \"relatedAnnotationIds\": [\"2c5ebf92-f92c-4058-ae37-d5fdd1a32220\", \"54728867-86f9-4985-ba7b-fd5521d5d1e6\"], \"reason\": \"综合解释训练记录、午餐部分摄入与晚餐替换依据\"}], \"blocks\": [{\"componentId\": \"blk-explain\", \"type\": \"text\", \"content\": {\"contentRef\": {\"entityRef\": {\"type\": \"analysis\", \"id\": \"analysis-1024-nutrition\", \"revision\": 1}, \"fieldPath\": \"summaryText\"}}, \"order\": 1}, {\"componentId\": \"m-intake-energy\", \"type\": \"metric\", \"content\": {\"label\": \"午餐已记录能量\", \"calculationId\": \"b8d44c37-2644-31dd-a158-ef19903da423\", \"resultPath\": \"total.energyKcal\", \"unit\": \"kcal\"}, \"order\": 2}, {\"componentId\": \"m-intake-protein\", \"type\": \"metric\", \"content\": {\"label\": \"午餐已记录蛋白质\", \"calculationId\": \"b8d44c37-2644-31dd-a158-ef19903da423\", \"resultPath\": \"total.proteinG\", \"unit\": \"g\"}, \"order\": 3}, {\"componentId\": \"m-target-energy\", \"type\": \"metric\", \"content\": {\"label\": \"今日能量目标\", \"calculationId\": \"42acf9f4-53ae-3282-a99d-d430ebb65ae5\", \"resultPath\": \"targets.energyKcal\", \"unit\": \"kcal\"}, \"order\": 4}, {\"componentId\": \"m-target-protein\", \"type\": \"metric\", \"content\": {\"label\": \"今日蛋白质目标\", \"calculationId\": \"42acf9f4-53ae-3282-a99d-d430ebb65ae5\", \"resultPath\": \"targets.proteinG\", \"unit\": \"g\"}, \"order\": 5}, {\"componentId\": \"m-plan-energy\", \"type\": \"metric\", \"content\": {\"label\": \"调整后计划能量合计\", \"calculationId\": \"ae248bc5-ed27-3258-9b30-243917aad5c5\", \"resultPath\": \"totals.total.energyKcal\", \"unit\": \"kcal\"}, \"order\": 6}, {\"componentId\": \"m-plan-protein\", \"type\": \"metric\", \"content\": {\"label\": \"调整后计划蛋白质合计\", \"calculationId\": \"ae248bc5-ed27-3258-9b30-243917aad5c5\", \"resultPath\": \"totals.total.proteinG\", \"unit\": \"g\"}, \"order\": 7}, {\"componentId\": \"l-dinner\", \"type\": \"list\", \"content\": {\"entityRefs\": [{\"type\": \"plan\", \"id\": \"f704f7fa-b8fc-3f7c-8c35-ef4b7904c597\", \"revision\": 3}], \"mealId\": \"dinner\"}, \"order\": 8}, {\"componentId\": \"l-training\", \"type\": \"list\", \"content\": {\"entityRefs\": [{\"type\": \"training\", \"id\": \"2e253002-fab9-3d90-bfd1-473632094430\", \"revision\": 1}]}, \"order\": 9}], \"summary\": \"已保存今天的胸部训练（上斜哑铃卧推实际3组，重量未记）、午餐200g熟米饭，并把晚餐换成份量更大的鸡蛋面牛肉蔬菜，附解释卡与营养指标。\", \"boardPatch\": {\"upsertCards\": [{\"cardId\": \"dfdeb4a3-4678-39e4-98a5-433e541214b2:guidance\", \"revision\": 2, \"title\": \"今日参考\", \"span\": 6, \"blocks\": [{\"componentId\": \"guidance\", \"type\": \"text\", \"content\": {\"contentRef\": {\"entityRef\": {\"type\": \"analysis\", \"id\": \"analysis-1024-nutrition\", \"revision\": 1}, \"fieldPath\": \"summaryText\"}}, \"actions\": []}, {\"componentId\": \"m-intake-energy\", \"type\": \"metric\", \"content\": {\"label\": \"午餐已记录能量\", \"calculationId\": \"b8d44c37-2644-31dd-a158-ef19903da423\", \"resultPath\": \"total.energyKcal\", \"unit\": \"kcal\"}, \"actions\": []}, {\"componentId\": \"m-intake-protein\", \"type\": \"metric\", \"content\": {\"label\": \"午餐已记录蛋白质\", \"calculationId\": \"b8d44c37-2644-31dd-a158-ef19903da423\", \"resultPath\": \"total.proteinG\", \"unit\": \"g\"}, \"actions\": []}, {\"componentId\": \"m-target-energy\", \"type\": \"metric\", \"content\": {\"label\": \"今日能量目标\", \"calculationId\": \"42acf9f4-53ae-3282-a99d-d430ebb65ae5\", \"resultPath\": \"targets.energyKcal\", \"unit\": \"kcal\"}, \"actions\": []}, {\"componentId\": \"m-target-protein\", \"type\": \"metric\", \"content\": {\"label\": \"今日蛋白质目标\", \"calculationId\": \"42acf9f4-53ae-3282-a99d-d430ebb65ae5\", \"resultPath\": \"targets.proteinG\", \"unit\": \"g\"}, \"actions\": []}, {\"componentId\": \"m-plan-energy\", \"type\": \"metric\", \"content\": {\"label\": \"调整后计划能量合计\", \"calculationId\": \"ae248bc5-ed27-3258-9b30-243917aad5c5\", \"resultPath\": \"totals.total.energyKcal\", \"unit\": \"kcal\"}, \"actions\": []}, {\"componentId\": \"m-plan-protein\", \"type\": \"metric\", \"content\": {\"label\": \"调整后计划蛋白质合计\", \"calculationId\": \"ae248bc5-ed27-3258-9b30-243917aad5c5\", \"resultPath\": \"totals.total.proteinG\", \"unit\": \"g\"}, \"actions\": []}], \"entityRefs\": [{\"type\": \"analysis\", \"id\": \"analysis-1024-nutrition\", \"revision\": 1}]}, {\"cardId\": \"dfdeb4a3-4678-39e4-98a5-433e541214b2:meal:dinner\", \"revision\": 2, \"title\": \"晚餐 · 鸡蛋面牛肉蔬菜\", \"span\": 6, \"blocks\": [{\"componentId\": \"foods-dinner\", \"type\": \"list\", \"content\": {\"entityRefs\": [{\"type\": \"plan\", \"id\": \"f704f7fa-b8fc-3f7c-8c35-ef4b7904c597\", \"revision\": 3}], \"mealId\": \"dinner\", \"options\": []}, \"entityRef\": {\"type\": \"plan\", \"id\": \"f704f7fa-b8fc-3f7c-8c35-ef4b7904c597\", \"revision\": 3}, \"actions\": [{\"actionId\": \"skip-dinner\", \"label\": \"这餐不再安排\", \"kind\": \"skip_meal\", \"targetRef\": {\"type\": \"plan\", \"id\": \"f704f7fa-b8fc-3f7c-8c35-ef4b7904c597\", \"revision\": 3}, \"mealId\": \"dinner\"}, {\"actionId\": \"replace-dinner\", \"label\": \"换一餐\", \"kind\": \"replace_meal\", \"targetRef\": {\"type\": \"plan\", \"id\": \"f704f7fa-b8fc-3f7c-8c35-ef4b7904c597\", \"revision\": 3}, \"mealId\": \"dinner\"}, {\"actionId\": \"less-dinner\", \"label\": \"少一档\", \"kind\": \"scale_meal\", \"targetRef\": {\"type\": \"plan\", \"id\": \"f704f7fa-b8fc-3f7c-8c35-ef4b7904c597\", \"revision\": 3}, \"mealId\": \"dinner\", \"value\": \"-0.25\"}, {\"actionId\": \"more-dinner\", \"label\": \"多一档\", \"kind\": \"scale_meal\", \"targetRef\": {\"type\": \"plan\", \"id\": \"f704f7fa-b8fc-3f7c-8c35-ef4b7904c597\", \"revision\": 3}, \"mealId\": \"dinner\", \"value\": \"0.25\"}, {\"actionId\": \"eat-dinner\", \"label\": \"记为已吃\", \"kind\": \"mark_eaten\", \"targetRef\": {\"type\": \"plan\", \"id\": \"f704f7fa-b8fc-3f7c-8c35-ef4b7904c597\", \"revision\": 3}, \"mealId\": \"dinner\"}, {\"actionId\": \"lock-dinner\", \"label\": \"保留这餐\", \"kind\": \"lock_meal\", \"targetRef\": {\"type\": \"plan\", \"id\": \"f704f7fa-b8fc-3f7c-8c35-ef4b7904c597\", \"revision\": 3}, \"mealId\": \"dinner\"}]}, {\"componentId\": \"scene-dinner\", \"type\": \"choice\", \"content\": {\"label\": \"用餐场景\", \"entityRefs\": [], \"options\": [{\"key\": \"home\", \"label\": \"自己做\"}, {\"key\": \"canteen\", \"label\": \"食堂\"}, {\"key\": \"takeout\", \"label\": \"外食\"}], \"selectedKey\": \"home\"}, \"entityRef\": {\"type\": \"plan\", \"id\": \"f704f7fa-b8fc-3f7c-8c35-ef4b7904c597\", \"revision\": 3}, \"actions\": [{\"actionId\": \"scene-dinner\", \"label\": \"场景\", \"kind\": \"change_scene\", \"targetRef\": {\"type\": \"plan\", \"id\": \"f704f7fa-b8fc-3f7c-8c35-ef4b7904c597\", \"revision\": 3}, \"mealId\": \"dinner\"}]}, {\"componentId\": \"source-dinner\", \"type\": \"text\", \"content\": {\"text\": \"按所列生熟状态与可食重量核算；额外调味及用油另计。\", \"entityRefs\": [], \"options\": []}, \"entityRef\": {\"type\": \"plan\", \"id\": \"f704f7fa-b8fc-3f7c-8c35-ef4b7904c597\", \"revision\": 3}, \"actions\": [{\"actionId\": \"source-dinner\", \"label\": \"查看依据\", \"kind\": \"open_source\", \"targetRef\": {\"type\": \"plan\", \"id\": \"f704f7fa-b8fc-3f7c-8c35-ef4b7904c597\", \"revision\": 3}, \"mealId\": \"dinner\"}]}], \"entityRefs\": [{\"type\": \"plan\", \"id\": \"f704f7fa-b8fc-3f7c-8c35-ef4b7904c597\", \"revision\": 3}]}, {\"clientRef\": \"card-training-1024\", \"title\": \"今日训练 · 胸部\", \"span\": 3, \"blocks\": [{\"componentId\": \"list-training\", \"type\": \"list\", \"content\": {\"entityRefs\": [{\"type\": \"training\", \"id\": \"2e253002-fab9-3d90-bfd1-473632094430\", \"revision\": 1}], \"options\": []}, \"actions\": []}], \"entityRefs\": [{\"type\": \"training\", \"id\": \"2e253002-fab9-3d90-bfd1-473632094430\", \"revision\": 1}]}, {\"clientRef\": \"card-intake-lunch-1024\", \"title\": \"午餐记录 · 200g熟米饭\", \"span\": 3, \"blocks\": [{\"componentId\": \"list-intake-lunch\", \"type\": \"list\", \"content\": {\"entityRefs\": [{\"type\": \"intake\", \"id\": \"4792f086-db0d-3a99-9d2f-044c30ae7818\", \"revision\": 1}], \"options\": []}, \"actions\": []}, {\"componentId\": \"m-lunch-energy\", \"type\": \"metric\", \"content\": {\"label\": \"能量\", \"calculationId\": \"b8d44c37-2644-31dd-a158-ef19903da423\", \"resultPath\": \"total.energyKcal\", \"unit\": \"kcal\"}, \"actions\": []}, {\"componentId\": \"m-lunch-carb\", \"type\": \"metric\", \"content\": {\"label\": \"碳水\", \"calculationId\": \"b8d44c37-2644-31dd-a158-ef19903da423\", \"resultPath\": \"total.carbohydrateG\", \"unit\": \"g\"}, \"actions\": []}], \"entityRefs\": [{\"type\": \"intake\", \"id\": \"4792f086-db0d-3a99-9d2f-044c30ae7818\", \"revision\": 1}]}]}}",
+      "result": {
+        "ok": false,
+        "data": null,
+        "error": {
+          "code": "VERSION_CONFLICT",
+          "message": "VERSION_CONFLICT: card\/dfdeb4a3-4678-39e4-98a5-433e541214b2:meal:dinner expected [1, 3]",
+          "retryable": false
+        }
+      }
+    }
+  ]
+}

@@ -52,14 +52,16 @@ class NutritionBoardRepository(private val db: AppDatabase, val catalog: FoodCat
         val snapshot = JSONObject().put("date", onDate.toString()).put("profile", profile?.let { JSONObject(DomainJson.encode(it)) })
             .put("goal", goal?.let { JSONObject(DomainJson.encode(it)) }).put("weight", weight?.let { JSONObject(DomainJson.encode(it)) })
             .put("policy", JSONObject(policyEntity.parametersJson)).toString()
-        val signature = fingerprint(snapshot + intakes.joinToString { "${it.id}@${it.revision}" } + trainings.joinToString { "${it.id}@${it.revision}" })
+        val progress = dao.allMealProgress().filter { it.dateContext == board.dateContext }
+        val signature = fingerprint(snapshot + progress.joinToString { "${it.id}@${it.revision}" } + intakes.joinToString { "${it.id}@${it.revision}" } + trainings.joinToString { "${it.id}@${it.revision}" })
         val targetId = id("target:$boardId:${fingerprint(snapshot)}")
         val target = CalculationEngine.calculate(input)
         if (dao.calculation(targetId) == null) dao.putCalculation(CalculationEntity(targetId, "nutrition_target", METHOD_VERSION,
             snapshot, refsJson(refs), DomainJson.encode(target), System.currentTimeMillis()))
         val previous = dao.planForDate(board.dateContext)
         val oldMeals = previous?.let { DomainJson.decode<MealsDocument>(it.meals).meals } ?: emptyList()
-        val eaten = consumedMeals(oldMeals, intakes)
+        val chronology = oldMeals.ifEmpty { slots(profile).map { PlannedMeal(it.key,it.key,it.label,profile?.defaultScene ?: "home","","",1.0,emptyList()) } }
+        val eaten = closedMealIds(chronology, intakes.mapNotNull { it.mealKey }.toSet(), progress.associate { it.mealId to it.state })
         val intake = intakeTotals(intakes)
         var plan = previous?.takeIf { it.state == "current" && JSONObject(it.inputRefs).optString("signature") == signature }
         val notes = target.notes.toMutableList()
@@ -88,6 +90,7 @@ class NutritionBoardRepository(private val db: AppDatabase, val catalog: FoodCat
                 kotlin.math.abs(effective.proteinG!! - target.targets.proteinG!!) <= target.targets.proteinG * .15
             notes.add(if (close) "当前组合接近目标（能量±10%、蛋白±15%的匹配标签）；份量按5g核算" else "当前可行组合仍有差额，可更换餐食或调整份量")
         }
+        if (oldMeals.any { it.mealId in eaten && intakes.none { entry -> entry.mealKey == it.slotKey } }) notes.add("已过的前餐不再纳入剩余安排；这不会新增实际摄入，可用「仍需安排这餐」调整。")
         if (intakes.isNotEmpty() && (intakes.any { it.completeness != "complete" } || !intake.complete))
             notes.add("摄入展示为已记录量；缺项保留，不能据此判断全天是否吃够")
         val summary = buildString {
@@ -99,7 +102,7 @@ class NutritionBoardRepository(private val db: AppDatabase, val catalog: FoodCat
             else if (target.status == "ready") append("按当前资料与阶段目标生成初始规划，不需要先记录饮食。")
             append(notes.distinct().joinToString("\n", prefix = "\n"))
         }.trim()
-        val analysisRefs = refs + intakes.map { EntityRef("intake", it.id, it.revision) }
+        val analysisRefs = refs + progress.map { EntityRef("meal_progress", it.id, it.revision) } + intakes.map { EntityRef("intake", it.id, it.revision) }
         val analysisId = id("guidance:$boardId:${fingerprint(summary + refsJson(analysisRefs))}")
         if (dao.analysis(analysisId) == null) dao.putAnalysis(AnalysisEntity(analysisId, 1, "reply", onDate.toString(), onDate.toString(),
             refsJson(analysisRefs), summary, "[]", "[]", "current", System.currentTimeMillis(), System.currentTimeMillis()))
@@ -129,15 +132,17 @@ class NutritionBoardRepository(private val db: AppDatabase, val catalog: FoodCat
                 refsJson(analysisRefs + EntityRef("plan", plan.id, plan.revision) + EntityRef("calculation", targetId)), result, System.currentTimeMillis()))
             val ref = EntityRef("plan", plan.id, plan.revision)
             meals.forEach { meal ->
+                val recorded = intakes.any { it.mealKey == meal.slotKey }
                 val consumed = meal.mealId in eaten
-                val actions = if (consumed) emptyList() else listOf(
+                val actions = if (recorded) emptyList() else if (consumed) listOf(CardAction("reopen-${meal.mealId}", "仍需安排这餐", "reopen_meal", ref, meal.mealId)) else listOf(
+                    CardAction("skip-${meal.mealId}", "这餐不再安排", "skip_meal", ref, meal.mealId),
                     CardAction("replace-${meal.mealId}", "换一餐", "replace_meal", ref, meal.mealId),
                     CardAction("less-${meal.mealId}", "少一档", "scale_meal", ref, meal.mealId, "-0.25"),
                     CardAction("more-${meal.mealId}", "多一档", "scale_meal", ref, meal.mealId, "0.25"),
                     CardAction("eat-${meal.mealId}", "记为已吃", "mark_eaten", ref, meal.mealId),
                     CardAction("lock-${meal.mealId}", if (meal.locked) "解锁" else "保留这餐", "lock_meal", ref, meal.mealId))
                     .filter { !meal.locked || it.kind in listOf("mark_eaten", "lock_meal") }
-                cards.add(DashboardCard(id = "$boardId:meal:${meal.mealId}", title = "${meal.label} · ${meal.title}${if (consumed) " · 已记录" else ""}", span = CardSpan.LARGE,
+                cards.add(DashboardCard(id = "$boardId:meal:${meal.mealId}", title = "${meal.label} · ${meal.title}${if (recorded) " · 已记录" else if (consumed) " · 不再安排" else ""}", span = CardSpan.LARGE,
                     blocks = listOf(BoardComponent("foods-${meal.mealId}", "list", ComponentContent(entityRefs = listOf(ref), mealId = meal.mealId), ref, actions),
                         BoardComponent("scene-${meal.mealId}", "choice", ComponentContent(label = "用餐场景", selectedKey = meal.scene,
                             options = listOf(ChoiceOption("home", "自己做"), ChoiceOption("canteen", "食堂"), ChoiceOption("takeout", "外食"))), ref,
@@ -285,7 +290,15 @@ class NutritionBoardRepository(private val db: AppDatabase, val catalog: FoodCat
         val meals = DomainJson.decode<MealsDocument>(plan.meals).meals
         val meal = requireNotNull(meals.firstOrNull { it.mealId == action.mealId })
         val allIntakes = db.recordDao().allIntakes().filter { date(it.dateContext) == date(plan.dateContext) }
-        val eaten = consumedMeals(meals, allIntakes)
+        val progress = dao.allMealProgress().filter { it.planId == plan.id }
+        val eaten = closedMealIds(meals, allIntakes.mapNotNull { it.mealKey }.toSet(), progress.associate { it.mealId to it.state })
+        if (action.kind in listOf("skip_meal", "reopen_meal")) {
+            check(allIntakes.none { it.mealKey == meal.slotKey }) { "已有摄入记录，请从档案纠正实际记录" }
+            val old = progress.firstOrNull { it.mealId == meal.mealId }
+            dao.putMealProgress(MealProgressEntity(old?.id ?: id("scope:${plan.id}:${meal.mealId}"), plan.id, meal.mealId, plan.dateContext,
+                if (action.kind == "skip_meal") "skipped" else "pending", (old?.revision ?: 0) + 1, System.currentTimeMillis()))
+            dao.invalidatePlans(); return@withTransaction
+        }
         if (action.kind == "mark_eaten") {
             val intakeId = id("eaten:${plan.id}:${meal.mealId}")
             if (db.recordDao().intake(intakeId) == null) {
