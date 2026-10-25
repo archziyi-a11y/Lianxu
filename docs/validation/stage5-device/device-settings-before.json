@@ -1,0 +1,10 @@
+{
+  "system:font_scale": "1.0",
+  "system:accelerometer_rotation": "1",
+  "system:user_rotation": "0",
+  "global:animator_duration_scale": "null",
+  "global:transition_animation_scale": "1.0",
+  "global:window_animation_scale": "1.0",
+  "size": "Physical size: 1080x2400",
+  "density": "Physical density: 420"
+}

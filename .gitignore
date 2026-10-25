@@ -30,3 +30,6 @@ key.properties
 # JVM crash diagnostics may contain local paths or process state
 hs_err_pid*.log
 replay_pid*.log
+
+# Installable local delivery; checksum and source revision are tracked.
+/deliverables/*.apk

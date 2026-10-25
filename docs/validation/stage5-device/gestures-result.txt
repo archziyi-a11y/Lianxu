@@ -1,0 +1,1 @@
+PASS: touch gestures, exact text, slider, system picker, two submissions, page swipe, cancellation

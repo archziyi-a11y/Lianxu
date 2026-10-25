@@ -1,0 +1,33 @@
+{
+  "codeCommit": "9a94ea5140871cd071d1bc1b0b39e863702d4b65",
+  "apk": "Lianxu-stage5-debug.apk",
+  "applicationId": "com.example.lianxu",
+  "variant": "debug",
+  "bytes": 31700219,
+  "sha256": "a1a24deea7207aea4ad97ed94ee00cb5f04563b971aadfa95e2a3772ce0c75d9",
+  "jvmTests": {
+    "passed": 17
+  },
+  "androidTests": {
+    "discovered": 75,
+    "passed": 71,
+    "optInSkipped": 4,
+    "failed": 0
+  },
+  "realApi": {
+    "model": "deepseek-flash",
+    "requests": 4,
+    "tools": 6,
+    "passed": true,
+    "verifiedAtCommit": "a577211944c83c5e2ef5f62a534ba5257477163c"
+  },
+  "manualEvidence": {
+    "video": "../docs/validation/stage5-device/controls_text_photo_two_rounds_archive.mp4",
+    "durationSeconds": 92.71,
+    "sha256": "05084e0c88916ac31e92d6a35a12e9b32f00f191b824010065096d877515865e",
+    "isolated": true,
+    "controlledRequests": 2,
+    "turns": 2,
+    "newTrainingRecords": 1
+  }
+}

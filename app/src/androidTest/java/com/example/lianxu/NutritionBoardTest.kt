@@ -116,7 +116,7 @@ class NutritionBoardTest {
         try {
             seed(db); val id = board(db); val service = NutritionBoardRepository.create(context, db); service.refresh(id)
             val store = BoardStore(db)
-            val protein = store.watchCards(id).first().first { it.title == "蛋白质" }
+            val protein = store.watchCards(id).first().first { it.id.endsWith(":target:proteinG") }
             store.edit(id) { cards -> cards.map { if (it.id == protein.id) it.copy(isAnnotationMode = true, annotationText = "为什么这样安排") else it } }
             val anchor = store.watchCards(id).first().first { it.id == protein.id }.annotationAnchor!!
             assertTrue(anchor.readableContent.contains("126"))
