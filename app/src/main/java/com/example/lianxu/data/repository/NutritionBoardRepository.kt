@@ -110,7 +110,7 @@ class NutritionBoardRepository(private val db: AppDatabase, val catalog: FoodCat
         val cards = mutableListOf<DashboardCard>()
         if (target.status in listOf("ready", "manual")) {
             NUTRIENT_KEYS.filter { target.targets[it] != null }.forEachIndexed { index, key ->
-                cards.add(DashboardCard(id = "$boardId:target:$key", title = nutrientLabel(key), span = if (index < 3) CardSpan.SMALL else CardSpan.MEDIUM,
+                cards.add(DashboardCard(id = "$boardId:target:$key", title = "${nutrientLabel(key)}目标", span = if (index < 3) CardSpan.SMALL else CardSpan.MEDIUM,
                     blocks = listOf(metric("target-$key", targetId, "targets.$key", nutrientLabel(key), unit(key)).let { block ->
                         if (key == "energyKcal") block.copy(actions = listOf(CardAction("target-source", "依据", "open_source", EntityRef("calculation", targetId)))) else block
                     })))
