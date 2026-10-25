@@ -67,7 +67,8 @@ fun TodayScreen(modifier:Modifier=Modifier,viewModel:TodayViewModel=viewModel(),
  source?.let { AlertDialog(onDismissRequest=viewModel::dismissSource,title={Text("食物与计算依据")},text={Text(it,Modifier.heightIn(max=420.dp).verticalScroll(rememberScrollState()))},confirmButton={TextButton(onClick=viewModel::dismissSource){Text("关闭")}}) }
  val count=cards.count(ActiveInputRepository::hasInput)
  val gridState=rememberLazyGridState()
- LaunchedEffect(processing){if(!processing)gridState.scrollToItem(0)}
+ // Room can publish the reply after the processing flag falls. Re-anchor on the new first card too.
+ LaunchedEffect(processing,cards.firstOrNull()?.id){if(!processing)gridState.scrollToItem(0)}
  LaunchedEffect(requestedInput,cards.any { it.id==requestedInput }) { val index=cards.indexOfFirst { it.id==requestedInput };if(requestedInput!=null && index>=0){gridState.scrollToItem(index+if(notice!=null)1 else 0);requestedInput=null} }
  val shortViewport=LocalConfiguration.current.screenHeightDp<450
  val compactHeader=LocalConfiguration.current.screenWidthDp<350 || LocalDensity.current.fontScale>1.25f
