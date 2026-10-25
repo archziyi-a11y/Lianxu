@@ -120,7 +120,11 @@ class AgentCollaborationTest {
         val retry=BoardStore(db).prepare(s.task.boardId); assertEquals(s.turn.submissionId,retry.turn.submissionId); assertEquals(s.turn.id,retry.turn.id)
         assertTrue(db.collaborationDao().input(s.turn.inputBundleId)!!.annotationsJson.contains("三组"))
         AgentRunner(context,db,repo.catalog,null).run(retry)
-        assertTrue(db.recordDao().allTrainings().isEmpty()); assertEquals("completed",db.collaborationDao().turn(s.turn.id)!!.status)
+        // Stage 5: explicit local saving now records rough input instead of a fake demo reply.
+        assertEquals(1,db.recordDao().allTrainings().size)
+        assertEquals("[]",db.recordDao().allTrainings().single().exercises)
+        assertTrue(db.recordDao().allTrainings().single().rawSummary!!.contains("三组"))
+        assertEquals("completed",db.collaborationDao().turn(s.turn.id)!!.status)
     } }
     @Test fun scriptedModelReceivesAnchorsAndCanAddCompositeCard() = runBlocking { scenario { db,repo,s ->
         var seen=false

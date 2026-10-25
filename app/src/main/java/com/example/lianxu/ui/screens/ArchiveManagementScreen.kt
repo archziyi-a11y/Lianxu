@@ -54,8 +54,9 @@ fun ArchiveManagementScreen(modifier: Modifier=Modifier,viewModel: ArchiveViewMo
             when(section) {
                 "资料" -> item { Column(verticalArrangement=Arrangement.spacedBy(16.dp)) { ProfileForm(viewModel,uiState) } }
                 "记录" -> {
-                    item { Button(onClick={addType="training";add=true},enabled=!busy,modifier=Modifier.fillMaxWidth()) { Text("补记训练、饮食或测量") } }
-                    if(records.isEmpty())item { Text("已有的训练、摄入和测量会保存在这里，可离线补记。") }
+                    item { OutlinedButton(onClick=onShowToday,modifier=Modifier.fillMaxWidth()){Text("添加今天的信息 → 今日")} }
+                    item { Button(onClick={addType="training";add=true},enabled=!busy,modifier=Modifier.fillMaxWidth()) { Text("补记历史训练、饮食或测量") } }
+                    if(records.isEmpty())item { Text("历史训练、摄入与测量保存在这里。补记需选择历史日期。") }
                     item { OutlinedTextField(value=recordDate,onValueChange={recordDate=it},label={Text("按日期查找，可留空")},singleLine=true,modifier=Modifier.fillMaxWidth()) }
                     items(records.filter { recordDate.isBlank() || it.date.startsWith(recordDate) }.take(recordLimit),key={"${it.type}:${it.id}"}) { item -> Card(Modifier.fillMaxWidth()) { Column(Modifier.padding(16.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
                         Text("${item.date} · ${item.title}",style=MaterialTheme.typography.titleSmall)
@@ -100,7 +101,7 @@ fun ArchiveManagementScreen(modifier: Modifier=Modifier,viewModel: ArchiveViewMo
 private fun RecordDialog(item: HistoryItem?,busy: Boolean,message: String?,defaultType: String,onDismiss:()->Unit,onSave:(String,String,String,String,String)->Unit) {
     var type by remember { mutableStateOf(item?.type ?: defaultType) }
     var text by remember { mutableStateOf(if(item?.type=="measurement")"" else item?.detail.orEmpty()) }
-    var date by remember { mutableStateOf(item?.date ?: LocalDate.now().toString()) }
+    var date by remember { mutableStateOf(item?.date ?: LocalDate.now().minusDays(1).toString()) }
     var metric by remember { mutableStateOf(item?.takeIf { it.type=="measurement" }?.let { org.json.JSONObject(it.raw).getString("metric") } ?: "weight") }
     var value by remember { mutableStateOf(item?.takeIf { it.type=="measurement" }?.let { org.json.JSONObject(it.raw).getDouble("value").toString() }.orEmpty()) }
     AlertDialog(onDismissRequest=onDismiss,title={Text(if(item==null)"离线补记" else "修改")},text={Column(verticalArrangement=Arrangement.spacedBy(8.dp)) {

@@ -48,12 +48,13 @@ import kotlin.math.abs
    }
    else->{
     val dates=points.map { runCatching { LocalDate.parse(it.label) }.getOrNull() };val minimum=dates.filterNotNull().minOrNull();val maximum=dates.filterNotNull().maxOrNull()
-    Canvas(Modifier.fillMaxWidth().height(100.dp).semantics { contentDescription=points.joinToString { "${it.label}：${it.value}${block.unit}" } }){
+    Canvas(Modifier.fillMaxWidth().height(128.dp).semantics { contentDescription=points.joinToString { "${it.label}：${it.value}${block.unit}" } }){
      val low=points.minOf { it.value };val high=points.maxOf { it.value };val spread=(high-low).coerceAtLeast(.1)
+     repeat(3) { tick->val y=6f+tick*(size.height-12)/2;drawLine(faint,Offset(0f,y),Offset(size.width,y),1.dp.toPx()) }
      val coordinates=points.mapIndexed { i,p->
       val x=if(minimum!=null && maximum!=null && dates[i]!=null && maximum>minimum)ChronoUnit.DAYS.between(minimum,dates[i]).toFloat()/ChronoUnit.DAYS.between(minimum,maximum) else if(points.size==1).5f else i.toFloat()/(points.size-1)
       Offset(4+x*(size.width-8),size.height-6-((p.value-low)/spread).toFloat()*(size.height-12)) }
-     coordinates.zipWithNext().forEach { (a,b)->drawLine(color,a,b,3f) };coordinates.forEach { drawCircle(color,4f,it) }
+     coordinates.zipWithNext().forEach { (a,b)->drawLine(color,a,b,2.dp.toPx()) };coordinates.forEach { drawCircle(color,3.dp.toPx(),it) }
     }
     Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween){Text(points.first().label,style=MaterialTheme.typography.labelSmall);Text(points.last().label,style=MaterialTheme.typography.labelSmall)}
     Text("${ComponentResolver.displayNumber(points.minOf { it.value },block.unit)} — ${ComponentResolver.displayNumber(points.maxOf { it.value },block.unit)} ${block.unit}",style=MaterialTheme.typography.labelSmall)

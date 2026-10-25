@@ -156,8 +156,7 @@ class NutritionBoardRepository(private val db: AppDatabase, val catalog: FoodCat
                 blocks = NUTRIENT_KEYS.flatMap { key -> listOf(metric("intake-$key", calculationId, "intake.knownSubtotal.$key", "已核算${nutrientLabel(key)}", unit(key)),
                     metric("remaining-$key", calculationId, "remaining.$key", "目标减已知${nutrientLabel(key)}", unit(key))) }))
         }
-        cards.add(DashboardCard(id = "$boardId:training-input", title = "训练记录", value = "长按补充今天的训练或上传图片", span = CardSpan.MEDIUM))
-        cards.add(DashboardCard(id = "$boardId:intake-input", title = "饮食补充", value = "可选：记录实际吃了什么", span = CardSpan.MEDIUM))
+        cards.addAll(if(target.status in listOf("ready","manual")) cards.indexOfFirst { it.id.endsWith(":guidance") }.coerceAtLeast(0) else 0, ActiveInputRepository(db).cards(boardId, onDate))
         if (measurements.any { it.metric == "weight" }) {
             val trend = weightTrend(measurements.filter { it.metric == "weight" }.mapNotNull { m -> date(m.observed)?.let { WeightPoint(it, m.value.toString().toDouble()) } }, onDate)
             val series = JSONObject().put("points", JSONArray(trend.points.map { JSONObject().put("date", it.date.toString()).put("value", it.value) }))
@@ -270,16 +269,24 @@ class NutritionBoardRepository(private val db: AppDatabase, val catalog: FoodCat
             } + generated.filter { it.id !in current && it.id !in removed && (it.id.endsWith(":intake-total") || it.id.endsWith(":training-summary") || it.id.endsWith(":weight-trend")) }
 
         } else generated
-        val result = composed.map { card ->
+        val prepared = generated.filter { it.managedBy == "input" }.associateBy { it.id }
+        val stable = composed.mapNotNull { old->if(old.managedBy=="input")prepared[old.id] else old }
+        val added = prepared.values.filter { p->stable.none { it.id==p.id } }
+        val arranged = stable + added
+        val withCustom = arranged + pending.values.filter { it.managedBy=="user_input" && arranged.none { c->c.id==it.id } }
+        val cancelled = db.recordDao().allKnowledge().filter { it.kind=="follow_up" && it.status=="cancelled" }.map { it.id }.toSet()
+        val retained = current.values.filter { old -> withCustom.none { it.id == old.id } && pending[old.id]?.let { ActiveInputRepository.hasInput(it) } == true }
+        val result = (withCustom + retained).map { candidate ->
+            val card=if(candidate.followUpId in cancelled)candidate.copy(title="已取消跟进 · 保留你的补充",value="这项跟进已停止。已写的进展仍可保存，也可以撤掉补充。",blocks=candidate.blocks.filterNot { it.type=="choice" }) else candidate
             val old = current[card.id]
             card.copy(revision = if (old == null) 1 else if (card.copy(revision = old.revision) == old) old.revision else old.revision + 1)
-        } + current.values.filter { old -> composed.none { it.id == old.id } && pending[old.id]?.let { !it.annotationText.isNullOrBlank() || it.attachmentId != null } == true }
+        }
         if (current.values.toList() == result) return
         dao.removeCards(board.id); dao.putCards(result.map { Card(it.id, board.id, DomainJson.encode(it)) })
         dao.putBoard(board.copy(revision = board.revision + 1, updatedAt = System.currentTimeMillis()))
         if (draft != null) dao.putDraft(draft.copy(revision = draft.revision + 1, updatedAt = System.currentTimeMillis(), cardsJson = store.encode(result.map { card ->
             pending[card.id]?.let { old -> card.copy(isAnnotationMode = old.isAnnotationMode, annotationText = old.annotationText,
-                annotationImageUri = old.annotationImageUri, attachmentId = old.attachmentId, annotationAnchor = old.annotationAnchor) } ?: card
+                annotationImageUri = old.annotationImageUri, attachmentId = old.attachmentId, annotationAnchor = old.annotationAnchor, inputValues = old.inputValues) } ?: card
         })))
     }
 

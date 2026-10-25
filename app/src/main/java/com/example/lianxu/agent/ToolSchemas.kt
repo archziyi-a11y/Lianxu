@@ -32,8 +32,8 @@ internal object ToolSchemas {
         operation("replace_plan_meal",obj(emptyList(),"mealId" to str,"meal" to mapOf("type" to "object"),"calculationId" to str,"meals" to arr(obj(listOf("mealId","meal","calculationId"),"mealId" to str,"meal" to mapOf("type" to "object"),"calculationId" to str)))),
         operation("create_day_plan",obj(listOf("dateContext","targetCalculationId","meals"),"dateContext" to date,"goalRef" to ref,"targetCalculationId" to str,"meals" to arr(mapOf("type" to "object")),"inputRefs" to arr(ref)))
     )))
-    private val content = obj(emptyList(),"label" to str,"text" to str,"contentRef" to obj(listOf("entityRef","fieldPath"),"entityRef" to ref,"fieldPath" to str),"calculationId" to str,"resultPath" to str,"unit" to str,"entityRefs" to arr(ref),"mealId" to str,"options" to arr(obj(listOf("key","label"),"key" to str,"label" to str)),"selectedKey" to str,"attachmentId" to str)
-    val blocks = arr(obj(listOf("componentId","type","content"),"componentId" to str,"type" to enum("text","image","metric","choice","list","trend"),"content" to content,"entityRef" to ref,"actions" to arr(obj(listOf("actionId","label","kind","targetRef"),"actionId" to str,"label" to str,"kind" to enum("replace_meal","scale_meal","mark_eaten","lock_meal","change_scene","open_source","skip_meal","reopen_meal"),"targetRef" to ref,"mealId" to str,"value" to str)),"order" to integer))
+    private val content = obj(emptyList(),"label" to str,"text" to str,"contentRef" to obj(listOf("entityRef","fieldPath"),"entityRef" to ref,"fieldPath" to str),"calculationId" to str,"resultPath" to str,"unit" to str,"entityRefs" to arr(ref),"mealId" to str,"options" to arr(obj(listOf("key","label"),"key" to str,"label" to str)),"selectedKey" to str,"attachmentId" to str,"inputKind" to enum("training","measurement","intake","note"),"inputFields" to arr(enum("name","sets","repsMin","repsMax","loadKg","equipment","metric","value")),"suggestedName" to str)
+    val blocks = arr(obj(listOf("componentId","type","content"),"componentId" to str,"type" to enum("text","image","metric","choice","list","trend","input"),"content" to content,"entityRef" to ref,"actions" to arr(obj(listOf("actionId","label","kind","targetRef"),"actionId" to str,"label" to str,"kind" to enum("replace_meal","scale_meal","mark_eaten","lock_meal","change_scene","open_source","skip_meal","reopen_meal"),"targetRef" to ref,"mealId" to str,"value" to str)),"order" to integer))
     val boardPatch = obj(emptyList(),"upsertCards" to arr(obj(listOf("title","span","blocks"),"cardId" to str,"clientRef" to str,"revision" to integer,"title" to str,"span" to mapOf("type" to "integer","enum" to listOf(2,3,6)),"blocks" to blocks,"entityRefs" to arr(ref),"order" to integer)),"removeCardIds" to arr(str),"orderedCardIds" to arr(str))
     private fun calculation(operation: String, input: Map<String, Any?>) = obj(listOf("operation","input"),"operation" to enum(operation),"input" to input,"stageId" to str)
     private val calculations = listOf(
@@ -48,7 +48,7 @@ internal object ToolSchemas {
         if (name == "calculate") return mapOf("type" to "object", "anyOf" to calculations)
         @Suppress("UNCHECKED_CAST") val props = (parameters["properties"] as Map<String, Any?>).toMutableMap()
         if (name in listOf("stage_records","finish_proposal")) props["operations"] = operations
-        if (name == "finish_proposal") { props["blocks"] = blocks; props["boardPatch"] = boardPatch; props["baseRefs"] = arr(ref) }
+        if (name == "finish_proposal") { props["followUp"] = obj(listOf("question"),"question" to str,"topicId" to str,"options" to arr(obj(listOf("key","label"),"key" to str,"label" to str)),"missingFields" to arr(str)); props["blocks"] = blocks; props["boardPatch"] = boardPatch; props["baseRefs"] = arr(ref) }
         return parameters + ("properties" to props)
     }
 }

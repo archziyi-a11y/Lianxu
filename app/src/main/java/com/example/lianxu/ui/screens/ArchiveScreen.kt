@@ -10,6 +10,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
@@ -20,8 +23,9 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class,ExperimentalFoundationApi::class,ExperimentalLayoutApi::class)
-@Composable fun ArchiveScreen(modifier:Modifier=Modifier,viewModel:ArchiveViewModel=viewModel(),onRetry:(String)->Unit={},onShowToday:()->Unit={}){
+@Composable fun ArchiveScreen(modifier:Modifier=Modifier,viewModel:ArchiveViewModel=viewModel(),onRetry:(String)->Unit={},onShowToday:()->Unit={},initialSection:String="首页",onSectionConsumed:()->Unit={},onSettings:()->Unit={},todayModel:TodayViewModel?=null){
  val state by viewModel.dashboard.collectAsState()
+ val shortViewport=LocalConfiguration.current.screenHeightDp<450
  var page by rememberSaveable { mutableStateOf("首页") }
  var category by rememberSaveable { mutableStateOf<String?>(null) }
  var options by remember { mutableStateOf<ArchiveDisplay?>(null) }
@@ -31,6 +35,9 @@ import java.time.format.DateTimeFormatter
  val message by viewModel.message.collectAsState();val busy by viewModel.busy.collectAsState()
  val clipboard=LocalClipboardManager.current
  BackHandler(page!="首页" || category!=null){page="首页";category=null}
+ LaunchedEffect(initialSection){if(initialSection!="首页"){page=initialSection;onSectionConsumed()}}
+ if(page=="安排"){ArrangementScreen(viewModel){page="首页"};return}
+ if(page=="设置" && todayModel!=null)SettingsPanel(todayModel){page="首页"}
  val management=page in listOf("记录","阶段","历日","资料","备份")
  if(management){ArchiveManagementScreen(modifier,viewModel,onRetry,onShowToday,initialSection=page,onBack={page="首页"});return}
  if(importMethod)AlertDialog(onDismissRequest={if(!busy)importMethod=false},title={Text("导入分析方法")},text={Column(verticalArrangement=Arrangement.spacedBy(8.dp)){
@@ -48,7 +55,16 @@ import java.time.format.DateTimeFormatter
   Text("计算依据",style=MaterialTheme.typography.titleSmall)
   item.topics.forEach { key->Text(state.sources[key].orEmpty(),style=MaterialTheme.typography.bodySmall) }
  }},confirmButton={TextButton(onClick={detail=null}){Text("关闭")}}) }
- Scaffold(topBar={TopAppBar(title={Text(if(page=="方法")"分析方法" else category ?: "档案")},navigationIcon={if(page!="首页" || category!=null)TextButton(onClick={page="首页";category=null}){Text("返回")}},actions={TextButton(onClick={page="资料"}){Text("资料")}})}) { padding->
+ Scaffold(topBar={
+  if(page!="首页" || category!=null)TopAppBar(title={Text(if(page=="方法")"分析方法" else category ?: "档案")},navigationIcon={TextButton(onClick={page="首页";category=null}){Text("返回")}})
+  else Column(Modifier.padding(horizontal=20.dp,vertical=8.dp)) {
+   if(!shortViewport)Text("练序  /  ARCHIVE",style=MaterialTheme.typography.labelMedium,color=MaterialTheme.colorScheme.onSurfaceVariant)
+   Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically) { Text("档案",Modifier.weight(1f),style=if(shortViewport)MaterialTheme.typography.titleLarge else MaterialTheme.typography.displaySmall);TextButton(onClick={page="资料"}){Text("资料与目标 ↗")} }
+   if(!shortViewport)Text("从积累中，看见变化。",Modifier.padding(vertical=8.dp),style=MaterialTheme.typography.labelLarge)
+   HorizontalDivider(color=MaterialTheme.colorScheme.outlineVariant)
+  }
+ }) { padding->
+  val wideCards=LocalConfiguration.current.screenWidthDp<350 || LocalDensity.current.fontScale>1.25f
   LazyVerticalGrid(columns=GridCells.Fixed(6),modifier=modifier.fillMaxSize().padding(padding),contentPadding=PaddingValues(16.dp),horizontalArrangement=Arrangement.spacedBy(10.dp),verticalArrangement=Arrangement.spacedBy(12.dp)){
    if(page=="方法"){
     item(span={GridItemSpan(6)}){Column(verticalArrangement=Arrangement.spacedBy(8.dp)){
@@ -63,6 +79,9 @@ import java.time.format.DateTimeFormatter
      Text(definition.question);TextButton(onClick={viewModel.enableMethod(m.id,!m.enabled)}){Text(if(m.enabled)"停用" else "启用")}
     }}}
    }else{
+    if(category==null)item(span={GridItemSpan(6)}) { FlowRow(horizontalArrangement=Arrangement.spacedBy(8.dp)) {
+     OutlinedButton(onClick={page="记录"}){Text("全部记录")};OutlinedButton(onClick={page="安排"}){Text("习惯与跟进")}
+    } }
     item(span={GridItemSpan(6)}){Column(verticalArrangement=Arrangement.spacedBy(6.dp)){
      if(state.overview.isNotBlank())Text(state.overview,style=MaterialTheme.typography.titleMedium)
      if(state.updatedAt>0)Text("更新于 ${DateTimeFormatter.ofPattern("MM-dd HH:mm").format(Instant.ofEpochMilli(state.updatedAt).atZone(ZoneId.systemDefault()))}",style=MaterialTheme.typography.labelSmall)
@@ -70,20 +89,21 @@ import java.time.format.DateTimeFormatter
      message?.let{Text(it,style=MaterialTheme.typography.bodySmall)}
     }}
     val displays=if(category==null)state.cards else state.catalog.filter { display->display.topics.any { key->state.topics.any { it.id==key && it.category==category } } }
-    if(displays.isEmpty() && category==null)item(span={GridItemSpan(6)}){Column(verticalArrangement=Arrangement.spacedBy(8.dp)){Text("从已有记录开始，逐渐看见变化。",style=MaterialTheme.typography.bodyLarge);TextButton(onClick={page="记录"}){Text("查看或补充记录")}}}
-    items(displays,key={it.card.id},span={GridItemSpan(it.card.span.span)}){display->
-     Card(modifier=Modifier.fillMaxWidth().combinedClickable(onClick={detail=display},onLongClick={options=display},onLongClickLabel="展示选项")){
+    if(displays.isEmpty() && category==null)item(span={GridItemSpan(6)}){Column(verticalArrangement=Arrangement.spacedBy(8.dp)){Text("从已有记录开始，逐渐看见变化。",style=MaterialTheme.typography.bodyLarge);TextButton(onClick=onShowToday){Text("记录今天 →")};TextButton(onClick={page="资料"}){Text("完善资料与目标")}}}
+    items(displays,key={it.card.id},span={GridItemSpan(if(wideCards)6 else it.card.span.span)}){display->
+     Card(modifier=Modifier.animateItem().fillMaxWidth().combinedClickable(onClick={detail=display},onLongClick={options=display},onLongClickLabel="展示选项"),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surface),border=BorderStroke(1.dp,MaterialTheme.colorScheme.outlineVariant)){
       Column(Modifier.padding(14.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){
        if(display.priority)Text("优先展示",style=MaterialTheme.typography.labelSmall,color=MaterialTheme.colorScheme.primary)
        Text(display.card.title,style=MaterialTheme.typography.titleSmall)
-       state.resolved[display.card.id].orEmpty().forEach { block->ComponentView(block,display.card.span.span==2,{_,_->},{}) }
+       val blocks=state.resolved[display.card.id].orEmpty()
+       blocks.filterNot { it.type=="text" && blocks.any { chart->chart.type=="trend" && chart.text==it.text } }.forEach { block->ComponentView(block,display.card.span.span==2,{_,_->},{}) }
       }
      }
     }
     if(category==null)item(span={GridItemSpan(6)}){Column(verticalArrangement=Arrangement.spacedBy(8.dp)){
      HorizontalDivider();Text("长期资料",style=MaterialTheme.typography.titleSmall)
      FlowRow(horizontalArrangement=Arrangement.spacedBy(8.dp)){MethodRegistry.categories.forEach { name->TextButton(onClick={category=name}){Text(name)}}}
-     FlowRow(horizontalArrangement=Arrangement.spacedBy(8.dp)){listOf("全部记录" to "记录","分析历史" to "阶段","历日方案" to "历日","分析方法" to "方法","备份恢复" to "备份").forEach { (label,target)->TextButton(onClick={page=target}){Text(label)}}}
+     FlowRow(horizontalArrangement=Arrangement.spacedBy(8.dp)){listOf("分析历史" to "阶段","历日方案" to "历日","分析方法" to "方法","备份恢复" to "备份","连接与显示" to "设置").forEach { (label,target)->TextButton(onClick={page=target}){Text(label)}}}
     }}
    }
    item(span={GridItemSpan(6)}){Spacer(Modifier.height(24.dp))}

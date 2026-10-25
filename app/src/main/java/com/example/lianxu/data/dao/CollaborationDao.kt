@@ -72,6 +72,7 @@ interface CollaborationDao {
 
 @Dao
 interface RecordDao {
+    @Query("SELECT * FROM knowledge_notes WHERE deletedAt IS NULL") fun watchArrangements(): Flow<List<KnowledgeNote>>
     @Query("SELECT * FROM knowledge_notes WHERE id = :id") suspend fun knowledgeById(id: String): KnowledgeNote?
     @Update suspend fun updateTraining(value: TrainingSession)
     @Update suspend fun updateIntake(value: IntakeEntry)

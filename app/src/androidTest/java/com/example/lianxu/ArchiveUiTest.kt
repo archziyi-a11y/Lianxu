@@ -28,9 +28,9 @@ class ArchiveUiTest {
         val vm=ArchiveViewModel(context.applicationContext as Application,db)
         val store=ViewModelStore().apply { put("archive",vm) }
         try {
-            rule.setContent { MaterialTheme { ArchiveScreen(viewModel=vm) } }
+            rule.setContent { com.example.lianxu.ui.theme.LianxuTheme { ArchiveScreen(viewModel=vm) } }
             rule.onNodeWithText("全部记录").performScrollTo().performClick()
-            rule.onNodeWithText("补记训练、饮食或测量").performClick()
+            rule.onNodeWithText("补记历史训练、饮食或测量").performClick()
             rule.onNodeWithText("记录说明").performTextInput("今天练胸四组，状态一般")
             rule.onNodeWithText("保存").performClick()
             rule.waitUntil(20000) { runBlocking { db.recordDao().allTrainings().isNotEmpty() } }
@@ -49,7 +49,7 @@ class ArchiveUiTest {
         runBlocking { com.example.lianxu.data.repository.HistoryRepository(db).add("measurement","",java.time.LocalDate.now(),"body_fat",18f) }
         val vm=ArchiveViewModel(context.applicationContext as Application,db);val store=ViewModelStore().apply { put("archive",vm) }
         try {
-            rule.setContent { MaterialTheme { ArchiveScreen(viewModel=vm) } }
+            rule.setContent { com.example.lianxu.ui.theme.LianxuTheme { ArchiveScreen(viewModel=vm) } }
             rule.waitUntil(20000) { rule.onAllNodesWithText("体脂率变化").fetchSemanticsNodes().isNotEmpty() }
             rule.onRoot().captureToImage().asAndroidBitmap().let { bitmap->File(context.filesDir,"archive-ui.png").outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG,100,it) } }
             rule.onNodeWithText("体脂率变化").performTouchInput { longClick() }

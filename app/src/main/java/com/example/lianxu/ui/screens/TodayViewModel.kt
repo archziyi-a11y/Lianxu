@@ -30,8 +30,8 @@ import java.io.File
 import java.time.LocalDate
 import java.time.ZoneId
 
-class TodayViewModel(application: Application) : AndroidViewModel(application) {
-    private val db = AppDatabase.getDatabase(application)
+class TodayViewModel @JvmOverloads constructor(application: Application, database: AppDatabase? = null, private val testClient: com.example.lianxu.agent.AgentClient? = null) : AndroidViewModel(application) {
+    private val db = database ?: AppDatabase.getDatabase(application)
     private val settings = SettingsManager(application)
     private val store = BoardStore(db)
     private val attachments = AttachmentStore(application, db)
@@ -78,7 +78,7 @@ class TodayViewModel(application: Application) : AndroidViewModel(application) {
                     kotlinx.coroutines.coroutineScope {
                         launch {
                             val records = AppRepository(db)
-                            combine(records.archiveFlow, records.trainings, records.intakes, records.knowledge) { _, _, _, _ -> Unit }.collect {
+                            combine(records.archiveFlow, records.trainings, records.intakes, records.knowledge, db.archiveDao().watchMethods()) { _, _, _, _, _ -> Unit }.collect {
                                 _isPlanning.value = true
                                 try { writes.withLock { repository.refresh(current.id) } }
                                 catch (error: CancellationException) { throw error }
@@ -150,6 +150,13 @@ class TodayViewModel(application: Application) : AndroidViewModel(application) {
             } finally { _isImporting.value = false }
         }
     }
+    fun updateInput(cardId:String,key:String,value:String)=edit { cards->cards.map { c->if(c.id==cardId)c.copy(inputValues=if(value.isBlank())c.inputValues-key else c.inputValues+(key to value)) else c } }
+    fun clearInput(cardId:String)=edit { cards->cards.map { if(it.id==cardId)it.copy(annotationText=null,attachmentId=null,annotationImageUri=null,inputValues=emptyMap(),annotationAnchor=null,isAnnotationMode=false) else it } }
+    fun removeImage(cardId:String)=edit { cards->cards.map { if(it.id==cardId)it.copy(attachmentId=null,annotationImageUri=null) else it } }
+    fun closeAnnotations()=edit { cards->cards.map { it.copy(isAnnotationMode=false) } }
+    fun addInput(kind:String):String { val card=DashboardCard(title=when(kind){"training"->"记录训练";"measurement"->"身体测量";"intake"->"饮食补充";else->"自由补充"},span=CardSpan.LARGE,
+        blocks=listOf(com.example.lianxu.data.repository.ActiveInputRepository.input(kind)),managedBy="user_input");edit { it+card };return card.id }
+    fun skipQuestion(cardId:String,key:String){viewModelScope.launch { com.example.lianxu.data.repository.ActiveInputRepository(db).dismissInvitation(key,_boardDate.value) };edit { cards->cards.filterNot { it.id==cardId } } }
     fun getApiKey(callback: (String?) -> Unit) {
         viewModelScope.launch {
             try { callback(settings.apiKeyFlow.first()) }
@@ -162,7 +169,7 @@ class TodayViewModel(application: Application) : AndroidViewModel(application) {
             catch (error: Exception) { _notice.value = "密钥保存失败，请重试" }
         }
     }
-    fun submitAnnotations() {
+    fun submitAnnotations(localOnly:Boolean=false) {
         val id = boardId ?: return
         if (_isProcessing.value || _isImporting.value) return
         _isProcessing.value = true
@@ -175,9 +182,9 @@ class TodayViewModel(application: Application) : AndroidViewModel(application) {
                 val key = settings.apiKeyFlow.first()
                 val repository = requireNotNull(nutrition)
                 val runner = com.example.lianxu.agent.AgentRunner(getApplication(), db, repository.catalog,
-                    key?.takeIf { it.isNotBlank() }?.let { com.example.lianxu.agent.DeepSeekAgentClient(it) }) { if (boardId == id) _taskProgress.value = it }
-                val result = runner.run(frozen)
-                if (boardId == id) _notice.value = result
+                    if(localOnly)null else testClient ?: key?.takeIf { it.isNotBlank() }?.let { com.example.lianxu.agent.DeepSeekAgentClient(it) }) { if (boardId == id) _taskProgress.value = it }
+                runner.run(frozen)
+                if (boardId == id) _notice.value = null
 
             } catch (error: CancellationException) {
                 val completed = kotlinx.coroutines.withContext(kotlinx.coroutines.NonCancellable) {

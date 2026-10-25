@@ -89,7 +89,7 @@ class ArchiveRepository(val context:Context,val db:AppDatabase){
   if(r.getString("chartKind")=="none"){
    for(path in listOf("trainingCount","measurementCount","intakeCount"))if(r.optInt(path)>0)blocks.add(BoardComponent(path,"metric",ComponentContent(label=when(path){"trainingCount"->"训练";"measurementCount"->"测量";else->"饮食"},calculationId=c.id,resultPath=path,unit="条")))
   }else{
-   if(r.getString("chartKind")=="line")blocks.add(BoardComponent("latest","metric",ComponentContent(label="最近记录",calculationId=c.id,resultPath="latest",unit=r.getString("unit"))))
+   if(r.getString("chartKind")=="line")blocks.add(BoardComponent("latest","metric",ComponentContent(label=if(JSONObject(c.inputSnapshot).optJSONObject("methodPackage")?.optJSONObject("manifest")?.optString("operator")=="rolling_mean")"最近滚动均值" else "最近记录",calculationId=c.id,resultPath="latest",unit=r.getString("unit"))))
    if(r.getJSONArray("points").length()>1 || r.getString("chartKind")!="line")blocks.add(BoardComponent("chart","trend",ComponentContent(label=topic.title,calculationId=c.id,unit=r.getString("unit"))))
   }
   // A local explanation is bound to the same calculation; the composer may provide a sourced replacement.

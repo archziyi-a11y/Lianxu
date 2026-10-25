@@ -29,10 +29,11 @@ class AgentRunner(private val context: Context, private val db: AppDatabase, pri
                     val tools = AgentTools(work)
                     val applier = ProposalApplier(work)
                     if (client == null) {
+                        ActiveInputRepository(work.overlay).consume(submission, offline = true)
                         val demo = JSONObject().put("contractVersion", "2").put("turnId", submission.turn.id).put("taskId", submission.task.id)
-                            .put("operations", JSONArray()).put("summary", "本地演示：本轮文字和图片已保留。当前营养与餐食由本地规则计算，尚未进行AI理解。")
+                            .put("operations", JSONArray()).put("summary", "已在本机保存本轮输入。明确填写的记录已入账；图片与自由补充保留原文，未进行 AI 理解。")
                         val cards = applier.finish(demo); applier.commit(cards, demo)
-                        return@withTimeout "本地演示：补充已保留，尚未进行AI分析"
+                        return@withTimeout "已在本机保存 · 未进行 AI 分析"
                     }
                     val messages = mutableListOf(Message("system", AgentProtocol.instructions + "\n表达指导：" + presentationGuide()))
                     messages.add(Message("user", inputContent(work)))
@@ -102,7 +103,10 @@ class AgentRunner(private val context: Context, private val db: AppDatabase, pri
     } }
     private fun presentationGuide(): String = runCatching { context.assets.open("assistant/intent-presentation.v1.json").bufferedReader().use { it.readText() } }.getOrDefault("根据问题自由组合文本、指标、清单与趋势；不强制展示缺数据卡片。")
     private suspend fun inputContent(work: AgentWorkspace): List<Map<String, Any>> {
-        val b = work.basis
+        val b = JSONObject(work.basis.toString())
+        b.put("trainings",JSONArray(work.overlay.recordDao().allTrainings().map { JSONObject(DomainJson.encode(it)) }))
+        b.put("measurements",JSONArray(work.overlay.measurementDao().all().map { JSONObject(DomainJson.encode(it)) }))
+        b.put("intakes",JSONArray(work.overlay.recordDao().allIntakes().map { JSONObject(DomainJson.encode(it)) }))
         val date = java.time.LocalDate.parse(work.date)
         val relevant = JSONObject()
         var remaining = 200
@@ -126,11 +130,12 @@ class AgentRunner(private val context: Context, private val db: AppDatabase, pri
                 .put("readableContent", ComponentResolver(db).readable(card))
         })
         val context = JSONObject().put("contractVersion", "2").put("turnId", work.submission.turn.id).put("taskId", work.submission.task.id)
+            .put("automaticAnnotationIds", JSONArray(work.automaticAnnotationIds.toList())).put("arrangements",JSONArray(b.getJSONArray("knowledge").objects().filter { it.getString("kind") in ActiveInputRepository.reserved }))
             .put("submissionId", work.submission.turn.submissionId).put("dateContext", JSONObject(work.dateContext)).put("focus", work.annotations.objects().firstOrNull()?.opt("target"))
             .put("annotations", work.annotations).put("inputParts", b.getJSONObject("input").getString("rawText"))
             .put("currentProfile", b.optJSONObject("profile")).put("activeGoal", b.getJSONArray("goals").objects().firstOrNull { it.getString("startsOn") <= work.date && (it.isNull("endsOn") || it.getString("endsOn") > work.date) })
             .put("activeNutritionPolicy", b.getJSONArray("policies").objects().filter { it.getString("startsOn") <= work.date }.maxByOrNull { it.getString("startsOn") })
-            .put("activeKnowledge", JSONArray(b.getJSONArray("knowledge").objects().filter { it.getString("status") == "current" && it.getString("effectiveFrom") <= work.date && (it.isNull("effectiveUntil") || it.getString("effectiveUntil") >= work.date) &&
+            .put("activeKnowledge", JSONArray(b.getJSONArray("knowledge").objects().filter { it.getString("kind") !in ActiveInputRepository.reserved && it.getString("status") == "current" && it.getString("effectiveFrom") <= work.date && (it.isNull("effectiveUntil") || it.getString("effectiveUntil") >= work.date) &&
                 runCatching { JSONObject(it.getString("origin")).optJSONArray("inputRefs")?.toString() }.getOrNull()?.let { refs -> validity.refsUsable(refs) } != false }))
             .put("relevantRecords", relevant).put("currentBoard", board).put("baseRevisions", work.basisRefs())
             .put("currentPlan", b.getJSONArray("plans").objects().firstOrNull { it.getString("dateContext") == work.dateContext })

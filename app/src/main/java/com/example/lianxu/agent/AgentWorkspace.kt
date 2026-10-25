@@ -27,6 +27,7 @@ class AgentWorkspace private constructor(val context: Context, val real: AppData
     val date: String = JSONObject(dateContext).getString("date")
     val annotations = JSONArray(basis.getJSONObject("input").getString("annotationsJson"))
     private val annotationIds = annotations.objects().map { it.getString("annotationId") }.toSet()
+    var automaticAnnotationIds: Set<String> = emptySet(); private set
     val dao get() = overlay.collaborationDao()
     val nutrition get() = NutritionBoardRepository(overlay, extendedCatalog())
     fun extendedCatalog() = FoodCatalog(catalog.foods + estimates.values.map { e ->
@@ -61,6 +62,8 @@ class AgentWorkspace private constructor(val context: Context, val real: AppData
         basis.getJSONArray("attachments").objects().forEach { d.putAttachment(DomainJson.decode(it.toString())) }
         d.putBoard(DomainJson.decode(basis.getJSONObject("board").toString()))
         d.putCards(submission.cards.map { Card(it.id, submission.task.boardId, DomainJson.encode(it.copy(annotationText = null, attachmentId = null, annotationImageUri = null, isAnnotationMode = false, annotationAnchor = null))) })
+        d.putInput(DomainJson.decode(basis.getJSONObject("input").toString()))
+        automaticAnnotationIds = ActiveInputRepository(overlay).consume(submission)
         toolCalculations.clear()
     }
     suspend fun stage(operations: JSONArray): JSONObject {
@@ -86,6 +89,7 @@ class AgentWorkspace private constructor(val context: Context, val real: AppData
     private fun checkedDate(raw: Any?): String {
         val dc = when (raw) { is JSONObject -> raw; is String -> if (raw.startsWith("{")) JSONObject(raw) else JSONObject(dateContext).put("date", raw); else -> JSONObject(dateContext) }
         LocalDate.parse(dc.getString("date")); require(dc.getString("date") <= date) { "OUT_OF_SCOPE: future record" }
+        if(submission.turn.entry=="daily") require(dc.getString("date")==date) { "OUT_OF_SCOPE: historical additions belong in archive" }
         val zone = dc.optString("zoneId", JSONObject(dateContext).getString("zoneId")); java.time.ZoneId.of(zone)
         return JSONObject().put("date", dc.getString("date")).put("zoneId", zone).put("basis", "operation_context").toString()
     }
@@ -129,6 +133,12 @@ class AgentWorkspace private constructor(val context: Context, val real: AppData
             require(related.isNotEmpty() && related.all { it in annotationIds } && original.optString("reason").isNotBlank()) { "OUT_OF_SCOPE: operation requires relatedAnnotationIds and reason" }
             val op = resolve(original) as JSONObject
             val kind = op.getString("kind")
+            if (kind in listOf("create_training","create_intake","create_measurement")) {
+                val automaticKinds=annotations.objects().filter { it.getString("annotationId") in related && it.getString("annotationId") in automaticAnnotationIds }
+                    .flatMap { it.getJSONArray("inputParts").objects() }.filter { it.optString("type")=="structured" }.map { it.getString("inputKind") }
+                require(kind.removePrefix("create_") !in automaticKinds) { "DUPLICATE_OPERATION: this structured fact is already recorded; read or update its current-turn record" }
+            }
+            if (submission.turn.entry == "daily") require(kind !in listOf("update_profile","set_goal")) { "OUT_OF_SCOPE: today appends; correct historical facts and manage goals in archive" }
             val target = op.optJSONObject("targetRef")
             val expectedType = when (kind.substringAfter("create_").substringAfter("update_")) {
                 "training" -> "training"; "intake" -> "intake"; "measurement" -> "measurement"; "profile" -> "profile"
@@ -136,6 +146,11 @@ class AgentWorkspace private constructor(val context: Context, val real: AppData
             }
             if (target != null) require(expectedType != null && target.getString("type") == expectedType) { "INVALID_SHAPE: targetRef.type" }
             if (kind.startsWith("create_") || kind == "set_goal") require(target == null) { "INVALID_SHAPE: creates allocate new IDs" }
+            if(submission.turn.entry=="daily" && kind in listOf("update_training","update_intake","update_measurement")) {
+                val targetId=target?.getString("id")
+                val source=when(kind){"update_training"->targetId?.let { overlay.recordDao().training(it)?.origin };"update_intake"->targetId?.let { overlay.recordDao().intake(it)?.origin };else->targetId?.let { overlay.measurementDao().byId(it)?.origin }}
+                require(source?.let { runCatching { JSONObject(it).optString("turnId")==submission.turn.id }.getOrDefault(false) }==true) { "OUT_OF_SCOPE: archive owns historical corrections" }
+            }
             val client = original.nullString("clientRef")
             val objectId = target?.getString("id") ?: client?.let { allocated(it) } ?: refId("${submission.turn.submissionId}:${op.getString("operationId")}")
             val payload = op.getJSONObject("payload")
@@ -254,7 +269,9 @@ class AgentWorkspace private constructor(val context: Context, val real: AppData
                 }
                 "upsert_knowledge" -> {
                     type = "knowledge"; payload.shape("kind", "text", "effectiveFrom", "effectiveUntil", "status", "expectedRevision")
+                    require(payload.getString("kind") !in ActiveInputRepository.reserved) { "OUT_OF_SCOPE: application-owned arrangement" }
                     val existing = overlay.recordDao().allKnowledge().find { it.id == objectId }
+                    require(existing?.kind !in ActiveInputRepository.reserved) { "OUT_OF_SCOPE: arrangement management is in archive" }
                     old = existing?.let { JSONObject(DomainJson.encode(it)) }
                     val protected = overlay.recordDao().allKnowledge().filter { note -> note.status == "current" && note.kind == payload.getString("kind") &&
                         runCatching { JSONObject(note.origin).optBoolean("corrected") }.getOrDefault(false) }

@@ -33,6 +33,11 @@ class ArchiveViewModel @JvmOverloads constructor(application: Application, datab
     private val db = database ?: AppDatabase.getDatabase(application)
     private val repository = AppRepository(db)
     private val archive=ArchiveRepository(application,db)
+    val arrangements=db.recordDao().watchArrangements().stateIn(viewModelScope,SharingStarted.WhileSubscribed(5000),emptyList())
+    fun saveFollowUp(text:String,old:KnowledgeNote?=null,status:String="current",done:()->Unit={})=work {
+        ActiveInputRepository(db).arrange(text,old,status);_message.value=if(status=="cancelled")"已取消主动跟进，历史进展保留" else "跟进安排已保存";done()
+    }
+    fun saveHabit(note:KnowledgeNote,name:String,format:String,enabled:Boolean,done:()->Unit={})=work { ActiveInputRepository(db).editHabit(note,name,format,enabled);_message.value="记录习惯已更新";done() }
     private val selectedScope=MutableStateFlow("current_phase")
     private val _dashboard=MutableStateFlow(ArchiveDashboardState())
     val dashboard=_dashboard.asStateFlow()
@@ -108,13 +113,14 @@ class ArchiveViewModel @JvmOverloads constructor(application: Application, datab
                 dao.putDraft(draft.copy(revision=draft.revision+1,cardsJson=BoardStore(db).encode(updated),updatedAt=System.currentTimeMillis()))
                 dao.putBoard(current.copy(revision=current.revision+1))
                 BoardStore(db).edit(board.id) { cards -> cards.map { if(it.id==cardId)it.copy(isAnnotationMode=true,
-                    annotationText=if(item==null)"结合阶段记录、当前目标和习惯，给出阶段评价与建议。" else "请结合这条记录整理分析，我会在这里补充需要纠正的内容。") else it } }
+                    annotationText=if(item==null)"结合阶段记录、当前目标和习惯，给出阶段评价与建议。" else "请结合这条历史记录分析我今天的新进展。旧记录纠正在档案完成。") else it } }
             }
         }
         onReady()
     }
     fun refreshAssessment()=work { archive.refresh(); _message.value="阶段记录已整理" }
     fun addRecord(type: String,text: String,date: String,metric: String,value: String,onSaved:()->Unit={})=work {
+        require(type=="knowledge" || LocalDate.parse(date)<today()) { "今天的信息请到今日添加；历史补记请选择早于今天的日期" }
         lastMutation=history.add(type,text,LocalDate.parse(date),metric,value.takeIf(String::isNotBlank)?.toFloatOrNull());canUndo.value=true
         archive.refresh();_message.value="已保存在本机";onSaved()
     }

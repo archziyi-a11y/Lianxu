@@ -51,10 +51,10 @@ class BoardStore(private val db: AppDatabase) {
         val before = decode(draft.cardsJson).associateBy { it.id }
         val board = requireNotNull(dao.board(boardId))
         val next = transform(before.values.toList()).map { card ->
-            val hasInput = !card.annotationText.isNullOrBlank() || card.attachmentId != null
+            val hasInput = ActiveInputRepository.hasInput(card)
             if (!card.isAnnotationMode && !hasInput) card.copy(annotationAnchor = null)
             else if (card.annotationAnchor == null) {
-                val original = before.getValue(card.id)
+                val original = before[card.id] ?: card
                 card.copy(annotationAnchor = AnnotationAnchor(board.revision, original.revision,
                     ComponentResolver(db).readable(original), JSONArray(original.blocks.map { JSONObject(DomainJson.encode(it)) }).toString(), original.title))
             } else card
@@ -67,7 +67,8 @@ class BoardStore(private val db: AppDatabase) {
         val draft = requireNotNull(dao.draft(boardId))
         val board = requireNotNull(dao.board(boardId))
         val cards = decode(draft.cardsJson)
-        val annotated = cards.filter { !it.annotationText.isNullOrBlank() || it.attachmentId != null }
+        val annotated = cards.filter { ActiveInputRepository.hasInput(it) }
+        annotated.forEach { ActiveInputRepository.validateValues(it) }
         require(annotated.isNotEmpty()) { "请先补充文字或图片" }
         val existing = dao.taskForDraft(boardId, draft.revision)
         if (existing != null) {
@@ -92,6 +93,11 @@ class BoardStore(private val db: AppDatabase) {
             card.attachmentId?.let {
                 requireNotNull(dao.attachment(it)) { "图片来源已丢失" }
                 parts.put(JSONObject().put("type", "image").put("attachmentId", it))
+            }
+            card.blocks.firstOrNull { it.type == "input" }?.let { control ->
+                parts.put(JSONObject().put("type", "structured").put("inputKind",control.content.inputKind)
+                    .put("values",JSONObject(card.inputValues)).put("fields",JSONArray(control.content.inputFields))
+                    .put("followUpId",card.followUpId).put("invitationId",card.invitationId))
             }
             val anchor = card.annotationAnchor
             annotations.put(JSONObject().put("annotationId", UUID.randomUUID().toString())
@@ -122,7 +128,7 @@ class BoardStore(private val db: AppDatabase) {
         val board = requireNotNull(dao.board(task.boardId))
         check(board.revision == submission.boardRevision) { "看板已更新，请重新提交" }
         require(result.map { it.id }.distinct().size == result.size) { "卡片标识重复" }
-        val clean = result.map { it.copy(isAnnotationMode = false, annotationText = null, annotationImageUri = null, attachmentId = null, annotationAnchor = null) }
+        val clean = result.map { it.copy(isAnnotationMode = false, annotationText = null, annotationImageUri = null, attachmentId = null, annotationAnchor = null, inputValues = emptyMap()) }
         val now = System.currentTimeMillis()
         val snapshotId = UUID.randomUUID().toString()
         dao.removeCards(board.id)
@@ -134,7 +140,7 @@ class BoardStore(private val db: AppDatabase) {
         val next = if (draft.revision == task.draftRevision) clean else {
             val pending = decode(draft.cardsJson).associateBy { it.id }
             clean.map { card -> pending[card.id]?.let { old -> card.copy(isAnnotationMode = old.isAnnotationMode,
-                annotationText = old.annotationText, annotationImageUri = old.annotationImageUri, attachmentId = old.attachmentId, annotationAnchor = old.annotationAnchor) } ?: card } +
+                annotationText = old.annotationText, annotationImageUri = old.annotationImageUri, attachmentId = old.attachmentId, annotationAnchor = old.annotationAnchor, inputValues = old.inputValues) } ?: card } +
                 pending.values.filter { old -> clean.none { it.id == old.id } }
         }
         dao.putDraft(draft.copy(revision = draft.revision + 1, cardsJson = encode(next), updatedAt = now))

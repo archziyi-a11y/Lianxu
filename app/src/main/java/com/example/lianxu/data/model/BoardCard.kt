@@ -20,7 +20,10 @@ data class DashboardCard(
     val blocks: List<BoardComponent> = emptyList(),
     val entityRefs: List<EntityRef> = emptyList(),
     val annotationAnchor: AnnotationAnchor? = null,
-    val managedBy: String = "local"
+    val managedBy: String = "local",
+    val inputValues: Map<String, String> = emptyMap(),
+    val followUpId: String? = null,
+    val invitationId: String? = null
 )
 
 @JsonClass(generateAdapter = true)
@@ -33,7 +36,8 @@ data class ChoiceOption(val key: String, val label: String)
 data class ComponentContent(val label: String? = null, val text: String? = null,
     val contentRef: ContentRef? = null, val calculationId: String? = null, val resultPath: String? = null,
     val unit: String? = null, val entityRefs: List<EntityRef> = emptyList(), val mealId: String? = null,
-    val options: List<ChoiceOption> = emptyList(), val selectedKey: String? = null, val attachmentId: String? = null)
+    val options: List<ChoiceOption> = emptyList(), val selectedKey: String? = null, val attachmentId: String? = null,
+    val inputKind: String? = null, val inputFields: List<String> = emptyList(), val suggestedName: String? = null)
 @JsonClass(generateAdapter = true)
 data class CardAction(val actionId: String, val label: String, val kind: String, val targetRef: EntityRef,
     val mealId: String? = null, val value: String? = null)

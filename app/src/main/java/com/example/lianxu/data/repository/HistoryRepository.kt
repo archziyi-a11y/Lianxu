@@ -19,7 +19,7 @@ class HistoryRepository(private val db: AppDatabase) {
         (t.map { HistoryItem("training",it.id,it.revision,day(it.dateContext),it.title.ifBlank { "训练" },it.rawSummary.orEmpty(),DomainJson.encode(it)) } +
             i.map { HistoryItem("intake",it.id,it.revision,day(it.dateContext),"实际摄入",it.rawDescription.orEmpty(),DomainJson.encode(it)) } +
             m.map { HistoryItem("measurement",it.id,it.revision,day(it.observed),label(it.metric),"${it.value} ${it.unit}",DomainJson.encode(it)) } +
-            k.map { HistoryItem("knowledge",it.id,it.revision,it.effectiveFrom,"长期认识 · ${it.kind}",it.text,DomainJson.encode(it)) }).sortedByDescending { it.date }
+            k.filter { it.kind !in ActiveInputRepository.reserved }.map { HistoryItem("knowledge",it.id,it.revision,it.effectiveFrom,"长期认识 · ${it.kind}",it.text,DomainJson.encode(it)) }).sortedByDescending { it.date }
     }
     suspend fun raw(type: String,id: String): JSONObject? = when(type) {
         "training" -> db.recordDao().training(id)?.let { JSONObject(DomainJson.encode(it)) }

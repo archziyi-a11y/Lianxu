@@ -59,18 +59,32 @@ class ProposalApplier(private val work: AgentWorkspace) {
             cards = cards + DashboardCard(refId("${work.submission.turn.id}:blocks"), "本轮建议", span = CardSpan.LARGE, blocks = parsed)
         }
         if (patch == null || patch.optJSONArray("upsertCards")?.length() == 0) {
-            cards = cards.filterNot { it.id == refId("${work.submission.task.boardId}:reply") } + DashboardCard(refId("${work.submission.task.boardId}:reply"), "本轮建议", span = CardSpan.LARGE,
-                blocks = listOf(BoardComponent("reply", "text", ComponentContent(contentRef = ContentRef(summaryRef, "summaryText")))), entityRefs = listOf(summaryRef))
+            cards = listOf(DashboardCard(refId("${work.submission.task.boardId}:reply"), "本轮建议", span = CardSpan.LARGE,
+                blocks = listOf(BoardComponent("reply", "text", ComponentContent(contentRef = ContentRef(summaryRef, "summaryText")))), entityRefs = listOf(summaryRef))) + cards.filterNot { it.id == refId("${work.submission.task.boardId}:reply") }
         }
         proposal.optJSONObject("followUp")?.let { follow ->
-            follow.shape("question", "options", "missingFields")
-            val question = follow.getString("question"); require(question.isNotBlank())
-            val options = follow.optJSONArray("options") ?: JSONArray()
-            val fid = refId("${work.submission.turn.id}:follow-up")
-            work.dao.putAnalysis(AnalysisEntity(fid, 1, "reply", work.date, work.date, work.currentRefs().toString(), question, "[]", "[]", "current", now, now))
-            cards = cards + DashboardCard(fid, "补充信息", span = CardSpan.LARGE,
-                blocks = listOf(BoardComponent("question", "text", ComponentContent(contentRef = ContentRef(EntityRef("analysis", fid), "summaryText")))) +
-                    if (options.length() > 0) listOf(BoardComponent("options", "choice", ComponentContent(options = options.objects().map { ChoiceOption(it.getString("key"), it.getString("label")) }))) else emptyList())
+            follow.shape("question", "options", "missingFields", "topicId")
+            val question = follow.getString("question"); require(question.isNotBlank() && question.length<=1000)
+            val notes = work.overlay.recordDao().allKnowledge()
+            val requestedId=follow.nullString("topicId")
+            val existing=requestedId?.let { key->notes.singleOrNull { it.id==key && it.kind=="follow_up" } }
+            if(requestedId!=null) require(existing?.status=="current") { "OUT_OF_SCOPE: follow-up cancelled or unknown" }
+            // No semantic matching can prove that a renamed question is a new arrangement. Once a
+            // user cancels, new schedules require the explicit archive 'new follow-up' action.
+            val mayCreate=requestedId==null && notes.none { it.kind=="follow_up" && it.status=="cancelled" }
+            if(existing!=null || mayCreate) {
+                val fid=existing?.id ?: refId("${work.submission.turn.id}:follow-up")
+                val options=follow.optJSONArray("options") ?: JSONArray()
+                require(options.length()<=8)
+                options.objects().forEach { it.shape("key","label");require(it.getString("key").length in 1..80 && it.getString("label").length in 1..160) }
+                require(options.objects().map { it.getString("key") }.distinct().size==options.length())
+                val arrangement=existing ?: KnowledgeNote(fid,1,"follow_up",question,
+                    JSONObject().put("kind","assistant").put("turnId",work.submission.turn.id).put("inputBundleId",work.submission.turn.inputBundleId).put("options",options).toString(),work.date,null,"current",null,now,now)
+                if(existing==null)work.overlay.recordDao().putKnowledge(arrangement)
+                val content=existing?.text ?: question
+                cards=cards.filterNot { it.followUpId==fid } + DashboardCard("${work.submission.task.boardId}:follow:$fid","接续上次",value=content,span=CardSpan.LARGE,
+                    blocks=com.example.lianxu.data.repository.ActiveInputRepository.followBlocks(arrangement),managedBy="input",followUpId=fid)
+            }
         }
         require(cards.size in 1..60 && cards.map { it.id }.distinct().size == cards.size) { "INVALID_RANGE: cards" }
         cards.forEach { card ->
@@ -135,7 +149,7 @@ class ProposalApplier(private val work: AgentWorkspace) {
     }
     private fun parseBlock(raw: JSONObject): BoardComponent {
         raw.shape("componentId", "type", "content", "entityRef", "actions", "order")
-        raw.optJSONObject("content")?.shape("label", "text", "contentRef", "calculationId", "resultPath", "unit", "entityRefs", "mealId", "options", "selectedKey", "attachmentId")
+        raw.optJSONObject("content")?.shape("label", "text", "contentRef", "calculationId", "resultPath", "unit", "entityRefs", "mealId", "options", "selectedKey", "attachmentId", "inputKind", "inputFields", "suggestedName")
         return DomainJson.decode(raw.toString())
     }
     private suspend fun validateBlock(block: BoardComponent) {
@@ -162,6 +176,7 @@ class ProposalApplier(private val work: AgentWorkspace) {
                 require(c.entityRefs.isNotEmpty()); work.validateRefs(JSONArray(c.entityRefs.map { JSONObject(DomainJson.encode(it)) }))
                 require(c.entityRefs.all { it.type in listOf("plan", "training", "intake") })
             }
+            "input" -> com.example.lianxu.data.repository.ActiveInputRepository.validate(c)
             "choice" -> require(c.options.isNotEmpty() && c.options.map { it.key }.distinct().size == c.options.size)
             else -> error("INVALID_SHAPE: component type")
         }
@@ -203,6 +218,15 @@ class ProposalApplier(private val work: AgentWorkspace) {
         d.putTurn(turn.copy(contextRefs = work.basisRefs().toString(), resultRefs = refs, mutationIds = JSONArray(operations.map { it.getString("operationId") }).toString()))
         operations.forEach { op ->
             d.putReceipt(MutationReceiptEntity(refId("${turn.submissionId}:${op.getString("operationId")}"), turn.submissionId, op.getString("operationId"), refs, turn.beforeBoardSnapshotId, null, System.currentTimeMillis()))
+        }
+        // Learn formats from successful model extraction too, never from prepared values.
+        operations.filter { it.getString("kind")=="create_training" }.forEach { op ->
+            val payload=op.getJSONObject("payload")
+            val exercises=payload.optJSONArray("exercises")?.objects().orEmpty()
+            val source=op.nullString("clientRef")?.let { work.mapping[it] } ?: refId("${turn.submissionId}:${op.getString("operationId")}")
+            val related=op.getJSONArray("relatedAnnotationIds").strings()
+            val imageInput=work.annotations.objects().filter { it.getString("annotationId") in related }.any { annotation->annotation.getJSONArray("inputParts").objects().any { it.optString("type")=="image" } }
+            com.example.lianxu.data.repository.ActiveInputRepository(db).learnHabit(if(imageInput)"" else exercises.firstOrNull()?.optString("name").orEmpty(),if(imageInput)"image" else "text",emptyList(),source,work.date)
         }
         BoardStore(db).complete(work.submission, cards)
     }
