@@ -100,8 +100,8 @@ import java.time.format.DateTimeFormatter
        if(metrics.size>1) {
         val primary=metrics.first()
         Text(primary.label,style=MaterialTheme.typography.labelMedium,color=MaterialTheme.colorScheme.onSurfaceVariant)
-        Text(primary.text,style=if(!lead && span<6)MaterialTheme.typography.headlineSmall else MaterialTheme.typography.displaySmall)
-        metrics.drop(1).chunked(if(wideCards || (!lead && span<6))1 else 2).forEach { row->Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(16.dp)){row.forEach { metric->Column(Modifier.weight(1f)){Text(metric.label,style=MaterialTheme.typography.labelSmall,color=MaterialTheme.colorScheme.onSurfaceVariant);Text(metric.text,style=MaterialTheme.typography.titleLarge)} }} }
+        Text(primary.text,style=if(!lead && display.card.span.span<6)MaterialTheme.typography.headlineSmall else MaterialTheme.typography.displaySmall)
+        metrics.drop(1).chunked(if(wideCards || (!lead && display.card.span.span<6))1 else 2).forEach { row->Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(16.dp)){row.forEach { metric->Column(Modifier.weight(1f)){Text(metric.label,style=MaterialTheme.typography.labelSmall,color=MaterialTheme.colorScheme.onSurfaceVariant);Text(metric.text,style=MaterialTheme.typography.titleLarge)} }} }
        }
        blocks.filterNot { (metrics.size>1 && it.type=="metric") || (it.type=="text" && blocks.any { chart->chart.type=="trend" && chart.text==it.text }) }.forEach { block->ComponentView(block,!lead && display.card.span.span==2,{_,_->},{}) }
       }

@@ -9,6 +9,7 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.viewModelScope
 import androidx.room.Room
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -128,8 +129,10 @@ class StageFiveUiTest {
   val models=ViewModelStore().apply{put("today",today);put("archive",archive)}
   val boundaryScope=CoroutineScope(SupervisorJob()+Dispatchers.Main.immediate)
   val cardsWhenProcessingEnds=CompletableDeferred<List<com.example.lianxu.data.model.DashboardCard>>()
+  val modelJobs=listOfNotNull(today.viewModelScope.coroutineContext[Job],archive.viewModelScope.coroutineContext[Job])
+  var mounted by mutableStateOf(true)
   try {
-   rule.setContent { LianxuTheme { MainScreen(today,archive) } }
+   rule.setContent { if(mounted)LianxuTheme { MainScreen(today,archive) } }
    rule.waitUntil(20000){today.cards.value.any { it.title=="卧推" }}
    val card=today.cards.value.single { it.title=="卧推" }
    rule.onNodeWithTag("card:${card.id}").performScrollTo()
@@ -149,7 +152,13 @@ class StageFiveUiTest {
    // Do not scroll to the assertion: receiving a reply must itself make it visible.
    rule.onNodeWithText("本轮建议").assertIsDisplayed()
    rule.onNodeWithText("隔离交互样本：本轮填写已保存，未填写负重保持未知。可以继续补充下一轮。").assertIsDisplayed()
-  }finally{boundaryScope.cancel();models.clear();db.close()}
+  }finally{
+   // Cancellation is asynchronous: let composition and model children stop using Room before closing it.
+   rule.runOnIdle { mounted=false;models.clear() }
+   rule.waitForIdle()
+   runBlocking { boundaryScope.coroutineContext[Job]?.cancelAndJoin();modelJobs.forEach { it.join() } }
+   db.close()
+  }
  }
 
  @Test fun manualEvidenceSession() {
