@@ -88,18 +88,18 @@ class NutritionBoardRepository(private val db: AppDatabase, val catalog: FoodCat
             val effective = aggregate(listOf("remaining" to planner.totals(DomainJson.decode<MealsDocument>(plan.meals).meals.filter { it.mealId !in eaten }).total, "intake" to intake.knownSubtotal)).total
             val close = kotlin.math.abs(effective.energyKcal!! - target.targets.energyKcal!!) <= target.targets.energyKcal * .10 &&
                 kotlin.math.abs(effective.proteinG!! - target.targets.proteinG!!) <= target.targets.proteinG * .15
-            notes.add(if (close) "当前组合接近目标（能量±10%、蛋白±15%的匹配标签）；份量按5g核算" else "当前可行组合仍有差额，可更换餐食或调整份量")
+            notes.add(if (close) "当前餐食组合接近目标" else "当前可行组合仍有差额，可更换餐食或调整份量")
         }
-        if (oldMeals.any { it.mealId in eaten && intakes.none { entry -> entry.mealKey == it.slotKey } }) notes.add("已过的前餐不再纳入剩余安排；这不会新增实际摄入，可用「仍需安排这餐」调整。")
+        if (oldMeals.any { it.mealId in eaten && intakes.none { entry -> entry.mealKey == it.slotKey } }) notes.add("已跳过前餐；如需安排，可点「仍需安排这餐」。")
         if (intakes.isNotEmpty() && (intakes.any { it.completeness != "complete" } || !intake.complete))
-            notes.add("摄入展示为已记录量；缺项保留，不能据此判断全天是否吃够")
+            notes.add("当前显示已记录摄入小计")
         val summary = buildString {
             if (target.status == "needs_input") {
                 val labels = mapOf("weightKg" to "体重", "heightCm" to "身高", "birthDate" to "出生日期", "formulaSex" to "公式参数", "goalKind" to "阶段目标", "manualTargets" to "手动营养目标")
                 append("补充${target.missingFields.joinToString("、") { labels[it] ?: it }}后，可计算每日营养目标。")
                 append("现在也可以记录训练，饮食记录可选。")
             } else if (target.status == "manual") append("当前采用你设置的每日目标。")
-            else if (target.status == "ready") append("按当前资料与阶段目标生成初始规划，不需要先记录饮食。")
+            else if (target.status == "ready") append("每日目标已按当前资料与阶段目标计算。")
             append(notes.distinct().joinToString("\n", prefix = "\n"))
         }.trim()
         val analysisRefs = refs + progress.map { EntityRef("meal_progress", it.id, it.revision) } + intakes.map { EntityRef("intake", it.id, it.revision) }
@@ -160,7 +160,7 @@ class NutritionBoardRepository(private val db: AppDatabase, val catalog: FoodCat
         if (measurements.any { it.metric == "weight" }) {
             val trend = weightTrend(measurements.filter { it.metric == "weight" }.mapNotNull { m -> date(m.observed)?.let { WeightPoint(it, m.value.toString().toDouble()) } }, onDate)
             val series = JSONObject().put("points", JSONArray(trend.points.map { JSONObject().put("date", it.date.toString()).put("value", it.value) }))
-                .put("summary", trend.weeklyChangeKg?.let { "两段周均值变化：${ComponentResolver.displayNumber(it, "kg")} kg" } ?: "已有测量日均值；数据不足时不判定周变化")
+                .put("summary", trend.weeklyChangeKg?.let { "两段周均值变化：${ComponentResolver.displayNumber(it, "kg")} kg" } ?: "每日平均体重")
             val weightInputs = measurements.filter { it.metric == "weight" }
             val weightRefs = weightInputs.map { EntityRef("measurement", it.id, it.revision) }
             val cid = id("weight:$boardId:${fingerprint(series.toString() + refsJson(weightRefs))}")
@@ -181,14 +181,14 @@ class NutritionBoardRepository(private val db: AppDatabase, val catalog: FoodCat
             val text = buildString {
                 append("观察期内已记录${frequency.trainingDays}个训练日、${frequency.sessionCount}次训练。")
                 frequency.weeklyRecordedDays?.let { append("近28天每周平均已记录${it}天。") }
-                    ?: append("记录覆盖不足28天，不推算完整月频率。")
+                    ?: append("记录尚未满28天。")
                 recent.filter { date(it.dateContext) == onDate }.forEach { append("\n${it.title.ifBlank { it.rawSummary.orEmpty() }}") }
-                if (summaries.any { it.missingSetIds.isNotEmpty() }) append("\n部分负重或次数未知，摘要不填零，也不由训练量推算消耗。")
+                if (summaries.any { it.missingSetIds.isNotEmpty() }) append("\n部分训练尚未填写负重或次数。")
             }
             if (dao.calculation(cid) == null) dao.putCalculation(CalculationEntity(cid, "training_summary", METHOD_VERSION,
                 DomainJson.encode(TrainingList(recent)), refsJson(sourceRefs), JSONObject().put("frequency", JSONObject(DomainJson.encode(frequency)))
                     .put("exercises", JSONArray(summaries.map { JSONObject(DomainJson.encode(it)) })).toString(), System.currentTimeMillis()))
-            val aid = id("training-text:$cid")
+            val aid = id("training-text:$cid:${fingerprint(text)}")
             val analysis = dao.analysis(aid)
             if (analysis == null) dao.putAnalysis(AnalysisEntity(aid, 1, "reply", onDate.minusDays(27).toString(), onDate.toString(), refsJson(sourceRefs),
                 text, "[]", JSONArray(listOf(cid)).toString(), "current", System.currentTimeMillis(), System.currentTimeMillis()))
@@ -326,7 +326,7 @@ class NutritionBoardRepository(private val db: AppDatabase, val catalog: FoodCat
             }
             return@withTransaction
         }
-        check(meal.mealId !in eaten) { "这餐已记录，规划调整不会改动实际摄入" }
+        check(meal.mealId !in eaten) { "这餐已记为摄入，请到档案修改记录" }
         if (action.kind != "lock_meal") check(!meal.locked) { "这餐已保留，请先解锁" }
         val profile = db.profileDao().getProfile()
         val target = DomainJson.decode<NutritionResult>(requireNotNull(dao.calculation(plan.targetCalculationId)).result)

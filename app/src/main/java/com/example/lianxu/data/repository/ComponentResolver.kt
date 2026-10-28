@@ -56,7 +56,7 @@ class ComponentResolver(private val db: AppDatabase) {
                 } }.joinToString("\n")
             }
 
-            "input" -> "可选输入 · 仅本次填写会保存"
+            "input" -> "可选输入"
             "choice" -> c.options.firstOrNull { it.key == c.selectedKey }?.label.orEmpty()
             "trend" -> {
                 val result = c.calculationId?.let { db.collaborationDao().calculation(it) }?.let { JSONObject(it.result) }

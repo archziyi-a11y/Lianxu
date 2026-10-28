@@ -61,7 +61,7 @@ object AnalysisExecutor {
       groups.getOrPut(name){mutableListOf()}.add(Observation(day(session.dateContext),sets,name,name,"组",EntityRef("training",session.id,session.revision)))
      }
      val all=groups.values.flatten()
-     emit("sets",m.title,all,"bars","按已知组数统计；无法可靠映射的动作保留动作名",JSONObject().put("points",JSONArray(groups.map { (name,rows)->JSONObject().put("label",name).put("value",rows.sumOf { it.value }).put("date",rows.maxOf { it.date }.toString()) })))
+     emit("sets",m.title,all,"bars","按训练组数统计",JSONObject().put("points",JSONArray(groups.map { (name,rows)->JSONObject().put("label",name).put("value",rows.sumOf { it.value }).put("date",rows.maxOf { it.date }.toString()) })))
     }
     "exercise_progress","interval_compare" -> {
      for((key,points) in performance(scoped.trainings).groupBy { it.subject }){
@@ -86,7 +86,7 @@ object AnalysisExecutor {
       if(p.all { (_,rows)->rows.map { day(it.observed) }.distinct().size>=3 }){
        val obs=p.flatMap { (g,rows)->rows.map { Observation(day(it.observed),it.value.toDouble(),g.startsOn,"phases","kg",EntityRef("measurement",it.id,it.revision)) } }
        val more=JSONObject().put("points",groupPoints(obs)).put("goalRefs",JSONArray(phases.map { JSONObject(DomainJson.encode(EntityRef("goal",it.id,it.revision))) }))
-       emit("weight",m.title,obs,"groups","相邻阶段已记录体重均值；不能据此测定肌肉增长",more)
+       emit("weight",m.title,obs,"groups","相邻阶段的平均体重",more)
        if(out.lastOrNull()?.topicKey=="${m.id}|weight|$scope"){ val old=out.removeAt(out.lastIndex);out.add(old.copy(refs=(old.refs+phases.map { EntityRef("goal",it.id,it.revision) }).distinct())) }
       }
      }
@@ -130,14 +130,14 @@ object AnalysisExecutor {
         Observation(date,totals.knownSubtotal[key] ?: return@mapNotNull null,date.toString(),key,unit,EntityRef("intake",rows.first().id,rows.first().revision))
        }
        val name=when(key){"energyKcal"->"已记录能量";"proteinG"->"已记录蛋白质";"carbohydrateG"->"已记录碳水";"fatG"->"已记录脂肪";else->"已记录纤维"}
-       val count=out.size;emit(key,name,daily,"line","按每日记录去重核算；部分记录仅为已知小计，不代表全天摄入")
+       val count=out.size;emit(key,name,daily,"line","每日已记录摄入小计")
        if(out.size>count){any=true;val old=out.removeAt(out.lastIndex);out.add(old.copy(refs=scoped.intakes.map { EntityRef("intake",it.id,it.revision) }))}
       }
-      if(!any)emit("entries",m.title,scoped.intakes.map { Observation(day(it.dateContext),1.0,it.mealKey ?: "未分类","entries","条",EntityRef("intake",it.id,it.revision)) },"bars","保留饮食描述，当前没有可核算营养值")
+      if(!any)emit("entries",m.title,scoped.intakes.map { Observation(day(it.dateContext),1.0,it.mealKey ?: "未分类","entries","条",EntityRef("intake",it.id,it.revision)) },"bars","已记录饮食描述，营养值待补充")
      } else {
       // A day contributes once per explicitly recorded scene; avoid pseudo-replicating entries.
       val daily=obs.groupBy { it.date to it.label }.map { (_,rows)->rows.first().copy(value=rows.map { it.value }.average()) }
-      stableGroups(daily,m)?.let { emit("protein",m.title,daily,"groups","明确场景下已记录蛋白质均值，非全天总量",JSONObject().put("points",groupPoints(daily)))
+      stableGroups(daily,m)?.let { emit("protein",m.title,daily,"groups","各用餐场景的已记录蛋白质均值",JSONObject().put("points",groupPoints(daily)))
        val old=out.removeAt(out.lastIndex);out.add(old.copy(refs=obs.map { it.ref }.distinct())) }
      }
     }
@@ -149,7 +149,7 @@ object AnalysisExecutor {
      val targets=latest?.let { JSONObject(it.result).optJSONObject("targets") }
      val more=JSONObject().put("units",JSONObject(NUTRIENT_KEYS.associateWith { if(it=="energyKcal")"kcal" else "g" }))
      targets?.keys()?.forEach { key->if(!targets.isNull(key))more.put(key,targets.get(key)) }
-     emit("energy",m.title,points,"line","已保存的每日营养目标；属于规划，不是实际摄入",more)
+     emit("energy",m.title,points,"line","",more)
     }
    }
   }

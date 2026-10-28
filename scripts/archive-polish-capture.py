@@ -1,5 +1,8 @@
-import subprocess,time,pathlib,uuid
-A="E:/Dev/Android/sdk/platform-tools/adb.exe";out=pathlib.Path("docs/validation/archive-polish");out.mkdir(exist_ok=True)
+import subprocess,time,pathlib,uuid,argparse
+parser=argparse.ArgumentParser()
+parser.add_argument("--output",default="docs/validation/archive-polish")
+args=parser.parse_args()
+A="E:/Dev/Android/sdk/platform-tools/adb.exe";out=pathlib.Path(args.output);out.mkdir(parents=True,exist_ok=True)
 def a(*x):return subprocess.check_output([A,*x])
 a("install","-r","app/build/outputs/apk/evidence/app-evidence.apk")
 for sparse in [False,True]:

@@ -95,7 +95,7 @@ class ArchiveRepository(val context:Context,val db:AppDatabase){
   // A local explanation is bound to the same calculation; the composer may provide a sourced replacement.
   if(topic.methodId=="builtin.nutrition")for(key in listOf("proteinG","carbohydrateG","fatG","fiberG"))if(r.opt(key) is Number)blocks.add(BoardComponent(key,"metric",ComponentContent(label=when(key){"proteinG"->"蛋白质";"carbohydrateG"->"碳水";"fatG"->"脂肪";else->"纤维"},calculationId=c.id,resultPath=key,unit="g")))
   val aid=topic.analysisId;val a=aid?.let { db.collaborationDao().analysis(it) }
-  if(a!=null && a.freshness=="current")blocks.add(BoardComponent("summary","text",ComponentContent(contentRef=ContentRef(EntityRef("analysis",a.id,a.revision),"summaryText"))))
+  if(a!=null && a.freshness=="current" && a.summaryText.isNotBlank())blocks.add(BoardComponent("summary","text",ComponentContent(contentRef=ContentRef(EntityRef("analysis",a.id,a.revision),"summaryText"))))
   return ArchiveDisplay(listOf(topic.id),DashboardCard("archive:${topic.id}",topic.title,span=if(blocks.size==1 && blocks.first().type=="metric")CardSpan.MEDIUM else CardSpan.LARGE,blocks=blocks),priority)
  }
  fun decode(raw:String)=JSONArray(raw).rows().map { ArchiveDisplay(it.getJSONArray("topics").texts(),DomainJson.decode<DashboardCard>(it.getJSONObject("card").toString())) }

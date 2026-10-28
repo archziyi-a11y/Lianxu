@@ -272,7 +272,7 @@ class TodayViewModel @JvmOverloads constructor(application: Application, databas
                 } else writes.withLock {
                     repository.act(action, value)
                     repository.refresh(id)
-                    _notice.value = if (action.kind == "mark_eaten") "已保存实际摄入，规划调整不会改写这条记录" else "已更新餐食与合计"
+                    _notice.value = if (action.kind == "mark_eaten") "已记为摄入" else "已更新餐食与合计"
                 }
             } catch (error: CancellationException) { throw error
             } catch (error: Exception) { _notice.value = error.message ?: "未完成操作，请重试" }

@@ -31,12 +31,12 @@ import org.json.JSONObject
         AlertDialog(onDismissRequest={habit=null},title={Text("记录习惯")},text={Column {
             OutlinedTextField(name,{name=it},label={Text("动作或记录名称")})
             FlowRow { listOf("controls" to "动作与次数","text" to "粗略描述","image" to "图片").forEach { (key,label)->FilterChip(selected=format==key,onClick={format=key},label={Text(label)}) } }
-            Text("影响以后准备的输入方式，不修改历史实绩。",style=MaterialTheme.typography.bodySmall)
+            Text("用于以后准备记录组件。",style=MaterialTheme.typography.bodySmall)
         }},confirmButton={TextButton(enabled=!busy && name.isNotBlank(),onClick={vm.saveHabit(note,name,format,true){habit=null}}){Text("保存")}},dismissButton={TextButton(enabled=!busy,onClick={vm.saveHabit(note,name,format,false){habit=null}}){Text("不再准备此组件")}})
     }
     Scaffold(topBar={TopAppBar(title={Text("习惯与跟进")},navigationIcon={TextButton(onClick=onBack){Text("返回")}})}) { padding ->
         LazyColumn(Modifier.fillMaxSize().padding(padding),contentPadding=PaddingValues(20.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
-            item { Text("保留关注，允许改变。",style=MaterialTheme.typography.headlineMedium);Text("取消跟进只停止主动询问；历史答复、训练与展示归档各自保留。",style=MaterialTheme.typography.bodyMedium) }
+            item { Text("保留关注，允许改变。",style=MaterialTheme.typography.headlineMedium);Text("管理需要持续关注的事项和常用记录方式。",style=MaterialTheme.typography.bodyMedium) }
             message?.let { item { Text(it,color=MaterialTheme.colorScheme.secondary) } }
             item { Button(onClick={vm.clearMessage();create=true}){Text("新建跟进")};Text("持续跟进",Modifier.padding(top=12.dp),style=MaterialTheme.typography.titleMedium) }
             val followups=notes.filter { it.kind=="follow_up" }.sortedBy { it.status!="current" }
@@ -57,10 +57,10 @@ import org.json.JSONObject
             }
             item { Text("你的记录方式",Modifier.padding(top=12.dp),style=MaterialTheme.typography.titleMedium) }
             val habits=notes.filter { it.kind=="input_habit" && it.status!="learning" }
-            if(habits.isEmpty())item { Text("重复使用后，会保留你熟悉的记录结构。一次不同的输入不会重排习惯。",style=MaterialTheme.typography.bodyMedium) }
+            if(habits.isEmpty())item { Text("随着使用，这里会积累你常用的记录方式。",style=MaterialTheme.typography.bodyMedium) }
             items(habits,key={it.id}) { note->Card(Modifier.fillMaxWidth()) { Column(Modifier.padding(16.dp)) {
                 Text(note.text,style=MaterialTheme.typography.titleSmall)
-                Text(if(note.status=="current")"供本次选择，未填写不记为完成" else "已停止准备",style=MaterialTheme.typography.bodyMedium)
+                Text(if(note.status=="current")"已启用" else "已停止准备",style=MaterialTheme.typography.bodyMedium)
                 TextButton(onClick={habit=note}){Text("调整记录方式")}
             } } }
         }

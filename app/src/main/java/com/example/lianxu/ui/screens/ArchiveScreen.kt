@@ -103,7 +103,7 @@ import java.time.format.DateTimeFormatter
         Text(primary.text,style=if(!lead && display.card.span.span<6)MaterialTheme.typography.headlineSmall else MaterialTheme.typography.displaySmall)
         metrics.drop(1).chunked(if(wideCards || (!lead && display.card.span.span<6))1 else 2).forEach { row->Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(16.dp)){row.forEach { metric->Column(Modifier.weight(1f)){Text(metric.label,style=MaterialTheme.typography.labelSmall,color=MaterialTheme.colorScheme.onSurfaceVariant);Text(metric.text,style=MaterialTheme.typography.titleLarge)} }} }
        }
-       blocks.filterNot { (metrics.size>1 && it.type=="metric") || (it.type=="text" && blocks.any { chart->chart.type=="trend" && chart.text==it.text }) }.forEach { block->ComponentView(block,!lead && display.card.span.span==2,{_,_->},{}) }
+       blocks.filterNot { (metrics.size>1 && it.type=="metric") || (it.type=="text" && (it.text.isBlank() || blocks.any { chart->chart.type=="trend" && chart.text==it.text })) }.forEach { block->ComponentView(block,!lead && display.card.span.span==2,{_,_->},{}) }
       }
      }
     }

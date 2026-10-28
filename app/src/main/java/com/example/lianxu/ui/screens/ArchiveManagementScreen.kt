@@ -205,7 +205,7 @@ private fun ProfileForm(viewModel: ArchiveViewModel,uiState: ArchiveUiState) {
                                 }
                             }
                             result.manualEnergyDifferenceKcal?.let { Text("与4/4/9换算差额：${ComponentResolver.displayNumber(it, "kcal")} kcal") }
-                        } else if (result.status == "needs_input") Text("资料尚未完整，可继续补充；已有记录会保留。")
+                        } else if (result.status == "needs_input") Text("补充资料后可计算营养目标。")
                         result.notes.forEach { Text(it, style = MaterialTheme.typography.bodySmall) }
                     }
                 }
