@@ -89,7 +89,7 @@ class TodayViewModel @JvmOverloads constructor(application: Application, databas
                                 finally { _isPlanning.value = false }
                             }
                         }
-                        combine(store.watchDraft(current.id), db.collaborationDao().watchAnalyses()) { draft, _ -> draft }.collect { draft ->
+                        combine(store.watchDraft(current.id), db.collaborationDao().watchAnalyses()) { draft, _ -> draft }.collectLatest { draft ->
                             draft?.let { publishDraft(it) }
                         }
                     }
@@ -112,8 +112,9 @@ class TodayViewModel @JvmOverloads constructor(application: Application, databas
         }
     }
 
-    private suspend fun publishDraft(draft: com.example.lianxu.data.entity.DraftEntity) = projection.withLock {
+    private suspend fun publishDraft(draft: com.example.lianxu.data.entity.DraftEntity, refreshResolved: Boolean = true) = projection.withLock {
         if (boardId != draft.boardId || projectedBoard == draft.boardId && draft.revision < projectedRevision) return@withLock
+        if (!refreshResolved && projectedBoard == draft.boardId && draft.revision == projectedRevision) return@withLock
         val cards = store.decode(draft.cardsJson)
         val resolver = ComponentResolver(db)
         val resolved = cards.associate { it.id to resolver.resolve(it) }
@@ -200,7 +201,7 @@ class TodayViewModel @JvmOverloads constructor(application: Application, databas
                 if (boardId == id) {
                     // Publish the committed reply before allowing the receive animation to begin.
                     // The revision guard also prevents a delayed Room emission restoring the old draft.
-                    writes.withLock { db.collaborationDao().draft(id)?.let { publishDraft(it) } }
+                    writes.withLock { db.collaborationDao().draft(id)?.let { publishDraft(it, refreshResolved = false) } }
                     _notice.value = null
                 }
 
