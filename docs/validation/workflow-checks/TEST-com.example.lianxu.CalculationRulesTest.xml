@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.lianxu.CalculationRulesTest" tests="16" skipped="0" failures="0" errors="0" timestamp="2026-10-28T07:40:56.870Z" hostname="DESKTOP-I29LU3K" time="1.622">
+  <properties/>
+  <testcase name="displayRoundingDoesNotChangeInputs" classname="com.example.lianxu.CalculationRulesTest" time="0.015"/>
+  <testcase name="ageUsesExplicitCalculationDate" classname="com.example.lianxu.CalculationRulesTest" time="0.001"/>
+  <testcase name="activityDefaultIsExplicit" classname="com.example.lianxu.CalculationRulesTest" time="0.006"/>
+  <testcase name="missingFieldsAreNotGuessed" classname="com.example.lianxu.CalculationRulesTest" time="0.005"/>
+  <testcase name="trainingRangesAndLoadsKeepKnownBoundaries" classname="com.example.lianxu.CalculationRulesTest" time="0.004"/>
+  <testcase name="energyOnlyTotalDoesNotInventZeroProtein" classname="com.example.lianxu.CalculationRulesTest" time="0.001"/>
+  <testcase name="exactGainAndCutMatchSpecification" classname="com.example.lianxu.CalculationRulesTest" time="0.0"/>
+  <testcase name="weightTrendUsesDailyMeansAndRequiresBothWindows" classname="com.example.lianxu.CalculationRulesTest" time="0.002"/>
+  <testcase name="packagedCatalogAndBoundedSearchAreDeterministic" classname="com.example.lianxu.CalculationRulesTest" time="1.222"/>
+  <testcase name="foodTotalsPreserveUnknownFiber" classname="com.example.lianxu.CalculationRulesTest" time="0.001"/>
+  <testcase name="intakeOverridesDoNotDoubleCountAndNullMetricsFallBack" classname="com.example.lianxu.CalculationRulesTest" time="0.0"/>
+  <testcase name="foodRestrictionsAreHardConstraints" classname="com.example.lianxu.CalculationRulesTest" time="0.223"/>
+  <testcase name="outOfScopeDoesNotGenerateAutomaticTargets" classname="com.example.lianxu.CalculationRulesTest" time="0.0"/>
+  <testcase name="singleMealReplacementPreservesOtherMealsAndLocks" classname="com.example.lianxu.CalculationRulesTest" time="0.131"/>
+  <testcase name="manualTargetsPreserveMismatchAndUnknownFiber" classname="com.example.lianxu.CalculationRulesTest" time="0.0"/>
+  <testcase name="frequencyDoesNotConvertShortCoverageIntoAFullMonth" classname="com.example.lianxu.CalculationRulesTest" time="0.005"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

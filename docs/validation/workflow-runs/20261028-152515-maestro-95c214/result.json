@@ -1,0 +1,151 @@
+{
+  "runId": "20261028-152515-maestro-95c214",
+  "requests": 1,
+  "processing": false,
+  "turns": [
+    {
+      "status": "completed",
+      "annotations": [
+        {
+          "annotationId": "ece05f81-d2ff-476d-a23b-c2f8bc9657e5",
+          "target": {
+            "boardId": "e768ffc5-4f02-3c60-a795-bf86e78297bb",
+            "boardRevision": 2,
+            "cardId": "e768ffc5-4f02-3c60-a795-bf86e78297bb:habit:6c1d2b66-ff2d-3694-b1e3-e4bfc27f71d7",
+            "cardRevision": 1
+          },
+          "targetSnapshot": {
+            "title": "卧推",
+            "readableContent": "可选输入 · 仅本次填写会保存",
+            "components": [
+              {
+                "componentId": "entry",
+                "type": "input",
+                "content": {
+                  "entityRefs": [],
+                  "options": [],
+                  "inputKind": "training",
+                  "inputFields": [
+                    "name",
+                    "sets",
+                    "repsMin",
+                    "repsMax"
+                  ],
+                  "suggestedName": "卧推"
+                },
+                "actions": []
+              }
+            ]
+          },
+          "inputParts": [
+            {
+              "type": "text",
+              "text": "Today bench was easy."
+            },
+            {
+              "type": "structured",
+              "inputKind": "training",
+              "values": {},
+              "fields": [
+                "name",
+                "sets",
+                "repsMin",
+                "repsMax"
+              ]
+            }
+          ]
+        },
+        {
+          "annotationId": "d2c48fc2-7de4-4f79-bb40-daf223ff4a24",
+          "target": {
+            "boardId": "e768ffc5-4f02-3c60-a795-bf86e78297bb",
+            "boardRevision": 2,
+            "cardId": "e768ffc5-4f02-3c60-a795-bf86e78297bb:follow:a01141f9-2614-4a95-9a2d-c769d2a28474",
+            "cardRevision": 1
+          },
+          "targetSnapshot": {
+            "title": "接续上次",
+            "readableContent": "可选输入 · 仅本次填写会保存",
+            "components": [
+              {
+                "componentId": "entry",
+                "type": "input",
+                "content": {
+                  "entityRefs": [],
+                  "options": [],
+                  "inputKind": "note",
+                  "inputFields": []
+                },
+                "actions": []
+              }
+            ]
+          },
+          "inputParts": [
+            {
+              "type": "text",
+              "text": "Recovery feels good."
+            },
+            {
+              "type": "structured",
+              "inputKind": "note",
+              "values": {},
+              "fields": [],
+              "followUpId": "a01141f9-2614-4a95-9a2d-c769d2a28474"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "trainingCount": 6,
+  "cards": [
+    {
+      "title": "本轮建议"
+    },
+    {
+      "title": "能量目标"
+    },
+    {
+      "title": "蛋白质目标"
+    },
+    {
+      "title": "碳水目标"
+    },
+    {
+      "title": "脂肪目标"
+    },
+    {
+      "title": "膳食纤维目标"
+    },
+    {
+      "title": "卧推"
+    },
+    {
+      "title": "饮食补充"
+    },
+    {
+      "title": "自由补充"
+    },
+    {
+      "title": "今日参考"
+    },
+    {
+      "title": "早餐 · 燕麦牛奶香蕉"
+    },
+    {
+      "title": "午餐 · 米饭扁豆豆腐"
+    },
+    {
+      "title": "晚餐 · 米饭豆腐菠菜"
+    },
+    {
+      "title": "餐食规划合计"
+    },
+    {
+      "title": "体重记录"
+    },
+    {
+      "title": "训练摘要"
+    }
+  ]
+}

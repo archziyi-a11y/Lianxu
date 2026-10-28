@@ -1,0 +1,13 @@
+{
+  "runId": "20261028-154507-adb-d8bbc4",
+  "rawVideoSha256": "8238ddef10b6ca49e4649a0f9fc7dd78856eb0e3589409ade84eb4750e86cb5a",
+  "clipStartSeconds": 40.282,
+  "clipEndSeconds": 53.456,
+  "anchorNote": "Approximate host/device alignment; screenrecord startup is not frame-synchronized. Review full clip for motion; do not use as latency benchmark.",
+  "deviceProcessingMs": 8174,
+  "sha256": {
+    "entry.png": "1b8e5844f6f1fac8f29797224431cffea3594a24edefe05d54aefefd24706d84",
+    "exit.png": "045f75273dffd71d5d04d53301349b7d7380b30afd8697572da3cc5d228b31d4",
+    "send-reply.mp4": "0d8a70500934efc966b03f42ea14b6cea5fe6e1f915332fb0794b2b7adc6dadc"
+  }
+}

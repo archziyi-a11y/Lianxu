@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-28",
+  "codeCommit": "7f7e40f6be956e0e5097f1e61b20030ff0605da1",
+  "packages": {
+    "Lianxu-workflow-7f7e40f-debug.apk": {
+      "sha256": "604b35b1af81ab99ed8af2428040f44259948306241058aeb39cbd7444ffbc26",
+      "bytes": 31700219
+    },
+    "Lianxu-workflow-7f7e40f-evidence.apk": {
+      "sha256": "59aba31fb5450a1ba9a2cf227607629809a66bcebb34a6acac7f732013ff1719",
+      "bytes": 29115426
+    }
+  },
+  "jvm": {
+    "passed": 17
+  },
+  "android": {
+    "discovered": 4,
+    "passed": 3,
+    "optInSkipped": 1
+  },
+  "runs": [
+    "20261028-154507-adb-d8bbc4",
+    "20261028-154636-maestro-c71d09"
+  ],
+  "transport": "offline-fixture",
+  "limitations": [
+    "No live API call in this experiment",
+    "One final comparison per driver; no statistically significant speed claim",
+    "No Terra/Sol model comparison"
+  ]
+}

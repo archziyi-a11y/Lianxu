@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<testsuites>
+  <testsuite name="Test Suite" device="emulator-5554" tests="1" failures="0" time="48.014" timestamp="2026-10-28T15:46:49">
+    <testcase id="Two cards to visible reply (offline isolated fixture)" name="Two cards to visible reply (offline isolated fixture)" classname="Two cards to visible reply (offline isolated fixture)" file="scripts\workflow\two-cards.yaml" time="48.004" timestamp="2026-10-28T15:46:49" status="SUCCESS"/>
+  </testsuite>
+</testsuites>

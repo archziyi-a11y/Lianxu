@@ -1,0 +1,16 @@
+{
+  "runId": "20261028-152515-maestro-95c214",
+  "driver": "maestro",
+  "serial": "emulator-5554",
+  "transport": "offline-fixture",
+  "frameClock": "android-real-time",
+  "package": "com.example.lianxu.evidence",
+  "sourceCommit": "7e510ac2d79614dfcd95573d44d0239daf7fa6dd",
+  "sourceStatus": "M app/build.gradle.kts\n?? app/src/evidence/\n?? docs/validation/workflow-runs/\n?? scripts/verify-workflow.py\n?? scripts/workflow/",
+  "apkSha256": "95daa1d7bd7dc8991dd5fbe05a5188a2d46557c545490f732c42637860e43c50",
+  "flowSha256": "449b8ef7885ff099948681d19c6fa9ad80f4515a974c1416ef59d0cd7d1da962",
+  "scenarioSeconds": 54.152,
+  "status": "passed",
+  "elapsedSeconds": 65.789,
+  "hostAdbCalls": 27
+}

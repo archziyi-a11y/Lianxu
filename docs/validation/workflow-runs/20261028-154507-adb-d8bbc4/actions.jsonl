@@ -1,0 +1,24 @@
+{"event": "assert_visible", "seconds": 8.345, "label": "今日"}
+{"event": "screenshot", "seconds": 8.536, "name": "ready"}
+{"event": "ready", "seconds": 8.536, "runId": "20261028-154507-adb-d8bbc4", "isolated": true, "transport": "offline-fixture", "clock": "android-real-time"}
+{"event": "clock_anchor", "seconds": 8.684, "deviceElapsedMs": 1693200.0, "roundTripMs": 31.973899982403964}
+{"event": "record_start_requested", "seconds": 8.684}
+{"event": "scroll", "seconds": 11.868, "target": "卧推"}
+{"event": "hold", "seconds": 16.123, "label": "卧推"}
+{"event": "tap", "seconds": 19.419, "label": "点按写文字\n上划添加图片 ↑"}
+{"event": "assert_visible", "seconds": 23.888, "label": "Today bench was easy."}
+{"event": "tap", "seconds": 25.933, "label": "收好这张 · 继续补充"}
+{"event": "tap", "seconds": 28.889, "label": "收起补充"}
+{"event": "scroll", "seconds": 31.931, "target": "接续上次"}
+{"event": "hold", "seconds": 36.226, "label": "接续上次"}
+{"event": "tap", "seconds": 39.485, "label": "点按写文字\n上划添加图片 ↑"}
+{"event": "assert_visible", "seconds": 43.783, "label": "Recovery feels good."}
+{"event": "tap", "seconds": 45.802, "label": "收好这张 · 继续补充"}
+{"event": "assert_visible", "seconds": 48.669, "label": "2 张待发送"}
+{"event": "screenshot", "seconds": 48.845, "name": "pending"}
+{"event": "tap", "seconds": 50.921, "label": "统一发送"}
+{"event": "assert_visible", "seconds": 62.731, "label": "本轮建议"}
+{"event": "screenshot", "seconds": 62.91, "name": "reply"}
+{"event": "assert_visible", "seconds": 64.995, "label": "隔离交互样本：两卡补充已收到。这是离线固定回复，不代表真实 AI 分析。"}
+{"event": "screenshot", "seconds": 65.194, "name": "verified-reply"}
+{"event": "result_verified", "seconds": 65.195}
