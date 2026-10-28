@@ -1,0 +1,8 @@
+{"event": "assert_visible", "seconds": 9.271, "label": "今日"}
+{"event": "screenshot", "seconds": 9.471, "name": "ready"}
+{"event": "ready", "seconds": 9.471, "runId": "20261028-164834-maestro-c22c85", "isolated": true, "transport": "offline-fixture", "clock": "android-real-time"}
+{"event": "clock_anchor", "seconds": 9.617, "deviceElapsedMs": 5501340.0, "roundTripMs": 32.77869999874383}
+{"event": "record_start_requested", "seconds": 9.618}
+{"event": "assert_visible", "seconds": 68.348, "label": "隔离交互样本：两卡补充已收到。这是离线固定回复，不代表真实 AI 分析。"}
+{"event": "screenshot", "seconds": 68.559, "name": "verified-reply"}
+{"event": "result_verified", "seconds": 68.559}

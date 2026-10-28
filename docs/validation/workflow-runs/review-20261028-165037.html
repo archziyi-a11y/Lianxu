@@ -1,0 +1,21 @@
+<!doctype html><html lang="zh"><meta charset="utf-8"><title>练序 · 工作流验证</title>
+<style>body{background:#101714;color:#e4eee4;font:16px system-ui;max-width:1120px;margin:auto;padding:32px}
+h1{color:#d7ff63}section{border-top:1px solid #5c6d5d;margin-top:32px;padding-top:16px}
+video{max-height:620px;max-width:100%;background:#000}img{max-width:100%}a{color:#d7ff63}
+button{padding:10px;margin:8px 8px 8px 0}p{line-height:1.7}summary{cursor:pointer;padding:12px}</style>
+<h1>练序 · 一次集中审阅</h1><p>独立安装包、内存数据库、离线固定回复。复用正式界面和真实 Android 动画时钟。
+运行通过表示两条批注进入同一已完成轮次且回复可见；不代表真实 AI 推理或主观手感已经通过。</p>
+<p>先审阅所有运行，集中列问题；修完一批后生成新运行。旧证据保留。
+短片根据业务事件自动截取；时间对齐近似，不能用来判定毫秒级性能。</p><section><h2>MAESTRO · 20261028-164834-maestro-c22c85</h2>
+      <p>场景 55.81s · 全流程 69.15s ·
+      主机 ADB 调用 33（不含 Maestro 内部调用，不能据此直接比较总调用量）</p>
+      <video controls preload="metadata" src="20261028-164834-maestro-c22c85/review/send-reply.mp4"></video>
+      <div class="buttons"><button onclick="step(this,-1/30)">前一帧</button><button onclick="step(this,1/30)">后一帧</button>
+      <button onclick="rate(this,0.5)">半速</button><button onclick="rate(this,1)">原速</button></div>
+      <p><a href="20261028-164834-maestro-c22c85/interaction.mp4">完整操作录屏</a> · <a href="20261028-164834-maestro-c22c85/manifest.json">版本与结果</a> ·
+      <a href="20261028-164834-maestro-c22c85/result.json">两卡原文与完成状态</a></p>
+      <details><summary>发送连续帧 · 每帧间隔约 100ms</summary><img src="20261028-164834-maestro-c22c85/review/exit.png"></details>
+      <details><summary>接收连续帧 · 每帧间隔约 100ms</summary><img src="20261028-164834-maestro-c22c85/review/entry.png"></details>
+      </section>
+<script>function step(b,n){let v=b.closest('section').querySelector('video');v.pause();v.currentTime+=n}
+function rate(b,n){b.closest('section').querySelector('video').playbackRate=n}</script></html>

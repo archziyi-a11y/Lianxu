@@ -1,0 +1,294 @@
+{
+  "status": "failed",
+  "error": "OUT_OF_SCOPE: operation requires relatedAnnotationIds and reason",
+  "responses": [
+    {
+      "content": "我先保存这次卧推训练，次数和重量按未知保留。",
+      "toolNames": [
+        "stage_records"
+      ]
+    },
+    {
+      "content": "",
+      "toolNames": [
+        "calculate"
+      ]
+    },
+    {
+      "content": "",
+      "toolNames": [
+        "finish_proposal"
+      ]
+    },
+    {
+      "content": "我先记录坐姿划船两组，并保留卧推原有记录不变。",
+      "toolNames": [
+        "stage_records"
+      ]
+    },
+    {
+      "content": "",
+      "toolNames": [
+        "calculate"
+      ]
+    },
+    {
+      "content": "",
+      "toolNames": [
+        "finish_proposal"
+      ]
+    },
+    {
+      "content": "",
+      "toolNames": [
+        "finish_proposal"
+      ]
+    }
+  ],
+  "trace": [
+    {
+      "name": "stage_records",
+      "arguments": "{\"operations\": [{\"operationId\": \"op-rowseat-1\", \"kind\": \"create_training\", \"clientRef\": \"tr-rowseat-20261028\", \"payload\": {\"dateContext\": {\"date\": \"2026-10-28\", \"zoneId\": \"GMT\", \"basis\": \"operation_context\"}, \"kind\": \"strength\", \"title\": \"坐姿划船训练\", \"exercises\": [{\"entryId\": \"e1\", \"name\": \"坐姿划船\", \"canonicalKey\": \"seated_cable_row\", \"equipment\": \"machine\", \"summarySets\": {\"kind\": \"exact\", \"value\": 2, \"unit\": \"sets\"}, \"repsPerSet\": {\"kind\": \"unknown\"}, \"loadKg\": {\"kind\": \"unknown\"}, \"sets\": []}], \"rawSummary\": \"今天新做坐姿划船两组。次数和重量也没记。\"}, \"relatedAnnotationIds\": [\"e213dca5-ae7e-4fe8-87cc-ef05deafc5c5\"], \"reason\": \"用户补记今天新做的独立动作坐姿划船两组，与已保存的卧推为不同动作，单独建记录；次数与重量未知按未知保留。\"}]}",
+      "result": {
+        "ok": true,
+        "data": {
+          "stageId": "4de7c424-5547-361d-b0fa-11952ee423bf",
+          "previewRefs": [
+            {
+              "type": "training",
+              "id": "cbef6f1a-ca50-3462-a58d-120034786d0d",
+              "revision": 1
+            },
+            {
+              "type": "training",
+              "id": "f010e888-8697-3ff8-b93d-63b6b5bf8330",
+              "revision": 1
+            }
+          ],
+          "clientRefs": {
+            "tr-rowseat-20261028": "cbef6f1a-ca50-3462-a58d-120034786d0d"
+          },
+          "board": [
+            {
+              "id": "e768ffc5-4f02-3c60-a795-bf86e78297bb:training-input",
+              "title": "记录训练",
+              "value": "从一个动作开始，也可以只留一句话或图片。",
+              "span": "LARGE",
+              "revision": 1,
+              "isAnnotationMode": false,
+              "blocks": [
+                {
+                  "componentId": "entry",
+                  "type": "input",
+                  "content": {
+                    "entityRefs": [],
+                    "options": [],
+                    "inputKind": "training",
+                    "inputFields": [
+                      "name",
+                      "sets",
+                      "repsMin",
+                      "repsMax"
+                    ]
+                  },
+                  "actions": []
+                }
+              ],
+              "entityRefs": [],
+              "managedBy": "input",
+              "inputValues": {}
+            },
+            {
+              "id": "e768ffc5-4f02-3c60-a795-bf86e78297bb:intake-input",
+              "title": "饮食补充",
+              "value": "可选 · 描述或图片",
+              "span": "MEDIUM",
+              "revision": 1,
+              "isAnnotationMode": false,
+              "blocks": [
+                {
+                  "componentId": "entry",
+                  "type": "input",
+                  "content": {
+                    "entityRefs": [],
+                    "options": [],
+                    "inputKind": "intake",
+                    "inputFields": []
+                  },
+                  "actions": []
+                }
+              ],
+              "entityRefs": [],
+              "managedBy": "input",
+              "inputValues": {}
+            },
+            {
+              "id": "e768ffc5-4f02-3c60-a795-bf86e78297bb:free-input",
+              "title": "自由补充",
+              "value": "今天的新情况",
+              "span": "MEDIUM",
+              "revision": 1,
+              "isAnnotationMode": false,
+              "blocks": [
+                {
+                  "componentId": "entry",
+                  "type": "input",
+                  "content": {
+                    "entityRefs": [],
+                    "options": [],
+                    "inputKind": "note",
+                    "inputFields": []
+                  },
+                  "actions": []
+                }
+              ],
+              "entityRefs": [],
+              "managedBy": "input",
+              "inputValues": {}
+            },
+            {
+              "id": "e768ffc5-4f02-3c60-a795-bf86e78297bb:guidance",
+              "title": "今日参考",
+              "value": "",
+              "span": "LARGE",
+              "revision": 1,
+              "isAnnotationMode": false,
+              "blocks": [
+                {
+                  "componentId": "guidance",
+                  "type": "text",
+                  "content": {
+                    "contentRef": {
+                      "entityRef": {
+                        "type": "analysis",
+                        "id": "a03e4fcb-8ee8-3e0f-851a-78ed79eff6fc",
+                        "revision": 1
+                      },
+                      "fieldPath": "summaryText"
+                    },
+                    "entityRefs": [],
+                    "options": [],
+                    "inputFields": []
+                  },
+                  "actions": []
+                }
+              ],
+              "entityRefs": [
+                {
+                  "type": "analysis",
+                  "id": "a03e4fcb-8ee8-3e0f-851a-78ed79eff6fc",
+                  "revision": 1
+                }
+              ],
+              "managedBy": "local",
+              "inputValues": {}
+            },
+            {
+              "id": "e768ffc5-4f02-3c60-a795-bf86e78297bb:training-summary",
+              "title": "训练摘要",
+              "value": "",
+              "span": "LARGE",
+              "revision": 2,
+              "isAnnotationMode": false,
+              "blocks": [
+                {
+                  "componentId": "training-summary",
+                  "type": "text",
+                  "content": {
+                    "contentRef": {
+                      "entityRef": {
+                        "type": "analysis",
+                        "id": "e2831591-64b0-32eb-bfdb-facaca46fb24",
+                        "revision": 1
+                      },
+                      "fieldPath": "summaryText"
+                    },
+                    "entityRefs": [],
+                    "options": [],
+                    "inputFields": []
+                  },
+                  "actions": []
+                }
+              ],
+              "entityRefs": [],
+              "managedBy": "local",
+              "inputValues": {}
+            }
+          ],
+          "errors": [],
+          "nextAction": "事实已暂存。calculate之后直接finish_proposal(stageId)，operations只需新增分析或餐食替换，应用原样展开本stage全部记录。不要为了加入分析而重新stage_records。"
+        },
+        "error": null
+      }
+    },
+    {
+      "name": "calculate",
+      "arguments": "{\"operation\": \"training_summary\", \"input\": {\"startDate\": \"2026-10-28\", \"endDate\": \"2026-10-28\"}, \"stageId\": \"4de7c424-5547-361d-b0fa-11952ee423bf\"}",
+      "result": {
+        "ok": true,
+        "data": {
+          "calculationId": "f84fcbf9-f5ee-3e74-ade2-fdcdb59ee59c",
+          "result": {
+            "frequency": {
+              "trainingDays": 1,
+              "sessionCount": 2,
+              "observedDays": 1
+            },
+            "exercises": [
+              {
+                "entryId": "e1",
+                "knownVolumeKgReps": 0,
+                "missingSetIds": [
+                  "e1"
+                ],
+                "machineVolumeKgReps": 0,
+                "comparisonKey": "seated_cable_row|machine|unknown|[]",
+                "warmupSetIds": [],
+                "unclassifiedSetIds": []
+              },
+              {
+                "entryId": "e1",
+                "knownVolumeKgReps": 0,
+                "missingSetIds": [
+                  "e1"
+                ],
+                "machineVolumeKgReps": 0,
+                "comparisonKey": "bench_press|null|unknown|[]",
+                "warmupSetIds": [],
+                "unclassifiedSetIds": []
+              }
+            ]
+          },
+          "inputRefs": [
+            {
+              "type": "training",
+              "id": "cbef6f1a-ca50-3462-a58d-120034786d0d",
+              "revision": 1
+            },
+            {
+              "type": "training",
+              "id": "f010e888-8697-3ff8-b93d-63b6b5bf8330",
+              "revision": 1
+            }
+          ],
+          "methodVersion": "fitness-policy-0.1",
+          "stageId": "4de7c424-5547-361d-b0fa-11952ee423bf"
+        },
+        "error": null
+      }
+    },
+    {
+      "name": "finish_proposal",
+      "arguments": "{\"contractVersion\": \"2\", \"turnId\": \"6886eb70-2ba5-4d99-855c-64cf15e071e5\", \"taskId\": \"688fb017-5f58-449a-bb6e-d31e75d2d9d9\", \"stageId\": \"4de7c424-5547-361d-b0fa-11952ee423bf\", \"baseRefs\": [{\"type\": \"training\", \"id\": \"f010e888-8697-3ff8-b93d-63b6b5bf8330\", \"revision\": 1}], \"operations\": [{\"operationId\": \"op-analysis-1\", \"kind\": \"create_analysis\", \"clientRef\": \"an-row-20261028\", \"payload\": {\"kind\": \"reply\", \"rangeStart\": \"2026-10-28\", \"rangeEnd\": \"2026-10-28\", \"summaryText\": \"本轮将保存：2026-10-28 新增一条独立训练记录「坐姿划船」2 组（次数、负重未知，保留原文描述）；今天卧推 3 组那条记录保持原样，不会被改写或重复。仍未知：坐姿划船的每组次数、负重和训练时长；以及补齐营养目标所需的体重、身高、出生日期、公式性别、阶段目标——均可不填。\\n\\n建议：\\n- 坐姿划船和卧推一个是拉、一个是推，同一天安排很合理；下次可以只补一个关键数字，比如“划船 40kg×12、12”，后续就能判断重量或次数是否在进步。\\n- 两项都只记了组数，暂时算不出训练容量，也不推算消耗，属于正常的“粗记”状态。\\n- 若想按上肢推\/拉平衡安排，可以留意本周拉类动作的总组数不要明显低于推类。\", \"calculationIds\": [\"f84fcbf9-f5ee-3e74-ade2-fdcdb59ee59c\"]}, \"relatedAnnotationIds\": [\"e213dca5-ae7e-4fe8-87cc-ef05deafc5c5\"], \"reason\": \"说明本轮补记内容、仍缺信息与可操作下一步。\"}], \"blocks\": [{\"componentId\": \"b-text\", \"type\": \"text\", \"content\": {\"contentRef\": {\"entityRef\": {\"type\": \"analysis\", \"id\": \"an-row-20261028\", \"revision\": 1}, \"fieldPath\": \"summaryText\"}}}, {\"componentId\": \"b-list\", \"type\": \"list\", \"content\": {\"entityRefs\": [{\"type\": \"training\", \"id\": \"cbef6f1a-ca50-3462-a58d-120034786d0d\", \"revision\": 1}, {\"type\": \"training\", \"id\": \"f010e888-8697-3ff8-b93d-63b6b5bf8330\", \"revision\": 1}]}}, {\"componentId\": \"b-metric\", \"type\": \"metric\", \"content\": {\"label\": \"今日训练次数\", \"calculationId\": \"f84fcbf9-f5ee-3e74-ade2-fdcdb59ee59c\", \"resultPath\": \"frequency.sessionCount\", \"unit\": \"次\"}}], \"boardPatch\": {\"upsertCards\": [{\"cardId\": \"b3038f90-3f39-3424-a384-f40fb63782a8\", \"revision\": 1, \"title\": \"本轮建议\", \"span\": 6, \"blocks\": [{\"componentId\": \"b-text\", \"type\": \"text\", \"content\": {\"contentRef\": {\"entityRef\": {\"type\": \"analysis\", \"id\": \"an-row-20261028\", \"revision\": 1}, \"fieldPath\": \"summaryText\"}}}, {\"componentId\": \"b-list\", \"type\": \"list\", \"content\": {\"entityRefs\": [{\"type\": \"training\", \"id\": \"cbef6f1a-ca50-3462-a58d-120034786d0d\", \"revision\": 1}, {\"type\": \"training\", \"id\": \"f010e888-8697-3ff8-b93d-63b6b5bf8330\", \"revision\": 1}]}}, {\"componentId\": \"b-metric\", \"type\": \"metric\", \"content\": {\"label\": \"今日训练次数\", \"calculationId\": \"f84fcbf9-f5ee-3e74-ade2-fdcdb59ee59c\", \"resultPath\": \"frequency.sessionCount\", \"unit\": \"次\"}}]}]}, \"summary\": \"本轮将保存：2026-10-28 新增一条独立训练记录「坐姿划船」2 组（次数、负重未知，保留原文）；卧推 3 组记录保持不变，不重复创建。仍未知：坐姿划船的每组次数与负重、训练时长，以及营养目标所需的体重、身高、出生日期、公式性别和阶段目标，均可不填。\"}",
+      "result": {
+        "ok": false,
+        "data": null,
+        "error": {
+          "code": "VERSION_CONFLICT",
+          "message": "VERSION_CONFLICT: analysis",
+          "retryable": false
+        }
+      }
+    }
+  ]
+}

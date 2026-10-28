@@ -1,0 +1,15 @@
+{
+  "codeCommit": "200980b",
+  "apk": "Lianxu-journey-200980b-debug.apk",
+  "sha256": "33bf9942c0d56d586f34525c5e6f12ece98cd7561684274a1c0858547c369a11",
+  "android": {
+    "discovered": 22,
+    "passed": 21,
+    "skipped": 1
+  },
+  "jvmPassed": 17,
+  "liveRequests": 6,
+  "liveTools": 6,
+  "liveRounds": 2,
+  "deviceRun": "20261028-164834-maestro-c22c85"
+}

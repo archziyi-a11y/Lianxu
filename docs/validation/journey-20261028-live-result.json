@@ -1,0 +1,6 @@
+{
+  "status": "failed",
+  "resultUnavailable": true,
+  "reason": "First test lacked failure report capture; see matching instrumentation log.",
+  "retrievalError": "cat: files/journey-20261028-live-result.json: No such file or directory\n"
+}

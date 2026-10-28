@@ -1,0 +1,13 @@
+{
+  "runId": "20261028-164834-maestro-c22c85",
+  "rawVideoSha256": "bebfc711b91057094836bc4f005b0e16e7eb3b518d90c1a8e10df655cdf938bc",
+  "clipStartSeconds": 40.775,
+  "clipEndSeconds": 57.48199999999999,
+  "anchorNote": "Approximate host/device alignment; screenrecord startup is not frame-synchronized. Review full clip for motion; do not use as latency benchmark.",
+  "deviceProcessingMs": 11707,
+  "sha256": {
+    "entry.png": "b126cfedd5b3792ddbc36ab998b146b0a3679d5819b7c442d734f0ace8d02167",
+    "exit.png": "f39f69c97af6e4aea55ced171518fbccebc310d50c82f89861d4025f3d369216",
+    "send-reply.mp4": "33e3c909dcaf9d8651b877b5794e7ed001beddf4247708fd34fb9655d4fd132e"
+  }
+}

@@ -1,0 +1,550 @@
+{
+  "status": "passed",
+  "model": "deepseek-flash",
+  "realApi": true,
+  "trainingCount": 2,
+  "rounds": [
+    {
+      "summary": "已保存今天3组卧推（次数\/重量未记，末组吃力）；因缺负荷数据，暂不做容量对比，仅给强度调整建议。",
+      "requests": 3,
+      "tools": 3,
+      "cards": [
+        {
+          "id": "e768ffc5-4f02-3c60-a795-bf86e78297bb:training-summary",
+          "title": "本次训练记录",
+          "value": "",
+          "span": "LARGE",
+          "revision": 2,
+          "isAnnotationMode": false,
+          "blocks": [
+            {
+              "componentId": "t-text",
+              "type": "text",
+              "content": {
+                "contentRef": {
+                  "entityRef": {
+                    "type": "analysis",
+                    "id": "1457f142-0ff7-3f9a-89dc-892ead3597af",
+                    "revision": 1
+                  },
+                  "fieldPath": "summaryText"
+                },
+                "entityRefs": [],
+                "options": [],
+                "inputFields": []
+              },
+              "actions": []
+            },
+            {
+              "componentId": "t-list",
+              "type": "list",
+              "content": {
+                "entityRefs": [
+                  {
+                    "type": "training",
+                    "id": "66c78397-501b-372b-93db-5005d55f6f16",
+                    "revision": 1
+                  }
+                ],
+                "options": [],
+                "inputFields": []
+              },
+              "actions": []
+            }
+          ],
+          "entityRefs": [
+            {
+              "type": "training",
+              "id": "66c78397-501b-372b-93db-5005d55f6f16",
+              "revision": 1
+            },
+            {
+              "type": "analysis",
+              "id": "1457f142-0ff7-3f9a-89dc-892ead3597af",
+              "revision": 1
+            }
+          ],
+          "managedBy": "assistant",
+          "inputValues": {}
+        },
+        {
+          "id": "e768ffc5-4f02-3c60-a795-bf86e78297bb:training-input",
+          "title": "记录训练",
+          "value": "从一个动作开始，也可以只留一句话或图片。",
+          "span": "LARGE",
+          "revision": 1,
+          "isAnnotationMode": false,
+          "blocks": [
+            {
+              "componentId": "entry",
+              "type": "input",
+              "content": {
+                "entityRefs": [],
+                "options": [],
+                "inputKind": "training",
+                "inputFields": [
+                  "name",
+                  "sets",
+                  "repsMin",
+                  "repsMax"
+                ]
+              },
+              "actions": []
+            }
+          ],
+          "entityRefs": [],
+          "managedBy": "input",
+          "inputValues": {}
+        },
+        {
+          "id": "e768ffc5-4f02-3c60-a795-bf86e78297bb:intake-input",
+          "title": "饮食补充",
+          "value": "可选 · 描述或图片",
+          "span": "MEDIUM",
+          "revision": 1,
+          "isAnnotationMode": false,
+          "blocks": [
+            {
+              "componentId": "entry",
+              "type": "input",
+              "content": {
+                "entityRefs": [],
+                "options": [],
+                "inputKind": "intake",
+                "inputFields": []
+              },
+              "actions": []
+            }
+          ],
+          "entityRefs": [],
+          "managedBy": "input",
+          "inputValues": {}
+        },
+        {
+          "id": "e768ffc5-4f02-3c60-a795-bf86e78297bb:free-input",
+          "title": "自由补充",
+          "value": "今天的新情况",
+          "span": "MEDIUM",
+          "revision": 1,
+          "isAnnotationMode": false,
+          "blocks": [
+            {
+              "componentId": "entry",
+              "type": "input",
+              "content": {
+                "entityRefs": [],
+                "options": [],
+                "inputKind": "note",
+                "inputFields": []
+              },
+              "actions": []
+            }
+          ],
+          "entityRefs": [],
+          "managedBy": "input",
+          "inputValues": {}
+        },
+        {
+          "id": "e768ffc5-4f02-3c60-a795-bf86e78297bb:guidance",
+          "title": "今日参考",
+          "value": "",
+          "span": "LARGE",
+          "revision": 1,
+          "isAnnotationMode": false,
+          "blocks": [
+            {
+              "componentId": "guidance",
+              "type": "text",
+              "content": {
+                "contentRef": {
+                  "entityRef": {
+                    "type": "analysis",
+                    "id": "a03e4fcb-8ee8-3e0f-851a-78ed79eff6fc",
+                    "revision": 1
+                  },
+                  "fieldPath": "summaryText"
+                },
+                "entityRefs": [],
+                "options": [],
+                "inputFields": []
+              },
+              "actions": []
+            }
+          ],
+          "entityRefs": [
+            {
+              "type": "analysis",
+              "id": "a03e4fcb-8ee8-3e0f-851a-78ed79eff6fc",
+              "revision": 1
+            }
+          ],
+          "managedBy": "local",
+          "inputValues": {}
+        },
+        {
+          "id": "81cadcc6-254b-30ea-a9fa-983f744fce2e",
+          "title": "本轮建议",
+          "value": "",
+          "span": "LARGE",
+          "revision": 1,
+          "isAnnotationMode": false,
+          "blocks": [
+            {
+              "componentId": "t-text",
+              "type": "text",
+              "content": {
+                "contentRef": {
+                  "entityRef": {
+                    "type": "analysis",
+                    "id": "1457f142-0ff7-3f9a-89dc-892ead3597af",
+                    "revision": 1
+                  },
+                  "fieldPath": "summaryText"
+                },
+                "entityRefs": [],
+                "options": [],
+                "inputFields": []
+              },
+              "actions": []
+            },
+            {
+              "componentId": "t-list",
+              "type": "list",
+              "content": {
+                "entityRefs": [
+                  {
+                    "type": "training",
+                    "id": "66c78397-501b-372b-93db-5005d55f6f16",
+                    "revision": 1
+                  }
+                ],
+                "options": [],
+                "inputFields": []
+              },
+              "actions": []
+            }
+          ],
+          "entityRefs": [],
+          "managedBy": "local",
+          "inputValues": {}
+        }
+      ]
+    },
+    {
+      "summary": "已新增坐姿划船2组（次数\/重量空白）为今日独立训练记录，卧推记录保持不变；并更新今日训练摘要卡。",
+      "requests": 3,
+      "tools": 3,
+      "cards": [
+        {
+          "id": "e768ffc5-4f02-3c60-a795-bf86e78297bb:training-summary",
+          "title": "本次训练记录",
+          "value": "",
+          "span": "LARGE",
+          "revision": 4,
+          "isAnnotationMode": false,
+          "blocks": [
+            {
+              "componentId": "row-text",
+              "type": "text",
+              "content": {
+                "contentRef": {
+                  "entityRef": {
+                    "type": "analysis",
+                    "id": "83fdcfdb-6439-371b-93ae-cb588714262f",
+                    "revision": 1
+                  },
+                  "fieldPath": "summaryText"
+                },
+                "entityRefs": [],
+                "options": [],
+                "inputFields": []
+              },
+              "actions": []
+            },
+            {
+              "componentId": "row-list",
+              "type": "list",
+              "content": {
+                "entityRefs": [
+                  {
+                    "type": "training",
+                    "id": "7141f89b-45e8-3b60-bde3-6d0665fdcec8",
+                    "revision": 1
+                  },
+                  {
+                    "type": "training",
+                    "id": "66c78397-501b-372b-93db-5005d55f6f16",
+                    "revision": 1
+                  }
+                ],
+                "options": [],
+                "inputFields": []
+              },
+              "actions": []
+            },
+            {
+              "componentId": "row-metric",
+              "type": "metric",
+              "content": {
+                "label": "今日训练日数",
+                "calculationId": "c130694e-dea1-3db4-bcd4-dbcfcef0e9a3",
+                "resultPath": "frequency.trainingDays",
+                "unit": "天",
+                "entityRefs": [],
+                "options": [],
+                "inputFields": []
+              },
+              "actions": []
+            }
+          ],
+          "entityRefs": [
+            {
+              "type": "training",
+              "id": "7141f89b-45e8-3b60-bde3-6d0665fdcec8",
+              "revision": 1
+            },
+            {
+              "type": "training",
+              "id": "66c78397-501b-372b-93db-5005d55f6f16",
+              "revision": 1
+            },
+            {
+              "type": "analysis",
+              "id": "83fdcfdb-6439-371b-93ae-cb588714262f",
+              "revision": 1
+            }
+          ],
+          "managedBy": "assistant",
+          "inputValues": {}
+        },
+        {
+          "id": "e768ffc5-4f02-3c60-a795-bf86e78297bb:training-input",
+          "title": "记录训练",
+          "value": "从一个动作开始，也可以只留一句话或图片。",
+          "span": "LARGE",
+          "revision": 1,
+          "isAnnotationMode": false,
+          "blocks": [
+            {
+              "componentId": "entry",
+              "type": "input",
+              "content": {
+                "entityRefs": [],
+                "options": [],
+                "inputKind": "training",
+                "inputFields": [
+                  "name",
+                  "sets",
+                  "repsMin",
+                  "repsMax"
+                ]
+              },
+              "actions": []
+            }
+          ],
+          "entityRefs": [],
+          "managedBy": "input",
+          "inputValues": {}
+        },
+        {
+          "id": "e768ffc5-4f02-3c60-a795-bf86e78297bb:intake-input",
+          "title": "饮食补充",
+          "value": "可选 · 描述或图片",
+          "span": "MEDIUM",
+          "revision": 1,
+          "isAnnotationMode": false,
+          "blocks": [
+            {
+              "componentId": "entry",
+              "type": "input",
+              "content": {
+                "entityRefs": [],
+                "options": [],
+                "inputKind": "intake",
+                "inputFields": []
+              },
+              "actions": []
+            }
+          ],
+          "entityRefs": [],
+          "managedBy": "input",
+          "inputValues": {}
+        },
+        {
+          "id": "e768ffc5-4f02-3c60-a795-bf86e78297bb:free-input",
+          "title": "自由补充",
+          "value": "今天的新情况",
+          "span": "MEDIUM",
+          "revision": 1,
+          "isAnnotationMode": false,
+          "blocks": [
+            {
+              "componentId": "entry",
+              "type": "input",
+              "content": {
+                "entityRefs": [],
+                "options": [],
+                "inputKind": "note",
+                "inputFields": []
+              },
+              "actions": []
+            }
+          ],
+          "entityRefs": [],
+          "managedBy": "input",
+          "inputValues": {}
+        },
+        {
+          "id": "e768ffc5-4f02-3c60-a795-bf86e78297bb:guidance",
+          "title": "今日参考",
+          "value": "",
+          "span": "LARGE",
+          "revision": 1,
+          "isAnnotationMode": false,
+          "blocks": [
+            {
+              "componentId": "guidance",
+              "type": "text",
+              "content": {
+                "contentRef": {
+                  "entityRef": {
+                    "type": "analysis",
+                    "id": "a03e4fcb-8ee8-3e0f-851a-78ed79eff6fc",
+                    "revision": 1
+                  },
+                  "fieldPath": "summaryText"
+                },
+                "entityRefs": [],
+                "options": [],
+                "inputFields": []
+              },
+              "actions": []
+            }
+          ],
+          "entityRefs": [
+            {
+              "type": "analysis",
+              "id": "a03e4fcb-8ee8-3e0f-851a-78ed79eff6fc",
+              "revision": 1
+            }
+          ],
+          "managedBy": "local",
+          "inputValues": {}
+        },
+        {
+          "id": "81cadcc6-254b-30ea-a9fa-983f744fce2e",
+          "title": "本轮建议",
+          "value": "",
+          "span": "LARGE",
+          "revision": 1,
+          "isAnnotationMode": false,
+          "blocks": [
+            {
+              "componentId": "t-text",
+              "type": "text",
+              "content": {
+                "contentRef": {
+                  "entityRef": {
+                    "type": "analysis",
+                    "id": "1457f142-0ff7-3f9a-89dc-892ead3597af",
+                    "revision": 1
+                  },
+                  "fieldPath": "summaryText"
+                },
+                "entityRefs": [],
+                "options": [],
+                "inputFields": []
+              },
+              "actions": []
+            },
+            {
+              "componentId": "t-list",
+              "type": "list",
+              "content": {
+                "entityRefs": [
+                  {
+                    "type": "training",
+                    "id": "66c78397-501b-372b-93db-5005d55f6f16",
+                    "revision": 1
+                  }
+                ],
+                "options": [],
+                "inputFields": []
+              },
+              "actions": []
+            }
+          ],
+          "entityRefs": [],
+          "managedBy": "local",
+          "inputValues": {}
+        },
+        {
+          "id": "c832d60d-07b2-3a79-96eb-cbe0ca784832",
+          "title": "本轮建议",
+          "value": "",
+          "span": "LARGE",
+          "revision": 1,
+          "isAnnotationMode": false,
+          "blocks": [
+            {
+              "componentId": "row-text",
+              "type": "text",
+              "content": {
+                "contentRef": {
+                  "entityRef": {
+                    "type": "analysis",
+                    "id": "83fdcfdb-6439-371b-93ae-cb588714262f",
+                    "revision": 1
+                  },
+                  "fieldPath": "summaryText"
+                },
+                "entityRefs": [],
+                "options": [],
+                "inputFields": []
+              },
+              "actions": []
+            },
+            {
+              "componentId": "row-list",
+              "type": "list",
+              "content": {
+                "entityRefs": [
+                  {
+                    "type": "training",
+                    "id": "7141f89b-45e8-3b60-bde3-6d0665fdcec8",
+                    "revision": 1
+                  },
+                  {
+                    "type": "training",
+                    "id": "66c78397-501b-372b-93db-5005d55f6f16",
+                    "revision": 1
+                  }
+                ],
+                "options": [],
+                "inputFields": []
+              },
+              "actions": []
+            },
+            {
+              "componentId": "row-metric",
+              "type": "metric",
+              "content": {
+                "label": "今日训练日数",
+                "calculationId": "c130694e-dea1-3db4-bcd4-dbcfcef0e9a3",
+                "resultPath": "frequency.trainingDays",
+                "unit": "天",
+                "entityRefs": [],
+                "options": [],
+                "inputFields": []
+              },
+              "actions": []
+            }
+          ],
+          "entityRefs": [],
+          "managedBy": "local",
+          "inputValues": {}
+        }
+      ]
+    }
+  ]
+}
