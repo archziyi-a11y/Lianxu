@@ -1,0 +1,28 @@
+{
+  "sourceCommit": "bdb4186a20405ca10e54f90bed30e45849d73a52",
+  "apk": "deliverables/Lianxu-copy-polish-20261028.apk",
+  "sha256": "cae542eda64253022483f5ea9d529eeb49c0ee9ca728f033f31ab64e7c476adc",
+  "installedHashes": {
+    "com.example.lianxu": "cae542eda64253022483f5ea9d529eeb49c0ee9ca728f033f31ab64e7c476adc",
+    "com.example.lianxu.evidence": "762bce0f4c96735f8054e4e3710cff69c862f649b928f64ef788fdf2ccba627a"
+  },
+  "jvm": {
+    "tests": 17,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "screenshots": {
+    "after-rich-dark-scroll-0.png": "e465c3e7f9e9fc83674c63d3141040ae50bc7a80846507adc75bab80a9dd72bd",
+    "after-rich-dark-scroll-1.png": "cae77da56f522cd63d76362e0a37751d53442eb789bfe476818c4aeb9842febc",
+    "after-rich-dark-scroll-2.png": "b7de0c9fc841ca40dd0f6d3e9475c9711470ca65ab029476bfa172d309e52d89",
+    "after-rich-dark.png": "2bdb878fe84a17b20511b762b96f1c8c976babe2b1148af0dbe9fb1def647c65",
+    "after-rich-light-scroll-0.png": "7adc2ad4f8e71267740ed60dfac31ce1215dbfba3f2ec7c5d4817fee9db2a35d",
+    "after-rich-light-scroll-1.png": "e64fdb43bebbdda5c3ce33c9e69f6349bbdf8d83cbc72371239550584126f69e",
+    "after-rich-light-scroll-2.png": "cd9c72fc45854f730e61f91758162fd2e74132f1034b078cabbf64d9f975d59c",
+    "after-rich-light.png": "b6fdbd9f1a3dbad6f61c82c4b0931f48eb74b69954efff24215ce8b445735517",
+    "after-sparse-dark.png": "f2e2c876231c1b120decb96faf54f14b39063f4010479bdc91cf499dd66d1bff",
+    "after-sparse-light.png": "afcd4b420b7f0204068a62adfdae07ad06922750e14027e19d6ce51b583ca6e8"
+  },
+  "verification": "Four states from isolated offline fixture; nutrition explanation removed and distribution wording visually checked. Live AI wording not retested."
+}
