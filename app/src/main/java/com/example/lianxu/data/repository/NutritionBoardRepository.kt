@@ -156,7 +156,7 @@ class NutritionBoardRepository(private val db: AppDatabase, val catalog: FoodCat
                 blocks = NUTRIENT_KEYS.flatMap { key -> listOf(metric("intake-$key", calculationId, "intake.knownSubtotal.$key", "已核算${nutrientLabel(key)}", unit(key)),
                     metric("remaining-$key", calculationId, "remaining.$key", "目标减已知${nutrientLabel(key)}", unit(key))) }))
         }
-        cards.addAll(if(target.status in listOf("ready","manual")) cards.indexOfFirst { it.id.endsWith(":guidance") }.coerceAtLeast(0) else 0, ActiveInputRepository(db).cards(boardId, onDate))
+        cards.addAll(0, ActiveInputRepository(db).cards(boardId, onDate))
         if (measurements.any { it.metric == "weight" }) {
             val trend = weightTrend(measurements.filter { it.metric == "weight" }.mapNotNull { m -> date(m.observed)?.let { WeightPoint(it, m.value.toString().toDouble()) } }, onDate)
             val series = JSONObject().put("points", JSONArray(trend.points.map { JSONObject().put("date", it.date.toString()).put("value", it.value) }))
@@ -239,7 +239,7 @@ class NutritionBoardRepository(private val db: AppDatabase, val catalog: FoodCat
         val current = dao.cards(board.id).associate { it.id to DomainJson.decode<DashboardCard>(it.data) }
         val draft = dao.draft(board.id)
         val pending = draft?.let { store.decode(it.cardsJson).associateBy { c -> c.id } } ?: emptyMap()
-        val composed = if (preserveComposition && board.latestCompletedTurnId != null) {
+        val composed = if (preserveComposition && (board.latestCompletedTurnId != null || pending.values.any { it.isAnnotationMode || ActiveInputRepository.hasInput(it) })) {
             val byId = generated.associateBy { it.id }
             val plan = dao.planForDate(board.dateContext)
             val latestTurn = board.latestCompletedTurnId?.let { dao.turn(it) }
@@ -272,7 +272,13 @@ class NutritionBoardRepository(private val db: AppDatabase, val catalog: FoodCat
         val prepared = generated.filter { it.managedBy == "input" }.associateBy { it.id }
         val stable = composed.mapNotNull { old->if(old.managedBy=="input")prepared[old.id] else old }
         val added = prepared.values.filter { p->stable.none { it.id==p.id } }
-        val arranged = stable + added
+        // Preserve the current composition while editing. Otherwise place new opportunities
+        // beside existing inputs, after any leading assistant reply, rather than below summaries.
+        val editing = pending.values.any { it.isAnnotationMode || ActiveInputRepository.hasInput(it) }
+        val inputIndex = stable.indexOfFirst { it.managedBy == "input" }
+        val insertion = if (editing) stable.size else if (inputIndex >= 0) inputIndex
+            else stable.indexOfFirst { it.managedBy != "assistant" }.let { if (it < 0) stable.size else it }
+        val arranged = stable.take(insertion) + added + stable.drop(insertion)
         val withCustom = arranged + pending.values.filter { it.managedBy=="user_input" && arranged.none { c->c.id==it.id } }
         val cancelled = db.recordDao().allKnowledge().filter { it.kind=="follow_up" && it.status=="cancelled" }.map { it.id }.toSet()
         val retained = current.values.filter { old -> withCustom.none { it.id == old.id } && pending[old.id]?.let { ActiveInputRepository.hasInput(it) } == true }

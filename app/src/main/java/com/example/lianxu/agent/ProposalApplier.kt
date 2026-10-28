@@ -53,14 +53,17 @@ class ProposalApplier(private val work: AgentWorkspace) {
         val patch = proposal.optJSONObject("boardPatch")
         if (patch != null) cards = patch(cards, patch, observedCardVersions)
         val blocks = proposal.optJSONArray("blocks")
+        var replyBlocks = emptyList<BoardComponent>()
+        val defaultReply = patch == null || patch.optJSONArray("upsertCards")?.length() == 0
         if (blocks != null && blocks.length() > 0) {
             val parsed = blocks.objects().map { parseBlock(bindCardRefs(work.resolve(it)) as JSONObject) }
             parsed.forEach { validateBlock(it) }
-            cards = cards + DashboardCard(refId("${work.submission.turn.id}:blocks"), "本轮建议", span = CardSpan.LARGE, blocks = parsed)
+            if (defaultReply) replyBlocks = parsed
+            else cards = cards + DashboardCard(refId("${work.submission.turn.id}:blocks"), "本轮建议", span = CardSpan.LARGE, blocks = parsed)
         }
-        if (patch == null || patch.optJSONArray("upsertCards")?.length() == 0) {
+        if (defaultReply) {
             cards = listOf(DashboardCard(refId("${work.submission.task.boardId}:reply"), "本轮建议", span = CardSpan.LARGE,
-                blocks = listOf(BoardComponent("reply", "text", ComponentContent(contentRef = ContentRef(summaryRef, "summaryText")))), entityRefs = listOf(summaryRef))) + cards.filterNot { it.id == refId("${work.submission.task.boardId}:reply") }
+                blocks = replyBlocks.ifEmpty { listOf(BoardComponent("reply", "text", ComponentContent(contentRef = ContentRef(summaryRef, "summaryText")))) }, entityRefs = listOf(summaryRef))) + cards.filterNot { it.id == refId("${work.submission.task.boardId}:reply") }
         }
         proposal.optJSONObject("followUp")?.let { follow ->
             follow.shape("question", "options", "missingFields", "topicId")
@@ -89,7 +92,10 @@ class ProposalApplier(private val work: AgentWorkspace) {
         require(cards.size in 1..60 && cards.map { it.id }.distinct().size == cards.size) { "INVALID_RANGE: cards" }
         cards.forEach { card ->
             require(card.title.length <= 120 && card.blocks.size <= 20)
-            card.blocks.forEach { block -> if (!(block.type == "text" && block.content.contentRef == null && generated[card.id]?.blocks?.contains(block) == true)) validateBlock(block) }
+            card.blocks.forEach { block -> if (!(block.type == "text" && block.content.contentRef == null && generated[card.id]?.blocks?.contains(block) == true)) {
+                val inherited = work.submission.cards.firstOrNull { it.id == card.id }?.blocks?.contains(block) == true
+                validateBlock(block, allowStaleAnalysis = inherited)
+            } }
             work.validateRefs(JSONArray(card.entityRefs.map { JSONObject(DomainJson.encode(it)) }))
         }
         cards
@@ -152,7 +158,7 @@ class ProposalApplier(private val work: AgentWorkspace) {
         raw.optJSONObject("content")?.shape("label", "text", "contentRef", "calculationId", "resultPath", "unit", "entityRefs", "mealId", "options", "selectedKey", "attachmentId", "inputKind", "inputFields", "suggestedName")
         return DomainJson.decode(raw.toString())
     }
-    private suspend fun validateBlock(block: BoardComponent) {
+    private suspend fun validateBlock(block: BoardComponent, allowStaleAnalysis: Boolean = false) {
         require(block.componentId.isNotBlank())
         val c = block.content
         when (block.type) {
@@ -160,7 +166,7 @@ class ProposalApplier(private val work: AgentWorkspace) {
                 val ref = requireNotNull(c.contentRef) { "INVALID_SHAPE: assistant text needs analysis contentRef" }
                 require(ref.entityRef.type == "analysis" && ref.fieldPath == "summaryText")
                 val analysis = requireNotNull(work.dao.analysis(ref.entityRef.id))
-                require(analysis.revision == ref.entityRef.revision && analysis.freshness == "current") { "VERSION_CONFLICT: analysis" }
+                require(analysis.revision == ref.entityRef.revision && (analysis.freshness == "current" || allowStaleAnalysis)) { "VERSION_CONFLICT: analysis" }
                 require(!analysis.summaryText.contains("{{")) { "INVALID_SHAPE: unresolved placeholder" }
             }
             "metric" -> {
