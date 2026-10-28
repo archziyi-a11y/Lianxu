@@ -1,0 +1,7 @@
+{
+  "sourceCommit": "be0baa8044653b73685d4b28fb09620de86845cf",
+  "apk": "deliverables/Lianxu-icon-20261028.apk",
+  "sha256": "d756830a7cec60fc0688150e39e08f6b5dfdfa98d0585d85d4e28e55a8345480",
+  "installedHashVerified": true,
+  "verification": "API37 launcher displays the new adaptive icon. Monochrome entry uses the same vector; themed-launcher mode not manually tested. Screenshot right-hand Android icon is the previously installed offline evidence package, not the production package."
+}
