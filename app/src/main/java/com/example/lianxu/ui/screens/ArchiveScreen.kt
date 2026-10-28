@@ -60,7 +60,6 @@ import java.time.format.DateTimeFormatter
   else Column(Modifier.padding(horizontal=20.dp,vertical=8.dp)) {
    if(!shortViewport)Text("练序  /  ARCHIVE",style=MaterialTheme.typography.labelMedium,color=MaterialTheme.colorScheme.onSurfaceVariant)
    Row(Modifier.fillMaxWidth(),verticalAlignment=Alignment.CenterVertically) { Text("档案",Modifier.weight(1f),style=if(shortViewport)MaterialTheme.typography.titleLarge else MaterialTheme.typography.displaySmall);TextButton(onClick={page="资料"}){Text("资料与目标 ↗")} }
-   if(!shortViewport)Text("从积累中，看见变化。",Modifier.padding(vertical=8.dp),style=MaterialTheme.typography.labelLarge)
    HorizontalDivider(color=MaterialTheme.colorScheme.outlineVariant)
   }
  }) { padding->
@@ -83,27 +82,35 @@ import java.time.format.DateTimeFormatter
      OutlinedButton(onClick={page="记录"}){Text("全部记录")};OutlinedButton(onClick={page="安排"}){Text("习惯与跟进")}
     } }
     item(span={GridItemSpan(6)}){Column(verticalArrangement=Arrangement.spacedBy(6.dp)){
-     if(state.overview.isNotBlank())Text(state.overview,style=MaterialTheme.typography.titleMedium)
+     if(state.overview.isNotBlank())Text(state.overview,style=MaterialTheme.typography.bodyLarge,color=MaterialTheme.colorScheme.onSurfaceVariant)
      if(state.updatedAt>0)Text("更新于 ${DateTimeFormatter.ofPattern("MM-dd HH:mm").format(Instant.ofEpochMilli(state.updatedAt).atZone(ZoneId.systemDefault()))}",style=MaterialTheme.typography.labelSmall)
      if(state.scopes.size>1)FlowRow(horizontalArrangement=Arrangement.spacedBy(8.dp)){state.scopes.forEach { scope->FilterChip(selected=state.scope==scope,onClick={viewModel.selectScope(scope)},label={Text(scopeLabel(scope))})}}
      message?.let{Text(it,style=MaterialTheme.typography.bodySmall)}
     }}
     val displays=if(category==null)state.cards else state.catalog.filter { display->display.topics.any { key->state.topics.any { it.id==key && it.category==category } } }
-    if(displays.isEmpty() && category==null)item(span={GridItemSpan(6)}){Column(verticalArrangement=Arrangement.spacedBy(8.dp)){Text("从已有记录开始，逐渐看见变化。",style=MaterialTheme.typography.bodyLarge);TextButton(onClick=onShowToday){Text("记录今天 →")};TextButton(onClick={page="资料"}){Text("完善资料与目标")}}}
-    items(displays,key={it.card.id},span={GridItemSpan(if(wideCards)6 else it.card.span.span)}){display->
-     Card(modifier=Modifier.animateItem().fillMaxWidth().combinedClickable(onClick={detail=display},onLongClick={options=display},onLongClickLabel="展示选项"),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surface),border=BorderStroke(1.dp,MaterialTheme.colorScheme.outlineVariant)){
-      Column(Modifier.padding(14.dp),verticalArrangement=Arrangement.spacedBy(6.dp)){
-       if(display.priority)Text("优先展示",style=MaterialTheme.typography.labelSmall,color=MaterialTheme.colorScheme.primary)
-       Text(display.card.title,style=MaterialTheme.typography.titleSmall)
+    if(displays.isEmpty() && category==null)item(span={GridItemSpan(6)}){Column(verticalArrangement=Arrangement.spacedBy(8.dp)){Text("从已有记录开始，逐渐看见变化。",style=MaterialTheme.typography.bodyLarge);Button(onClick=onShowToday){Text("记录今天 →")};TextButton(onClick={page="资料"}){Text("完善资料与目标",color=MaterialTheme.colorScheme.onSurfaceVariant)}}}
+    itemsIndexed(displays,key={_,display->display.card.id},span={index,display->GridItemSpan(if(wideCards || index==0)6 else display.card.span.span)}){index,display->
+     val lead=index==0
+     Card(modifier=Modifier.animateItem().fillMaxWidth().combinedClickable(onClick={detail=display},onLongClick={options=display},onLongClickLabel="展示选项"),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surface),border=BorderStroke(1.dp,if(lead)MaterialTheme.colorScheme.primary.copy(alpha=.45f) else MaterialTheme.colorScheme.outlineVariant)){
+      Column(Modifier.padding(if(lead)20.dp else 16.dp),verticalArrangement=Arrangement.spacedBy(12.dp)){
+       Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween){Text(if(display.priority)"优先展示" else "",style=MaterialTheme.typography.labelSmall,color=MaterialTheme.colorScheme.primary);Text("查看依据 ↗",style=MaterialTheme.typography.labelSmall,color=MaterialTheme.colorScheme.onSurfaceVariant)}
+       Text(display.card.title,style=if(lead)MaterialTheme.typography.headlineSmall else MaterialTheme.typography.titleMedium)
        val blocks=state.resolved[display.card.id].orEmpty()
-       blocks.filterNot { it.type=="text" && blocks.any { chart->chart.type=="trend" && chart.text==it.text } }.forEach { block->ComponentView(block,display.card.span.span==2,{_,_->},{}) }
+       val metrics=blocks.filter { it.type=="metric" }
+       if(metrics.size>1) {
+        val primary=metrics.first()
+        Text(primary.label,style=MaterialTheme.typography.labelMedium,color=MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(primary.text,style=if(!lead && span<6)MaterialTheme.typography.headlineSmall else MaterialTheme.typography.displaySmall)
+        metrics.drop(1).chunked(if(wideCards || (!lead && span<6))1 else 2).forEach { row->Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(16.dp)){row.forEach { metric->Column(Modifier.weight(1f)){Text(metric.label,style=MaterialTheme.typography.labelSmall,color=MaterialTheme.colorScheme.onSurfaceVariant);Text(metric.text,style=MaterialTheme.typography.titleLarge)} }} }
+       }
+       blocks.filterNot { (metrics.size>1 && it.type=="metric") || (it.type=="text" && blocks.any { chart->chart.type=="trend" && chart.text==it.text }) }.forEach { block->ComponentView(block,!lead && display.card.span.span==2,{_,_->},{}) }
       }
      }
     }
     if(category==null)item(span={GridItemSpan(6)}){Column(verticalArrangement=Arrangement.spacedBy(8.dp)){
      HorizontalDivider();Text("长期资料",style=MaterialTheme.typography.titleSmall)
-     FlowRow(horizontalArrangement=Arrangement.spacedBy(8.dp)){MethodRegistry.categories.forEach { name->TextButton(onClick={category=name}){Text(name)}}}
-     FlowRow(horizontalArrangement=Arrangement.spacedBy(8.dp)){listOf("分析历史" to "阶段","历日方案" to "历日","分析方法" to "方法","备份恢复" to "备份","连接与显示" to "设置").forEach { (label,target)->TextButton(onClick={page=target}){Text(label)}}}
+     FlowRow(horizontalArrangement=Arrangement.spacedBy(8.dp)){MethodRegistry.categories.forEach { name->TextButton(onClick={category=name}){Text(name,color=MaterialTheme.colorScheme.onSurfaceVariant)}}}
+     FlowRow(horizontalArrangement=Arrangement.spacedBy(8.dp)){listOf("分析历史" to "阶段","历日方案" to "历日","分析方法" to "方法","备份恢复" to "备份","连接与显示" to "设置").forEach { (label,target)->TextButton(onClick={page=target}){Text(label,color=MaterialTheme.colorScheme.onSurfaceVariant)}}}
     }}
    }
    item(span={GridItemSpan(6)}){Spacer(Modifier.height(24.dp))}

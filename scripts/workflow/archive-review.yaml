@@ -1,0 +1,23 @@
+appId: com.example.lianxu.evidence
+name: Archive evidence priority and archive
+---
+- assertVisible: "档案"
+- startRecording: archive-interaction
+- tapOn: "营养规划变化"
+- assertVisible: "计算依据"
+- tapOn: "关闭"
+- longPressOn: "营养规划变化"
+- assertVisible: "展示选项"
+- tapOn: "优先展示.*"
+- assertVisible: "优先展示"
+- takeScreenshot: priority
+- longPressOn: "营养规划变化"
+- tapOn: "归档.*"
+- assertNotVisible: "营养规划变化"
+- scrollUntilVisible:
+    element: "营养"
+    direction: DOWN
+- tapOn: "营养"
+- assertVisible: "营养规划变化"
+- takeScreenshot: catalog-restored
+- stopRecording

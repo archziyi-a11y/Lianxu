@@ -29,10 +29,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun MainScreen(todayModel: TodayViewModel = androidx.lifecycle.viewmodel.compose.viewModel(), archiveModel: ArchiveViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
+fun MainScreen(todayModel: TodayViewModel = androidx.lifecycle.viewmodel.compose.viewModel(), archiveModel: ArchiveViewModel = androidx.lifecycle.viewmodel.compose.viewModel(), initialPage: Int = 0) {
     val scope=rememberCoroutineScope()
     var archiveSection by remember { mutableStateOf("首页") }
-    val pagerState = rememberPagerState(pageCount = { 2 })
+    val pagerState = rememberPagerState(initialPage = initialPage, pageCount = { 2 })
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),

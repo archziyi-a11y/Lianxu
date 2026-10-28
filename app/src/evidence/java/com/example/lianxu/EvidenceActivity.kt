@@ -45,7 +45,7 @@ class EvidenceActivity : ComponentActivity() {
         enableEdgeToEdge()
         db = Room.inMemoryDatabaseBuilder(this, AppDatabase::class.java).build()
         lifecycleScope.launch {
-            seed()
+            if (!intent.getBooleanExtra("sparse", false)) seed()
             val client = AgentClient { messages, _ ->
                 calls++
                 event("request", JSONObject().put("requests", calls))
@@ -64,12 +64,12 @@ class EvidenceActivity : ComponentActivity() {
             val archive = ArchiveViewModel(application, db)
             viewModelStore.put("evidence-today", today)
             viewModelStore.put("evidence-archive", archive)
-            setContent { LianxuTheme { MainScreen(today, archive) } }
+            setContent { LianxuTheme(darkTheme=intent.getBooleanExtra("dark", false)) { MainScreen(today, archive, initialPage=if(intent.getBooleanExtra("archive", false))1 else 0) } }
             launch {
                 today.isProcessing.collect { event("processing", JSONObject().put("value", it)) }
             }
             launch {
-                today.cards.filter { cards -> cards.any { it.title == "卧推" } }.first()
+                today.cards.filter { cards -> cards.isNotEmpty() }.first()
                 File(output, "ready.json").writeText(JSONObject().put("runId", runId)
                     .put("isolated", true).put("transport", "offline-fixture")
                     .put("clock", "android-real-time").toString())

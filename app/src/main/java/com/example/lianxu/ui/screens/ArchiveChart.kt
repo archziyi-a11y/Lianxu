@@ -25,12 +25,12 @@ import kotlin.math.abs
     if(latest!=null){
      val first=maxOf(parsed.minOf { it.first },latest.minusDays(83));val aligned=first.minusDays(first.dayOfWeek.value.toLong()-1)
      val values=parsed.filter { it.first>=first }.groupBy { it.first }.mapValues { it.value.sumOf { x->x.second } }
-     Text("一    二    三    四    五    六    日",style=MaterialTheme.typography.labelSmall)
+     Row(Modifier.fillMaxWidth()){listOf("一","二","三","四","五","六","日").forEach { Text(it,Modifier.weight(1f),style=MaterialTheme.typography.labelSmall) }}
      Canvas(Modifier.fillMaxWidth().height(110.dp).semantics { contentDescription=values.entries.joinToString { "${it.key}：${it.value.toInt()}次训练" } }){
-      val rows=(ChronoUnit.DAYS.between(aligned,latest)/7+1).toInt();val cell=minOf(size.width/7,size.height/rows)
+      val rows=(ChronoUnit.DAYS.between(aligned,latest)/7+1).toInt();val cell=size.width/7;val rowHeight=size.height/rows
       var date=aligned
       while(date<=latest){val n=ChronoUnit.DAYS.between(aligned,date).toInt();val value=values[date] ?: 0.0
-       drawRect(if(value>0)color.copy(alpha=(.4+value*.15).coerceAtMost(1.0).toFloat()) else faint,Offset((n%7)*cell+2,(n/7)*cell+2),androidx.compose.ui.geometry.Size(cell-4,cell-4));date=date.plusDays(1)}
+       drawRect(if(value>0)color.copy(alpha=(.4+value*.15).coerceAtMost(1.0).toFloat()) else faint,Offset((n%7)*cell+2,(n/7)*rowHeight+2),androidx.compose.ui.geometry.Size(cell-4,rowHeight-4));date=date.plusDays(1)}
      }
      Text("显示${first}至${latest} · 有色方格为已记录训练日",style=MaterialTheme.typography.labelSmall)
     }
@@ -48,14 +48,20 @@ import kotlin.math.abs
    }
    else->{
     val dates=points.map { runCatching { LocalDate.parse(it.label) }.getOrNull() };val minimum=dates.filterNotNull().minOrNull();val maximum=dates.filterNotNull().maxOrNull()
-    Canvas(Modifier.fillMaxWidth().height(128.dp).semantics { contentDescription=points.joinToString { "${it.label}：${it.value}${block.unit}" } }){
-     val low=points.minOf { it.value };val high=points.maxOf { it.value };val spread=(high-low).coerceAtLeast(.1)
+    val rawLow=points.minOf { it.value };val rawHigh=points.maxOf { it.value };val padding=((rawHigh-rawLow)*.15).coerceAtLeast(if(block.unit=="kg") .5 else .1)
+    val low=rawLow-padding;val high=rawHigh+padding
+    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(10.dp)){
+    Column(Modifier.height(160.dp).widthIn(min=42.dp),verticalArrangement=Arrangement.SpaceBetween){listOf(high,(high+low)/2,low).forEach { Text(ComponentResolver.displayNumber(it,block.unit),style=MaterialTheme.typography.labelSmall,color=MaterialTheme.colorScheme.onSurfaceVariant) }}
+    Canvas(Modifier.weight(1f).height(160.dp).semantics { contentDescription=points.joinToString { "${it.label}：${it.value}${block.unit}" } }){
+     val spread=high-low
      repeat(3) { tick->val y=6f+tick*(size.height-12)/2;drawLine(faint,Offset(0f,y),Offset(size.width,y),1.dp.toPx()) }
      val coordinates=points.mapIndexed { i,p->
       val x=if(minimum!=null && maximum!=null && dates[i]!=null && maximum>minimum)ChronoUnit.DAYS.between(minimum,dates[i]).toFloat()/ChronoUnit.DAYS.between(minimum,maximum) else if(points.size==1).5f else i.toFloat()/(points.size-1)
       Offset(4+x*(size.width-8),size.height-6-((p.value-low)/spread).toFloat()*(size.height-12)) }
      coordinates.zipWithNext().forEach { (a,b)->drawLine(color,a,b,2.dp.toPx()) };coordinates.forEach { drawCircle(color,3.dp.toPx(),it) }
     }
+    }
+    Text("${block.unit} · 纵轴为局部范围",style=MaterialTheme.typography.labelSmall,color=MaterialTheme.colorScheme.onSurfaceVariant)
     Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween){Text(points.first().label,style=MaterialTheme.typography.labelSmall);Text(points.last().label,style=MaterialTheme.typography.labelSmall)}
     Text("${ComponentResolver.displayNumber(points.minOf { it.value },block.unit)} — ${ComponentResolver.displayNumber(points.maxOf { it.value },block.unit)} ${block.unit}",style=MaterialTheme.typography.labelSmall)
    }
