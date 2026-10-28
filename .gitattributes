@@ -1,3 +1,2 @@
 # Evidence manifests hash raw artifact bytes; preserve them across Windows checkouts.
-docs/validation/workflow-runs/** -text
-docs/validation/workflow-runs/**/*.log whitespace=-blank-at-eof
+docs/validation/workflow-runs/** -text whitespace=cr-at-eol,-blank-at-eof
