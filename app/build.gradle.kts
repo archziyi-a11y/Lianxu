@@ -22,6 +22,11 @@ android {
     }
 
     buildTypes {
+        create("evidence") {
+            initWith(getByName("debug"))
+            applicationIdSuffix = ".evidence"
+            matchingFallbacks += "debug"
+        }
         release {
             optimization {
                 enable = true

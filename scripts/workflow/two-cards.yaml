@@ -1,0 +1,31 @@
+appId: com.example.lianxu.evidence
+name: Two cards to visible reply (offline isolated fixture)
+---
+- assertVisible: "今日"
+- scrollUntilVisible:
+    element: "卧推"
+    direction: DOWN
+    centerElement: true
+- longPressOn: "卧推"
+- tapOn: "点按写文字.*"
+- inputText: "Today bench was easy."
+- assertVisible: "Today bench was easy."
+- tapOn: "收好这张 · 继续补充"
+- tapOn: "收起补充"
+- scrollUntilVisible:
+    element: "接续上次"
+    direction: DOWN
+    centerElement: true
+- longPressOn: "接续上次"
+- tapOn: "点按写文字.*"
+- inputText: "Recovery feels good."
+- assertVisible: "Recovery feels good."
+- tapOn: "收好这张 · 继续补充"
+- assertVisible: "2 张待发送"
+- takeScreenshot: pending
+- tapOn: "统一发送"
+- extendedWaitUntil:
+    visible: "隔离交互样本：两卡补充已收到。这是离线固定回复，不代表真实 AI 分析。"
+    timeout: 20000
+- assertVisible: "本轮建议"
+- takeScreenshot: reply

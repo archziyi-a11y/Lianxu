@@ -33,3 +33,7 @@ replay_pid*.log
 
 # Installable local delivery; checksum and source revision are tracked.
 /deliverables/*.apk
+
+# Workflow trials retain local raw evidence; only reviewed evidence is force-added.
+/docs/validation/workflow-runs/
+**/__pycache__/

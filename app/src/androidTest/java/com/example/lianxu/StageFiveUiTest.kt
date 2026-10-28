@@ -126,6 +126,8 @@ class StageFiveUiTest {
   val db=Room.inMemoryDatabaseBuilder(context,AppDatabase::class.java).build();runBlocking { seed(db) }
   val today=TodayViewModel(context.applicationContext as Application,db,client);val archive=ArchiveViewModel(context.applicationContext as Application,db)
   val models=ViewModelStore().apply{put("today",today);put("archive",archive)}
+  val boundaryScope=CoroutineScope(SupervisorJob()+Dispatchers.Main.immediate)
+  val cardsWhenProcessingEnds=CompletableDeferred<List<com.example.lianxu.data.model.DashboardCard>>()
   try {
    rule.setContent { LianxuTheme { MainScreen(today,archive) } }
    rule.waitUntil(20000){today.cards.value.any { it.title=="卧推" }}
@@ -133,12 +135,21 @@ class StageFiveUiTest {
    rule.onNodeWithTag("card:${card.id}").performScrollTo()
    rule.runOnIdle { today.updateInput(card.id,"name","卧推");today.updateInput(card.id,"sets","3") }
    rule.waitUntil(5000){today.cards.value.any { it.inputValues["sets"]=="3" }}
+   boundaryScope.launch {
+    today.isProcessing.first { it }
+    today.isProcessing.first { !it }
+    cardsWhenProcessingEnds.complete(today.cards.value)
+   }
    rule.onNodeWithContentDescription("统一发送").performClick()
    rule.waitUntil(20000){calls>0 && !today.isProcessing.value && today.cards.value.firstOrNull()?.title=="本轮建议"}
+   rule.waitUntil(5000){cardsWhenProcessingEnds.isCompleted}
+   val entering=runBlocking { cardsWhenProcessingEnds.await() }
+   assertEquals("Reply must be ready before the receive animation starts","本轮建议",entering.first().title)
+   assertFalse("Submitted inputs must not flash back during entry",entering.any(ActiveInputRepository::hasInput))
    // Do not scroll to the assertion: receiving a reply must itself make it visible.
    rule.onNodeWithText("本轮建议").assertIsDisplayed()
    rule.onNodeWithText("隔离交互样本：本轮填写已保存，未填写负重保持未知。可以继续补充下一轮。").assertIsDisplayed()
-  }finally{models.clear();db.close()}
+  }finally{boundaryScope.cancel();models.clear();db.close()}
  }
 
  @Test fun manualEvidenceSession() {

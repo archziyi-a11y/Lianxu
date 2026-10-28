@@ -36,6 +36,9 @@ class TodayViewModel @JvmOverloads constructor(application: Application, databas
     private val store = BoardStore(db)
     private val attachments = AttachmentStore(application, db)
     private val writes = Mutex()
+    private val projection = Mutex()
+    private var projectedBoard: String? = null
+    private var projectedRevision = -1
     private var boardId: String? = null
     private var nutrition: NutritionBoardRepository? = null
     private val _resolved = MutableStateFlow<Map<String, List<ResolvedComponent>>>(emptyMap())
@@ -86,10 +89,8 @@ class TodayViewModel @JvmOverloads constructor(application: Application, databas
                                 finally { _isPlanning.value = false }
                             }
                         }
-                        combine(store.watchCards(current.id), db.collaborationDao().watchAnalyses()) { cards, _ -> cards }.collect { cards ->
-                            val resolver = ComponentResolver(db)
-                            _resolved.value = cards.associate { it.id to resolver.resolve(it) }
-                            _cards.value = cards
+                        combine(store.watchDraft(current.id), db.collaborationDao().watchAnalyses()) { draft, _ -> draft }.collect { draft ->
+                            draft?.let { publishDraft(it) }
                         }
                     }
                 }
@@ -109,6 +110,18 @@ class TodayViewModel @JvmOverloads constructor(application: Application, databas
             catch (error: CancellationException) { throw error }
             catch (error: Exception) { _notice.value = "无法读取密钥，请在设置中重新保存" }
         }
+    }
+
+    private suspend fun publishDraft(draft: com.example.lianxu.data.entity.DraftEntity) = projection.withLock {
+        if (boardId != draft.boardId || projectedBoard == draft.boardId && draft.revision < projectedRevision) return@withLock
+        val cards = store.decode(draft.cardsJson)
+        val resolver = ComponentResolver(db)
+        val resolved = cards.associate { it.id to resolver.resolve(it) }
+        if (boardId != draft.boardId) return@withLock
+        _resolved.value = resolved
+        _cards.value = cards
+        projectedBoard = draft.boardId
+        projectedRevision = draft.revision
     }
 
     private fun edit(transform: (List<DashboardCard>) -> List<DashboardCard>) {
@@ -184,7 +197,12 @@ class TodayViewModel @JvmOverloads constructor(application: Application, databas
                 val runner = com.example.lianxu.agent.AgentRunner(getApplication(), db, repository.catalog,
                     if(localOnly)null else testClient ?: key?.takeIf { it.isNotBlank() }?.let { com.example.lianxu.agent.DeepSeekAgentClient(it) }) { if (boardId == id) _taskProgress.value = it }
                 runner.run(frozen)
-                if (boardId == id) _notice.value = null
+                if (boardId == id) {
+                    // Publish the committed reply before allowing the receive animation to begin.
+                    // The revision guard also prevents a delayed Room emission restoring the old draft.
+                    writes.withLock { db.collaborationDao().draft(id)?.let { publishDraft(it) } }
+                    _notice.value = null
+                }
 
             } catch (error: CancellationException) {
                 val completed = kotlinx.coroutines.withContext(kotlinx.coroutines.NonCancellable) {
