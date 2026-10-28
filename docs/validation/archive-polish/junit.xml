@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<testsuites>
+  <testsuite name="Test Suite" device="emulator-5554" tests="1" failures="0" time="41.483" timestamp="2026-10-28T17:50:30">
+    <testcase id="Archive evidence priority and archive" name="Archive evidence priority and archive" classname="Archive evidence priority and archive" file="scripts\workflow\archive-review.yaml" time="41.472" timestamp="2026-10-28T17:50:30" status="SUCCESS"/>
+  </testsuite>
+</testsuites>

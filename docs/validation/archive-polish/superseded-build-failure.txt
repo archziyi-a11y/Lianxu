@@ -1,0 +1,30 @@
+Starting a Gradle Daemon, 9 stopped Daemons could not be reused, use --status for details
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preEvidenceBuild UP-TO-DATE
+> Task :app:mergeEvidenceNativeDebugMetadata NO-SOURCE
+> Task :app:generateEvidenceResources UP-TO-DATE
+> Task :app:packageEvidenceResources UP-TO-DATE
+> Task :app:processEvidenceNavigationResources UP-TO-DATE
+> Task :app:parseEvidenceLocalResources UP-TO-DATE
+> Task :app:generateEvidenceRFile UP-TO-DATE
+> Task :app:kspEvidenceKotlin
+
+> Task :app:compileEvidenceKotlin FAILED
+e: file:///E:/Dev/Android/APP/Lianxu/app/src/main/java/com/example/lianxu/ui/screens/ArchiveScreen.kt:103:45 Unresolved reference 'span'.
+e: file:///E:/Dev/Android/APP/Lianxu/app/src/main/java/com/example/lianxu/ui/screens/ArchiveScreen.kt:104:59 Unresolved reference 'span'.
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:compileEvidenceKotlin' (registered by plugin 'com.android.internal.application').
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more details
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 21s
+7 actionable tasks: 2 executed, 5 up-to-date

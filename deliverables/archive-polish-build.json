@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-28",
+  "productionCommit": "7d183d97e886ee97da2faa0cae7c6999b0e72966",
+  "apk": "deliverables\\Lianxu-archive-polish-20261028.apk",
+  "sha256": "83c3eab0d8a90371071460b05762a7f64b07c9d08cbe9f0eddfc1f191fc03109",
+  "device": "emulator-5554 API37 1080x2400",
+  "data": "isolated in-memory fixture; production user database preserved",
+  "api": "offline fixture; no live provider requests",
+  "baselineCaveat": "before images bypassed MainScreen and are not valid product baseline",
+  "jvmTests": {
+    "passed": 17
+  },
+  "maestro": {
+    "flowsPassed": 1,
+    "seconds": 41,
+    "run": "2026-10-28_175027",
+    "scenario": "detail, priority, archive, category retrieval"
+  },
+  "installedApkShaVerified": true,
+  "instrumentation": {
+    "passed": 5,
+    "skipped": 1,
+    "failed": 0,
+    "originalFailurePreserved": true
+  },
+  "evidenceApkSha256": "a968fce01a2cb97e3c08c52f36082b5001281ea301a61642dd98d161fdd82746",
+  "fontScale": {
+    "tested": 1.5,
+    "restored": 1.0
+  },
+  "artifacts": {
+    "after-rich-dark-scroll-0.png": "61e33d60cc341d624b5773e08398b2a85e2fa740fce3758033536f12bbd95aba",
+    "after-rich-dark-scroll-1.png": "169f494a434c1cf3e62f64c739972a7f1874e2a55a26fcbb25f808b17ece4339",
+    "after-rich-dark-scroll-2.png": "83287787037f3c08a0bc5ed6ad6b0a607ea07a5da5eebab2590a6ee7aad05268",
+    "after-rich-dark.png": "bfddc502a4cacf72b67ef137e4b1d688cd2e70d3741e4a8226120e3ae32ef0a6",
+    "after-rich-light-scroll-0.png": "15830e6e02f741355ec5bd2b6d83b45bb62d9d01243b6df496c72530c239780a",
+    "after-rich-light-scroll-1.png": "161ebb6bc426d766e6c297f5c23b8d72f59167d4e436ecc93afc79341e7333aa",
+    "after-rich-light-scroll-2.png": "35f91cec1730ba425fd2d542364562c4953a787679572cade5ca51f189b81998",
+    "after-rich-light.png": "0fba9e439f3b261630985654801577084d13adc34d5793e965895758e8f2d255",
+    "after-sparse-dark.png": "6c127b7c2cc3c72812e62b1d863886dd8c35eda74286a1ab9f21ad74ae59a06c",
+    "after-sparse-light.png": "df55bc4d58b10c92b38335e8c1000c6414cc1eaa1d4e4902eff8a631e4553e45",
+    "archive-interaction.mp4": "91a434400e1f1c9b7621899b6d37e57926f1b3eef74025bd613aaa4132ec2a49",
+    "catalog-restored.png": "7bcdb169b2006ad043d950eee5b8c7bbe17803e97a7e68b086685384d05355eb",
+    "font-150-metrics.png": "8ecbb0fac82254b99e8286dba8d77776346d945628b81fdc06e0b8e81013a4ac",
+    "font-150-top.png": "1e286cf94bb2575bcbce505e3a23adb36fc627cbf537866d320fa2e71cd1d42c",
+    "priority.png": "f6ebbe20f3c494f6dcd801c8d0d6975afdcb0fb47e106805fb3127b3861ac6c1"
+  }
+}
