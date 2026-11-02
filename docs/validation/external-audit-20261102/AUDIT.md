@@ -28,3 +28,11 @@ Terra 交接时的测试桥接 PID 为 31584，根代理已将其停止并使用
 广回归命令为 `adb shell am instrument -w -r -e notClass com.example.lianxu.LiveAgentTest,com.example.lianxu.LiveArchiveTest,com.example.lianxu.StageFiveLiveTest com.example.lianxu.test/androidx.test.runner.AndroidJUnitRunner`。完整原始日志见本目录 `root-instrumentation.log`、`root-python.log`、`root-retest.log`。
 
 仍待真实验收：Grok Bot 账号侧的 MCP 认证、用户发送后的 webhook、定时接续，以及实际网络下的撤权与交接整链。图片测试使用固定样本和脚本提议，不代表 Grok 已完成图片理解。联网服务尚未选定授权；本轮未向公网部署，也未使用真实训练库进行平台试验。
+
+## 临时公网联调准备（后续授权）
+
+用户随后明确授权使用 Cloudflare 临时 HTTPS 隧道连接带令牌认证的隔离样本服务，并要求验证后关闭。Evidence 专用真实 HTTP 模式已提交 `b26677c`，生产 APK 未改变。测试服务位于 localhost:18765，使用新建隔离 SQLite、合成资料及随机凭据；凭据保存在仓库外受限目录，未输出到聊天或验证文档。
+
+本地验证完成 MCP 初始化、12 项工具发现、样本交接读取及页面回写 `applied`。根代理独立复核未认证请求返回 401、有效认证返回 200，交接含 1 个样本看板和 2 个样本计划。本轮无效令牌测试不等同于真实旧代际撤销，后者由既有回归覆盖。
+
+执行环境自动审批拒绝了启动 Cloudflare 隧道及生成启动脚本，返回 `blocked by policy`，没有提供更具体原因。未尝试换壳、改名或其他绕过路径。目前未生成公网 URL，Grok Bot 仍未连接。待用户在本机完成正常的隧道启动后，再进行公网和账号侧验证；此次准备不能记作平台联调成功。
