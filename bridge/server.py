@@ -46,6 +46,19 @@ def agent_epoch(ctx: Context):
     return bridge.authenticate(header[7:])
 
 @mcp.tool()
+def describe_capabilities(ctx: Context) -> dict:
+    """Discover accepted fact operations and registered archive methods. Methods and topics come from the current phone snapshot; no arbitrary scripts are accepted."""
+    handoff = bridge.read_handoff(agent_epoch(ctx))
+    snapshot = handoff.get('snapshot') or {}
+    return {'factOperations': {
+        'create_training': {'payload': {'kind':'strength', 'title':'actual activity', 'exercises':[], 'rawSummary':'reported actual activity'}},
+        'create_intake': {'payload': {'mode':'description', 'rawDescription':'用户实际报告的饮食', 'completeness':'partial'}, 'nutrientTotalExample': {'mode':'nutrient_total', 'manualNutrients':{'energyKcal':500,'proteinG':25}, 'completeness':'partial'}, 'note':'items requires known foodRef; catalog lookup is not exposed yet.'},
+        'create_measurement': {'payload': {'metric':'weight', 'value':70, 'unit':'kg'}}},
+        'operationEnvelope': {'operationId':'unique within input', 'kind':'create_training', 'payload':{}, 'relatedAnnotationIds':['id from input'], 'reason':'evidence'},
+        'operationSchema': snapshot.get('factOperationSchema', {}), 'archiveMethods': snapshot.get('archiveMethods', []), 'archiveTopics': snapshot.get('archiveTopics', []),
+        'note':'Registered methods run on the phone when source facts change. Read their resulting calculations and topic keys from the latest snapshot.'}
+
+@mcp.tool()
 def read_handoff(ctx: Context) -> dict:
     """Read latest phone snapshot and pending inputs prior to accepting handoff."""
     return bridge.read_handoff(agent_epoch(ctx))
@@ -72,6 +85,11 @@ def submit_requirement(proposal_id: str, base_revision: int, merge_key: str, sce
     body = {'type':'requirement', 'mergeKey':merge_key, 'scenario':scenario, 'limitation':limitation,
             'workaround':workaround, 'expectedInteraction':expected_interaction, 'inputIds':input_ids}
     return bridge.propose(agent_epoch(ctx), proposal_id, base_revision, body)
+
+@mcp.tool()
+def submit_facts(proposal_id: str, base_revision: int, input_id: str, operations: list[dict], ctx: Context) -> str:
+    """Propose facts actually reported by one pending input, never plans or predictions. Each operation is {operationId,kind,clientRef?,payload,relatedAnnotationIds,reason}; kind is create_training, create_intake or create_measurement. IDs in relatedAnnotationIds must be from that input. Do not recreate a kind already in automaticAnnotationIds. The phone validates and atomically saves the batch and completes the input."""
+    return bridge.propose(agent_epoch(ctx), proposal_id, base_revision, {'type':'facts','inputIds':[input_id],'operations':operations})
 
 @mcp.tool()
 def submit_plan(proposal_id: str, base_revision: int, plan_id: str, goal_id: str, goal_revision: int, content: str, reason: str, effective_at: int, activate: bool, changes_goal: bool, breaks_constraints: bool, input_ids: list[str], ctx: Context) -> str:
@@ -111,7 +129,7 @@ async def phone(request):
         if int(request.headers.get('content-length', '0')) > limit: return JSONResponse({'error':'too large'}, status_code=413)
         if len(await request.body()) > limit: return JSONResponse({'error':'too large'}, status_code=413)
         data = await request.json()
-        if action == 'switch': bridge.switch(data['epoch'], data['mode'], data.get('agent'), data.get('agentToken'))
+        if action == 'switch': bridge.switch(data['epoch'], data['mode'], data.get('agent'), data.get('agentToken'), data.get('completedIds', []))
         elif action == 'control':
             with bridge.lock:
                 row = bridge.db.execute('SELECT epoch,mode,agent,accepted FROM control WHERE id=1').fetchone()

@@ -117,6 +117,14 @@ class TodayViewModel @JvmOverloads constructor(application: Application, databas
             }
         }
         viewModelScope.launch {
+            combine(db.externalDao().watchControl(), com.example.lianxu.data.repository.ExternalSync.syncStatus) { control, connected -> control to connected }
+                .collect { (control, connected) ->
+                    _externalStatus.value = if (control?.mode != "external") "内置助手"
+                        else if (connected == false) "外部智能体 · 连接中断，正在重试"
+                        else "外部智能体 · ${if (control.handoffAccepted) "已接手" else "等待接手"}"
+                }
+        }
+        viewModelScope.launch {
             try { combine(settings.apiKeyFlow, db.externalDao().watchControl()) { key, control -> key to (control?.mode == "external") }.collect { (key, external) -> _externalMode.value = external; _demoMode.value = !external && key.isNullOrBlank() } }
             catch (error: CancellationException) { throw error }
             catch (error: Exception) { _notice.value = "无法读取密钥，请在设置中重新保存" }
@@ -153,7 +161,7 @@ class TodayViewModel @JvmOverloads constructor(application: Application, databas
     }
     fun toggleAnnotationMode(cardId: String) = edit { cards -> cards.map {
         if (it.id == cardId) it.copy(isAnnotationMode = !it.isAnnotationMode) else it } }
-    fun toggleCardCollapsed(cardId: String) = edit { cards -> cards.map { if (it.id == cardId) it.copy(collapsed = !it.collapsed) else it } }
+    fun toggleCardCollapsed(cardId: String) = edit { cards -> cards.map { if (it.id == cardId) it.copy(collapsed = !it.collapsed, collapsedOverride = true) else it } }
     fun updateAnnotationText(cardId: String, text: String) = edit { cards -> cards.map {
         if (it.id == cardId) it.copy(annotationText = text, isAnnotationMode = true) else it } }
     fun selectAssistantChoice(cardId: String, componentId: String, key: String) = edit { cards -> cards.map { card ->
@@ -261,6 +269,7 @@ class TodayViewModel @JvmOverloads constructor(application: Application, databas
                         _notice.value = "正在接续待处理输入"
                         com.example.lianxu.agent.AgentRunner(getApplication(), db, repository.catalog, client).run(submission)
                         _notice.value = "待处理输入已接续"
+                        com.example.lianxu.data.repository.ExternalSyncWorker.now(getApplication())
                     } catch (error: CancellationException) { throw error }
                     catch (error: Exception) {
                         store.fail(submission, error.message ?: "输入接续失败")

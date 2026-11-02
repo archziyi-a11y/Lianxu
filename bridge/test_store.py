@@ -38,6 +38,12 @@ class BridgeTests(unittest.TestCase):
         with self.assertRaises(ValueError): b.propose(1,'p',1,{})
         b.switch(2,'builtin')
         with self.assertRaises(PermissionError): b.propose(1,'p',2,{})
+    def test_phone_completion_survives_builtin_handoff(self):
+        b=self.b; b.switch(1,"external","a",self.token); b.snapshot(1,{"v":1}); b.enqueue("done",{"text":"x"},1)
+        b.switch(2,"builtin"); b.switch(2,"builtin",completed_ids=["done"])
+        b.switch(3,"external","b","b"*40,completed_ids=["done"])
+        self.assertEqual([],b.read_handoff(3)["pending"])
+
     def test_images_are_on_demand_and_cleared_at_handoff(self):
         b=self.b; b.switch(1,'external','agent',self.token); b.snapshot(1,{'v':1}); b.accept(1,1)
         b.enqueue('s',{'annotations':[{'inputParts':[{'type':'image','attachmentId':'photo'}]}]},1)

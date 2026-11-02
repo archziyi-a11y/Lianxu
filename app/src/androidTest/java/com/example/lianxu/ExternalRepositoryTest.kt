@@ -34,6 +34,29 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class ExternalRepositoryTest {
+    @Test fun reportedTextCreatesFactOnceAndCompletesItsInput() = runBlocking {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val db = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
+        try {
+            val store = BoardStore(db)
+            val board = store.open(listOf(DashboardCard(id="note", title="输入", span=CardSpan.LARGE)))
+            val repo = ExternalRepository(db); val control = repo.beginHandoff("agent"); repo.acceptHandoff("agent", control.epoch)
+            store.edit(board) { cards -> cards.map { it.copy(annotationText="卧推完成三组", isAnnotationMode=true) } }
+            repo.queueSubmission(store.prepare(board))
+            val input = repo.pending().single()
+            val annotation = JSONObject(input.payload).getJSONArray("annotations").getJSONObject(0).getString("annotationId")
+            val operation = JSONObject().put("operationId", "training-1").put("kind", "create_training")
+                .put("payload", JSONObject().put("kind", "strength").put("title", "卧推").put("exercises", JSONArray()).put("rawSummary", "完成三组"))
+                .put("relatedAnnotationIds", JSONArray().put(annotation)).put("reason", "用户实际报告")
+            val proposal = JSONObject().put("type", "facts").put("inputIds", JSONArray().put(input.id)).put("operations", JSONArray().put(operation))
+            repo.applyFactProposal(context, "agent", control.epoch, "fact-1", proposal)
+            assertEquals("卧推", db.recordDao().allTrainings().single().title)
+            assertTrue(repo.pending().isEmpty())
+            repo.applyFactProposal(context, "agent", control.epoch, "fact-1", proposal)
+            assertEquals(1, db.recordDao().allTrainings().size)
+            try { repo.applyFactProposal(context, "agent", control.epoch, "fact-2", proposal); fail("completed input") } catch (_: IllegalArgumentException) { }
+        } finally { db.close() }
+    }
     @Test fun builtinHandoffWaitsForDraftEdits() = runBlocking {
         val context=InstrumentationRegistry.getInstrumentation().targetContext
         val db=Room.inMemoryDatabaseBuilder(context,AppDatabase::class.java).build()
@@ -99,6 +122,7 @@ class ExternalRepositoryTest {
             val action=card.blocks.last().actions.first { it.kind=="record_set" }
             repo.recordSet(boardId,action)
             assertEquals(1,db.recordDao().allTrainings().size)
+            assertEquals("recorded_set", JSONObject(repo.pending().single().payload).getString("eventType"))
             try { repo.recordSet(boardId,action); fail("duplicate click") } catch (_: IllegalArgumentException) { }
             assertEquals(1,db.recordDao().allTrainings().size)
         } finally { db.close() }
@@ -189,6 +213,12 @@ class ExternalRepositoryTest {
             val decisionItem = repo.requirements().single()
             repo.resolveDecision(decisionItem, false)
             assertTrue(db.recordDao().knowledgeById("external-decision:${decisionItem.id}")!!.text.contains("拒绝"))
+            assertEquals("decision_resolved", JSONObject(repo.pending().single().payload).getString("eventType"))
+            repo.resolveDecision(decisionItem, false)
+            assertEquals(1, repo.pending().size)
+            repo.resolveDecision(decisionItem, true)
+            assertEquals(2, repo.pending().size)
+            assertEquals("accepted", JSONObject(db.recordDao().knowledgeById("external-decision:${decisionItem.id}")!!.origin).getString("decision"))
             val need = JSONObject().put("type", "requirement").put("mergeKey", "timer").put("scenario", "训练计时")
                 .put("limitation", "现有控件不足").put("workaround", "暂用普通计时").put("expectedInteraction", "分组计时").put("inputIds", JSONArray())
             repo.applyRequirementProposal("a", control.epoch, "need1", need)

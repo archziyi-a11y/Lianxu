@@ -33,17 +33,22 @@ class Bridge:
     @staticmethod
     def digest(token):
         return hashlib.sha256(token.encode()).hexdigest()
-    def switch(self, epoch, mode, agent=None, token=None):
+    def switch(self, epoch, mode, agent=None, token=None, completed_ids=None):
         if mode not in ('builtin', 'external') or mode == 'external' and (not agent or not token or len(token) < 32):
             raise ValueError('invalid control')
         with self.lock, self.db:
             self.db.execute('BEGIN IMMEDIATE')
             current = self.db.execute('SELECT * FROM control WHERE id=1').fetchone()
             digest = self.digest(token) if token else None
-            if epoch == current['epoch'] and mode == current['mode'] and agent == current['agent'] and digest == current['token_hash']: return
+            if not isinstance(completed_ids or [], list) or not all(isinstance(i, str) for i in completed_ids or []): raise ValueError('invalid completed ids')
+            def reconcile():
+                for id in completed_ids or []: self.db.execute("UPDATE inputs SET status='completed' WHERE id=?", (id,))
+            if epoch == current['epoch'] and mode == current['mode'] and agent == current['agent'] and digest == current['token_hash']:
+                reconcile(); return
             if epoch <= current['epoch']: raise ValueError('stale epoch')
             if digest and self.db.execute('SELECT 1 FROM used_tokens WHERE hash=?', (digest,)).fetchone(): raise ValueError('token already used')
             if digest: self.db.execute('INSERT INTO used_tokens VALUES (?)', (digest,))
+            reconcile()
             self.db.execute('UPDATE control SET epoch=?,mode=?,agent=?,token_hash=?,accepted=0 WHERE id=1', (epoch,mode,agent,self.digest(token) if token else None))
             self.db.execute("UPDATE inputs SET epoch=? WHERE status='pending'", (epoch,))
             self.db.execute("UPDATE proposals SET status='revoked' WHERE status='pending'")

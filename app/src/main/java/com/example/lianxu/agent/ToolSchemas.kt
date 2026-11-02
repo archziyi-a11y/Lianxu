@@ -21,6 +21,7 @@ internal object ToolSchemas {
     private val analysis = obj(listOf("summaryText"),"kind" to enum("reply","assessment"),"rangeStart" to str,"rangeEnd" to str,"summaryText" to str,"blocks" to arr(obj()),"calculationIds" to arr(str),"inputRefs" to arr(ref))
     private fun operation(kind: String, payload: Map<String, Any?>): Map<String, Any?> = obj(listOf("operationId","kind","payload","relatedAnnotationIds","reason"),
         "operationId" to str,"kind" to enum(kind),"targetRef" to ref,"clientRef" to str,"payload" to payload,"relatedAnnotationIds" to arr(str),"reason" to str)
+    val factOperations: Map<String, Any?> = arr(mapOf("anyOf" to listOf(operation("create_training", training), operation("create_intake", intake), operation("create_measurement", measurement))))
     val operations: Map<String, Any?> = arr(mapOf("anyOf" to listOf(
         operation("create_training",training),operation("update_training",obj(listOf("set"),"set" to (training + ("required" to emptyList<String>())))),
         operation("create_intake",intake),operation("update_intake",obj(listOf("set"),"set" to (intake + ("required" to emptyList<String>())))),

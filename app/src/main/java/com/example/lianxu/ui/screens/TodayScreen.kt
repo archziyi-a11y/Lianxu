@@ -171,7 +171,7 @@ fun DashboardCardItem(card:DashboardCard,onLongPress:()->Unit,onTap:()->Unit,onS
  val active=card.isAnnotationMode;val pending=ActiveInputRepository.hasInput(card)
  LaunchedEffect(active) { if(!active){editor=false;photo=false} }
  val metricPanel=card.id.endsWith(":target:energyKcal")
- val color by animateColorAsState(if(active || metricPanel || card.emphasis == "high")MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface,label="card-state")
+ val color by animateColorAsState(if(active || metricPanel || card.emphasis == "high")MaterialTheme.colorScheme.primaryContainer else if(card.emphasis=="low")MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.surface,label="card-state")
  val border=if(pending || active)MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant
  val field=card.blocks.firstOrNull { it.type=="input" }?.content
  fun activate(){haptic.performHapticFeedback(HapticFeedbackType.LongPress);onLongPress()}

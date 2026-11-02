@@ -102,7 +102,8 @@ class ArchiveComposer(private val repo:ArchiveRepository,private val client:Agen
    }
    val id="archive-ai:${fingerprint(keys.joinToString())}"
    val previous=dao.presentation()?.let { repo.decode(it.cardsJson).firstOrNull { old -> old.card.id==id } }
-   cards.add(ArchiveDisplay(keys,DashboardCard(id,title,span=span,blocks=blocks,managedBy=if(externalEpoch==null)"assistant" else "external",groupTitle=group,emphasis=emphasis,collapsed=previous?.card?.collapsed ?: c.optBoolean("collapsed",false))))
+   val collapsed=if(previous?.card?.collapsedOverride==true)previous.card.collapsed else c.optBoolean("collapsed",previous?.card?.collapsed ?: false)
+   cards.add(ArchiveDisplay(keys,DashboardCard(id,title,span=span,blocks=blocks,managedBy=if(externalEpoch==null)"assistant" else "external",groupTitle=group,emphasis=emphasis,collapsed=collapsed,collapsedOverride=previous?.card?.collapsedOverride==true)))
   }
   val old=dao.presentation();dao.putPresentation(ArchivePresentationEntity(revision=(old?.revision ?: 0)+1,cardsJson=repo.encode(cards),inputFingerprint=basis,updatedAt=now))
   val job=requireNotNull(dao.job());dao.putJob(job.copy(completedFingerprint=basis,status="completed",lastError=null,updatedAt=now))

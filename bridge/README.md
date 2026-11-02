@@ -17,3 +17,5 @@
 手机外部模式在联网时后台重试；普通页面更新不通知，声明需要用户决定的目标或约束变更会在系统通知获准时提醒。切回内置模式立即停止手机侧外部写入；若手机离线，远端撤权要等连接恢复，平台原有 routine 也需用户在平台管理。目标 ID 与修订和数据来源在手机校验；自由文字约束依赖智能体阅读并遵守，不能视为已由程序完全证明。
 
 官方参考：[Grok Bot 接入应用](https://docs.x.ai/grok-bot/computer-and-apps)、[Grok Bot 例程与 webhook](https://docs.x.ai/grok-bot/skills-routines-and-automations)。真实账号、实际付费和长期部署尚未配置，未完成平台联调。
+
+`describe_capabilities` 和 `read_handoff` 提供手机已注册的分析方法、档案主题及计算结果。手机档案运行时在事实变化后自动执行适用方法；数据不足时不会虚构结果。图表应引用快照中实际出现的 calculation ID 和结果路径。`submit_facts` 经手机校验并完成对应输入后，另行提交页面时请使用空 `inputIds`，避免重复完成同一输入。实际记组和用户决定会生成独立待处理事件，供接续和触发使用。

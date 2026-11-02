@@ -26,7 +26,8 @@ data class DashboardCard(
     val invitationId: String? = null,
     val groupTitle: String? = null,
     val emphasis: String = "normal",
-    val collapsed: Boolean = false
+    val collapsed: Boolean = false,
+    val collapsedOverride: Boolean = false
 )
 
 @JsonClass(generateAdapter = true)

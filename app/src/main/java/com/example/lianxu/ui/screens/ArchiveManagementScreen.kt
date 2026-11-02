@@ -27,6 +27,7 @@ fun ArchiveManagementScreen(modifier: Modifier=Modifier,viewModel: ArchiveViewMo
     val externalRequirements by viewModel.externalRequirements.collectAsState()
     val externalPlans by viewModel.externalPlans.collectAsState()
     val currentExternalPlan by viewModel.currentExternalPlan.collectAsState()
+    val arrangements by viewModel.arrangements.collectAsState()
     val days by viewModel.days.collectAsState()
     val message by viewModel.message.collectAsState()
     val busy by viewModel.busy.collectAsState()
@@ -71,9 +72,13 @@ fun ArchiveManagementScreen(modifier: Modifier=Modifier,viewModel: ArchiveViewMo
                         Text("当前不足：${need.limitation}")
                         if (need.workaround.isNotBlank()) Text("临时方式：${need.workaround}")
                         Text("期望：${need.expectedInteraction}")
-                        if (need.mergeKey.startsWith("decision:")) Row {
+                        if (need.mergeKey.startsWith("decision:")) {
+                        val answer=arrangements.firstOrNull { it.id=="external-decision:${need.id}" }
+                        Text(if(answer==null)"等待决定" else if(runCatching { org.json.JSONObject(answer.origin).optString("decision") }.getOrDefault("")=="accepted" || answer.text.startsWith("用户同意"))"已同意建议" else "已拒绝建议",style=MaterialTheme.typography.labelLarge)
+                        Row {
                             TextButton(onClick={viewModel.resolveExternalDecision(need, true)}) { Text("同意建议") }
                             TextButton(onClick={viewModel.resolveExternalDecision(need, false)}) { Text("拒绝") }
+                        }
                         }
                         if (need.occurrences > 1) Text("已合并 ${need.occurrences} 次", style=MaterialTheme.typography.labelSmall)
                     } } }

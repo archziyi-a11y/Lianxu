@@ -26,9 +26,12 @@ import com.example.lianxu.MainActivity
 import android.util.Base64
 import java.io.File
 import java.security.MessageDigest
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 /** Synchronizes only after explicit configuration. Never logs tokens or personal payloads. */
 class ExternalSync(private val db: AppDatabase, private val settings: SettingsManager, private val context: Context? = null) {
+    companion object { private val syncLock = Mutex(); val syncStatus = kotlinx.coroutines.flow.MutableStateFlow<Boolean?>(null) }
     private val http = OkHttpClient.Builder().connectTimeout(15, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).build()
     private val repo = ExternalRepository(db)
     private fun notifyDecision(id: String) {
@@ -65,18 +68,23 @@ class ExternalSync(private val db: AppDatabase, private val settings: SettingsMa
         val recordDao = db.recordDao()
         val collaboration = db.collaborationDao()
         val boards = collaboration.allBoards()
+        val knowledge = recordDao.allKnowledge()
         JSONObject().put("profile", db.profileDao().getProfile()?.let(::json))
             .put("goals", JSONArray(db.goalPhaseDao().getGoalPhasesFlow().first().map(::json)))
             .put("trainings", JSONArray(recordDao.allTrainings().map(::json)))
             .put("measurements", JSONArray(db.measurementDao().all().map(::json)))
             .put("intakes", JSONArray(recordDao.allIntakes().map(::json)))
-            .put("knowledge", JSONArray(recordDao.allKnowledge().map(::json)))
+            .put("knowledge", JSONArray(knowledge.map(::json)))
             .put("analyses", JSONArray(collaboration.allAnalyses().map(::json)))
             .put("calculations", JSONArray(collaboration.allCalculations().map(::json)))
             .put("nutritionPlans", JSONArray(collaboration.allPlans().map(::json)))
             .put("trainingPlans", JSONArray(repo.plans().map(::json)))
+            .put("trainingPlanLinks", JSONArray(db.externalDao().trainingLinks().map(::json)))
             .put("currentTrainingPlan", repo.currentPlan()?.let(::json))
-            .put("requirements", JSONArray(repo.requirements().map(::json)))
+            .put("requirements", JSONArray(repo.requirements().map { need ->
+                val decision = knowledge.firstOrNull { it.id == "external-decision:${need.id}" }
+                json(need).put("decision", decision?.let { JSONObject(it.origin).optString("decision").ifBlank { if (it.text.startsWith("用户同意")) "accepted" else "rejected" } } ?: if (need.mergeKey.startsWith("decision:")) "pending" else JSONObject.NULL)
+            }))
             .put("boards", JSONArray(boards.map { board ->
                 json(board).put("cards", JSONArray(collaboration.cards(board.id).map(::json)))
                     .put("draft", collaboration.draft(board.id)?.let(::json))
@@ -84,15 +92,18 @@ class ExternalSync(private val db: AppDatabase, private val settings: SettingsMa
                         json(turn).put("input", collaboration.input(turn.inputBundleId)?.let(::json))
                     }))
             }))
+            .put("factOperationSchema", JSONObject(com.example.lianxu.agent.ToolSchemas.factOperations))
+            .put("archiveMethods", JSONArray(db.archiveDao().methods().map(::json)))
             .put("archiveTopics", JSONArray(db.archiveDao().topics().map(::json)))
             .put("archivePlacements", JSONArray(db.archiveDao().placements().map(::json)))
     }
-    suspend fun sync(): Int = withContext(Dispatchers.IO) {
+    suspend fun sync(): Int = try { syncLock.withLock { withContext(Dispatchers.IO) {
         val credentials = requireNotNull(settings.bridgeCredentials.first()) { "请先设置外部连接" }
         val control = repo.control()
         call(credentials, "switch", JSONObject().put("epoch", control.epoch).put("mode", control.mode)
-            .put("agent", control.agentId).put("agentToken", if (control.mode == "external") credentials.agentToken else JSONObject.NULL))
-        if (control.mode != "external") return@withContext 0
+            .put("agent", control.agentId).put("agentToken", if (control.mode == "external") credentials.agentToken else JSONObject.NULL)
+            .put("completedIds", JSONArray(db.externalDao().completedInputs().map { it.id })))
+        if (control.mode != "external") { syncStatus.value = true; return@withContext 0 }
         val body = snapshot()
         check(repo.control() == control) { "处理方已切换，请重新同步" }
         val snapshotRevision = call(credentials, "snapshot", JSONObject().put("epoch", control.epoch).put("body", body)).getLong("revision")
@@ -141,6 +152,9 @@ class ExternalSync(private val db: AppDatabase, private val settings: SettingsMa
                             if (proposal.optString("type") == "requirement") {
                                 repo.applyRequirementProposal(requireNotNull(control.agentId), control.epoch, id, proposal)
                                 "applied"
+                            } else if (proposal.optString("type") == "facts") {
+                                repo.applyFactProposal(requireNotNull(context), requireNotNull(control.agentId), control.epoch, id, proposal)
+                                "applied"
                             } else if (proposal.optString("type") == "plan") {
                                 repo.applyPlanProposal(requireNotNull(control.agentId), control.epoch, id, proposal)
                             } else if (proposal.optString("type") == "archive") {
@@ -160,6 +174,8 @@ class ExternalSync(private val db: AppDatabase, private val settings: SettingsMa
             if (receipt == null && result == "decision") notifyDecision(id)
             if (result != "deferred") call(credentials, "ack", JSONObject().put("epoch", control.epoch).put("id", id).put("status", result))
         }
+        syncStatus.value = true
         count
-    }
+    } } } catch (error: kotlinx.coroutines.CancellationException) { throw error }
+      catch (error: Exception) { syncStatus.value = false; throw error }
 }

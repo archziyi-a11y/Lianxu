@@ -69,7 +69,7 @@ class ArchiveRepository(val context:Context,val db:AppDatabase){
   val presentation=requireNotNull(db.archiveDao().presentation())
   val cards=decode(presentation.cardsJson)
   require(cards.any { it.card.id==cardId && it.card.managedBy=="external" })
-  db.archiveDao().putPresentation(presentation.copy(revision=presentation.revision+1, cardsJson=encode(cards.map { if(it.card.id==cardId)it.copy(card=it.card.copy(collapsed=!it.card.collapsed)) else it }), updatedAt=System.currentTimeMillis()))
+  db.archiveDao().putPresentation(presentation.copy(revision=presentation.revision+1, cardsJson=encode(cards.map { if(it.card.id==cardId)it.copy(card=it.card.copy(collapsed=!it.card.collapsed,collapsedOverride=true)) else it }), updatedAt=System.currentTimeMillis()))
  }
  suspend fun cards(scope:String?,category:String?=null,all:Boolean=false):List<ArchiveDisplay>{
   val dao=db.archiveDao();val allTopics=dao.topics();val currentTopics=allTopics.filter { it.state=="current" };val topics=currentTopics.filter { (scope==null || it.scopeKey==scope) && (category==null || it.category==category) }

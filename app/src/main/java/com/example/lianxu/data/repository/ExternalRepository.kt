@@ -11,6 +11,8 @@ import android.content.Context
 import com.example.lianxu.archive.ArchiveComposer
 import com.example.lianxu.archive.ArchiveRepository
 import com.example.lianxu.agent.AgentClient
+import com.example.lianxu.agent.AgentWorkspace
+import com.example.lianxu.agent.refId
 import com.example.lianxu.engine.RecordedExercise
 import com.example.lianxu.engine.RecordedSet
 
@@ -162,6 +164,47 @@ class ExternalRepository(private val db: AppDatabase) {
         else dao.updateRequirement(old.copy(occurrences = old.occurrences + 1, updatedAt = value.updatedAt))
     }
     suspend fun requirements() = dao.requirements()
+    /** Apply only validated facts tied to one original pending user input. */
+    suspend fun applyFactProposal(context: Context, agentId: String, epoch: Long, proposalId: String, proposal: JSONObject) = db.withTransaction {
+        requireWriter(state(), agentId, epoch)
+        require(proposalId.isNotBlank() && proposalId.length <= 120)
+        val collaboration = db.collaborationDao()
+        if (collaboration.receipt("external:$proposalId", "apply") != null) return@withTransaction
+        require(proposal.keys().asSequence().toSet() == setOf("type", "inputIds", "operations") && proposal.getString("type") == "facts")
+        val inputIds = proposal.getJSONArray("inputIds"); require(inputIds.length() == 1)
+        val inputId = inputIds.getString(0)
+        val pending = requireNotNull(dao.input(inputId))
+        require(pending.status == "pending" && pending.ownerMode == "external" && pending.ownerAgentId == agentId && pending.epoch == epoch)
+        val input = requireNotNull(collaboration.input(inputId))
+        val turn = requireNotNull(collaboration.turn(input.turnId))
+        val task = requireNotNull(collaboration.task(turn.taskId))
+        val board = requireNotNull(collaboration.board(task.boardId))
+        val draft = requireNotNull(collaboration.draft(board.id))
+        val operations = proposal.getJSONArray("operations")
+        require(operations.length() in 1..20)
+        for (i in 0 until operations.length()) require(operations.getJSONObject(i).getString("kind") in setOf("create_training", "create_intake", "create_measurement"))
+        val submission = Submission(turn, task, BoardStore(db).decode(draft.cardsJson), board.revision)
+        val catalog = NutritionBoardRepository.create(context, db).catalog
+        AgentWorkspace.open(context, db, submission, catalog).use { work ->
+            work.applyOperations(operations)
+            for (i in 0 until operations.length()) {
+                val op = operations.getJSONObject(i)
+                val ref = op.optString("clientRef").takeIf { it.isNotBlank() }
+                val id = ref?.let { work.allocated(it) } ?: refId("${turn.submissionId}:${op.getString("operationId")}")
+                when (op.getString("kind")) {
+                    "create_training" -> AppRepository(db).recordTraining(requireNotNull(work.overlay.recordDao().training(id)))
+                    "create_intake" -> AppRepository(db).recordIntake(requireNotNull(work.overlay.recordDao().intake(id)))
+                    "create_measurement" -> {
+                        require(db.measurementDao().byId(id) == null)
+                        db.measurementDao().insert(requireNotNull(work.overlay.measurementDao().byId(id)))
+                        invalidateDerived(db)
+                    }
+                }
+            }
+        }
+        complete(agentId, epoch, inputId, proposalId) {}
+        collaboration.putReceipt(MutationReceiptEntity(java.util.UUID.randomUUID().toString(), "external:$proposalId", "apply", "[]", null, null, System.currentTimeMillis()))
+    }
     /** A user tap records exactly one set from the current form, never from suggested values. */
     suspend fun recordSet(boardId: String, action: CardAction) = db.withTransaction {
         require(action.kind == "record_set" && action.targetRef.type == "local")
@@ -179,14 +222,40 @@ class ExternalRepository(private val db: AppDatabase) {
         val reps = values["repsMin"]?.toInt()
         val load = values["loadKg"]?.toDouble()
         val now = System.currentTimeMillis()
-        val recordId = java.util.UUID.randomUUID().toString()
+        val control = state()
+        val submissionId = java.util.UUID.randomUUID().toString()
+        val turnId = java.util.UUID.randomUUID().toString()
+        val inputId = java.util.UUID.randomUUID().toString()
+        val taskId = java.util.UUID.randomUUID().toString()
+        val annotationId = java.util.UUID.randomUUID().toString()
+        val recordId = ActiveInputRepository.id("$submissionId:input:$annotationId")
         val exercise = RecordedExercise(entryId=java.util.UUID.randomUUID().toString(), name=name,
             equipment=values["equipment"], sets=listOf(RecordedSet(setId=java.util.UUID.randomUUID().toString(), reps=reps, loadKg=load)))
+        val origin = JSONObject().put("kind", "user").put("cardId", card.id)
+        if (control.mode == "external") origin.put("inputBundleId", inputId).put("turnId", turnId).put("annotationIds", JSONArray().put(annotationId))
         AppRepository(db).recordTraining(TrainingSession(recordId, board.dateContext, "strength", name, null,
-            DomainJson.encode(listOf(exercise)), null, JSONObject().put("kind", "user").put("cardId", card.id).toString(), 1, now, now))
+            DomainJson.encode(listOf(exercise)), null, origin.toString(), 1, now, now))
         action.value?.let { planId ->
             require(dao.currentPlan()?.planId == planId) { "计划已变化，请先刷新" }
             linkTrainingToPlan(recordId, planId)
+        }
+        if (control.mode == "external") {
+            val inputBlock = requireNotNull(card.blocks.firstOrNull { it.type == "input" })
+            val part = JSONObject().put("type", "structured").put("inputKind", "training").put("values", JSONObject(values))
+                .put("fields", JSONArray(inputBlock.content.inputFields))
+            val annotation = JSONObject().put("annotationId", annotationId)
+                .put("target", JSONObject().put("boardId", boardId).put("boardRevision", board.revision).put("cardId", card.id).put("cardRevision", card.revision))
+                .put("targetSnapshot", JSONObject().put("title", card.title).put("readableContent", "用户刚记录一组").put("components", JSONArray()))
+                .put("inputParts", JSONArray().put(part))
+            val annotations = JSONArray().put(annotation)
+            collaboration.putInput(InputBundleEntity(inputId, turnId, submissionId, board.dateContext, "", annotations.toString(), now))
+            collaboration.putTask(TaskEntity(taskId, turnId, submissionId, boardId, draft.revision, "completed", null, now, now))
+            collaboration.putTurn(Turn(turnId, submissionId, "daily", boardId, board.dateContext,
+                (collaboration.turns(boardId).maxOfOrNull { it.sequence } ?: 0) + 1, inputId, "[]", "completed", taskId, "[]", "[]", null, null, now, now))
+            val payload = JSONObject().put("eventType", "recorded_set").put("recordId", recordId).put("turnId", turnId)
+                .put("submissionId", submissionId).put("dateContext", board.dateContext).put("rawText", "")
+                .put("annotations", annotations).put("automaticAnnotationIds", JSONArray().put(annotationId)).toString()
+            enqueue(inputId, submissionId, payload, now)
         }
         store.edit(boardId) { cards -> cards.map { if (it.id == card.id) it.copy(inputValues=emptyMap()) else it } }
     }
@@ -255,10 +324,35 @@ class ExternalRepository(private val db: AppDatabase) {
         require(requirement.mergeKey.startsWith("decision:"))
         val id = "external-decision:${requirement.id}"
         val existing = db.recordDao().knowledgeById(id)
+        val decision = if (accepted) "accepted" else "rejected"
+        if (existing != null && runCatching { JSONObject(existing.origin).optString("decision") }.getOrNull() == decision) return@withTransaction
         val now = System.currentTimeMillis()
+        val revision = (existing?.revision ?: 0) + 1
         val text = (if (accepted) "用户同意此建议，目标和约束仍以资料中的当前设置为准：" else "用户拒绝：") + requirement.scenario + "；" + requirement.expectedInteraction
-        db.recordDao().putKnowledge(KnowledgeNote(id, (existing?.revision ?: 0) + 1, "external_decision", text,
-            JSONObject().put("kind", "user").put("decisionId", requirement.id).toString(), java.time.LocalDate.now().toString(), null, "current", null, existing?.createdAt ?: now, now))
+        db.recordDao().putKnowledge(KnowledgeNote(id, revision, "external_decision", text,
+            JSONObject().put("kind", "user").put("decisionId", requirement.id).put("decision", decision).toString(), java.time.LocalDate.now().toString(), null, "current", null, existing?.createdAt ?: now, now))
+        if (state().mode == "external") {
+            val collaboration = db.collaborationDao()
+            val board = collaboration.allBoards().firstOrNull { it.status == "active" }
+                ?: requireNotNull(collaboration.board(BoardStore(db).open(emptyList())))
+            val draft = requireNotNull(collaboration.draft(board.id))
+            val seed = "decision:${requirement.id}:$revision"
+            val submissionId = refId(seed); val inputId = refId("$seed:input"); val turnId = refId("$seed:turn")
+            val taskId = refId("$seed:task"); val annotationId = refId("$seed:annotation")
+            val annotation = JSONObject().put("annotationId", annotationId)
+                .put("target", JSONObject().put("boardId", board.id).put("boardRevision", board.revision).put("cardId", "decision").put("cardRevision", 1))
+                .put("targetSnapshot", JSONObject().put("title", "用户决定").put("readableContent", text).put("components", JSONArray()))
+                .put("inputParts", JSONArray().put(JSONObject().put("type", "text").put("text", text)))
+            val annotations = JSONArray().put(annotation)
+            collaboration.putInput(InputBundleEntity(inputId, turnId, submissionId, board.dateContext, text, annotations.toString(), now))
+            collaboration.putTask(TaskEntity(taskId, turnId, submissionId, board.id, draft.revision, "completed", null, now, now))
+            collaboration.putTurn(Turn(turnId, submissionId, "daily", board.id, board.dateContext,
+                (collaboration.turns(board.id).maxOfOrNull { it.sequence } ?: 0) + 1, inputId, "[]", "completed", taskId, "[]", "[]", null, null, now, now))
+            val payload = JSONObject().put("eventType", "decision_resolved").put("decisionId", requirement.id).put("decision", decision)
+                .put("turnId", turnId).put("submissionId", submissionId).put("dateContext", board.dateContext)
+                .put("rawText", text).put("annotations", annotations).put("automaticAnnotationIds", JSONArray()).toString()
+            enqueue(inputId, submissionId, payload, now)
+        }
     }
 
     /** Declarative native components only; all referenced data and actions are validated locally. */
@@ -367,7 +461,8 @@ class ExternalRepository(private val db: AppDatabase) {
                 }
                 blocks.add(block)
             }
-            added.add(DashboardCard(id=cardId, title=title, span=span, revision=(existing?.revision ?: 0)+1, blocks=blocks, managedBy="external", followUpId=followUpId, groupTitle=group, emphasis=emphasis, collapsed=existing?.collapsed ?: spec.optBoolean("collapsed", false)))
+            val collapsed = if (existing?.collapsedOverride == true) existing.collapsed else spec.optBoolean("collapsed", existing?.collapsed ?: false)
+            added.add(DashboardCard(id=cardId, title=title, span=span, revision=(existing?.revision ?: 0)+1, blocks=blocks, managedBy="external", followUpId=followUpId, groupTitle=group, emphasis=emphasis, collapsed=collapsed, collapsedOverride=existing?.collapsedOverride == true))
         }
         val inputIds = proposal.getJSONArray("inputIds")
         require((0 until inputIds.length()).map { inputIds.getString(it) }.distinct().size == inputIds.length())

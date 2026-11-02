@@ -90,6 +90,7 @@ class EvidenceActivity : ComponentActivity() {
                         val state = JSONObject().put("runId", runId).put("requests", calls)
                             .put("processing", processing).put("turns", inputs)
                             .put("trainingCount", db.recordDao().allTrainings().size)
+                            .put("externalPending", JSONArray(db.externalDao().pendingInputs().map { JSONObject(it.payload) }))
                             .put("cards", JSONArray(cards.map { JSONObject().put("title", it.title)
                                 .put("annotation", it.annotationText) }))
                         val tmp = File(output, "state.tmp")
@@ -122,6 +123,7 @@ class EvidenceActivity : ComponentActivity() {
         val topic=db.archiveDao().topics().first { it.methodId=="builtin.weight-series" && it.scopeKey=="accumulated" && it.state=="current" }
         val external=ExternalRepository(db);val control=external.beginHandoff("隔离样本智能体");external.acceptHandoff("隔离样本智能体",control.epoch)
         val now=System.currentTimeMillis()
+        external.publishPlan("隔离样本智能体",control.epoch,ExternalPlanVersionEntity("sample-old-plan","隔离样本：原先每周两次训练","初始安排",now-86400000,now-86400000,"隔离样本智能体"),true,now)
         external.publishPlan("隔离样本智能体",control.epoch,ExternalPlanVersionEntity("sample-plan","隔离样本：按近期反馈安排训练","示例理由",now,now,"隔离样本智能体"),true,now)
         val cardId="${board.id}:external:main"
         val actions=JSONArray().put(JSONObject().put("kind","record_set").put("label","记下这一组").put("planId","sample-plan"))
@@ -137,6 +139,8 @@ class EvidenceActivity : ComponentActivity() {
         external.applyArchiveProposal(this,"隔离样本智能体",control.epoch,"sample-archive",JSONObject().put("type","archive").put("inputIds",JSONArray())
             .put("cards",JSONArray().put(JSONObject().put("title","身体变化").put("span",6).put("group","长期趋势").put("emphasis","high").put("blocks",blocks))))
         external.submitRequirement(ExternalRequirementEntity("sample-need","sample-group-timer","隔离样本：分组计时","现有控件未提供分组提示","先使用普通计时","完成每组后显示休息倒计时",1,now))
+        external.submitRequirement(ExternalRequirementEntity("sample-need-2","sample-group-timer","隔离样本：分组计时","现有控件未提供分组提示","先使用普通计时","完成每组后显示休息倒计时",1,now+1))
+        external.submitRequirement(ExternalRequirementEntity("sample-decision","decision:sample-decision","隔离样本：调整目标","近期恢复反馈","请决定是否调整目标","建议重新评估目标",1,now))
     }
 
     override fun onDestroy() {
