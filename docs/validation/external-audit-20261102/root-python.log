@@ -1,0 +1,50 @@
+test_mcp_handshake_and_tool_calls (test_http.HttpTests.test_mcp_handshake_and_tool_calls) ... [11/02/26 16:51:17] INFO     StreamableHTTP      streamable_http_manager.py:115
+                             session manager                                   
+                             started                                           
+                    INFO     HTTP Request: POST                 _client.py:1025
+                             http://127.0.0.1:8765/phone/switch                
+                             "HTTP/1.1 401 Unauthorized"                       
+                    INFO     HTTP Request: POST                 _client.py:1025
+                             http://127.0.0.1:8765/phone/switch                
+                             "HTTP/1.1 200 OK"                                 
+                    INFO     HTTP Request: POST                 _client.py:1025
+                             http://127.0.0.1:8765/phone/snapsh                
+                             ot "HTTP/1.1 200 OK"                              
+                    INFO     HTTP Request: POST                 _client.py:1025
+                             http://127.0.0.1:8765/phone/enqueu                
+                             e "HTTP/1.1 200 OK"                               
+                    INFO     HTTP Request: POST                 _client.py:1025
+                             http://127.0.0.1:8765/phone/enqueu                
+                             e "HTTP/1.1 200 OK"                               
+                    INFO     HTTP Request: POST                 _client.py:1025
+                             http://127.0.0.1:8765/mcp/                        
+                             "HTTP/1.1 401 Unauthorized"                       
+                    INFO     Terminating session: None   streamable_http.py:779
+                    INFO     HTTP Request: POST                 _client.py:1025
+                             http://127.0.0.1:8765/mcp/                        
+                             "HTTP/1.1 200 OK"                                 
+                    INFO     Processing request of type           server.py:713
+                             CallToolRequest                                   
+                    INFO     Terminating session: None   streamable_http.py:779
+                    INFO     HTTP Request: POST                 _client.py:1025
+                             http://127.0.0.1:8765/mcp/                        
+                             "HTTP/1.1 200 OK"                                 
+                    INFO     HTTP Request: POST                 _client.py:1025
+                             http://127.0.0.1:8765/phone/switch                
+                             "HTTP/1.1 200 OK"                                 
+                    INFO     HTTP Request: POST                 _client.py:1025
+                             http://127.0.0.1:8765/mcp/                        
+                             "HTTP/1.1 401 Unauthorized"                       
+                    INFO     StreamableHTTP      streamable_http_manager.py:119
+                             session manager                                   
+                             shutting down                                     
+ok
+test_handoff_revocation_and_retry (test_store.BridgeTests.test_handoff_revocation_and_retry) ... ok
+test_images_are_on_demand_and_cleared_at_handoff (test_store.BridgeTests.test_images_are_on_demand_and_cleared_at_handoff) ... ok
+test_phone_completion_survives_builtin_handoff (test_store.BridgeTests.test_phone_completion_survives_builtin_handoff) ... ok
+test_stale_snapshot_and_input_conflict (test_store.BridgeTests.test_stale_snapshot_and_input_conflict) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.124s
+
+OK
