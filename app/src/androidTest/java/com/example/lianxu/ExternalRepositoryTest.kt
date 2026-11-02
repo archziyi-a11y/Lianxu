@@ -6,6 +6,10 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.example.lianxu.data.db.AppDatabase
 import com.example.lianxu.data.entity.*
 import com.example.lianxu.data.repository.ExternalRepository
+import com.example.lianxu.data.repository.BackupRepository
+import com.example.lianxu.data.repository.AppRepository
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 import org.junit.Test
@@ -13,6 +17,26 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class ExternalRepositoryTest {
+    @Test fun backupPreservesPlanLinksButRevokesRestoredConnection() = runBlocking {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val source = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
+        val target = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
+        try {
+            val repo = ExternalRepository(source)
+            val c = repo.beginHandoff("a"); repo.acceptHandoff("a", c.epoch)
+            repo.publishPlan("a", c.epoch, ExternalPlanVersionEntity("plan", "body", "reason", 1, 1, "a"), true, 2)
+            AppRepository(source).recordTraining(TrainingSession("t", "{}", "strength", "training", null, "[]", null, "user", 1, 1, 1))
+            repo.enqueue("i", "s", "input", 1)
+            val bytes = ByteArrayOutputStream().also { BackupRepository(context, source).export(it) }.toByteArray()
+            val targetRepo = ExternalRepository(target)
+            repeat(3) { targetRepo.beginHandoff("old") }
+            BackupRepository(context, target).restore(ByteArrayInputStream(bytes))
+            assertEquals("plan", target.externalDao().trainingLink("t")!!.planId)
+            assertEquals("builtin", targetRepo.control().mode)
+            assertEquals(4L, targetRepo.control().epoch)
+            assertEquals("builtin", targetRepo.pending().single().ownerMode)
+        } finally { source.close(); target.close() }
+    }
     @Test fun handoffRevokesOldWriterAndMovesOnlyPending() = runBlocking {
         val db = Room.inMemoryDatabaseBuilder(InstrumentationRegistry.getInstrumentation().targetContext, AppDatabase::class.java).build()
         try {

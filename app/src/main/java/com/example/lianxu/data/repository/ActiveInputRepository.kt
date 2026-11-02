@@ -159,8 +159,11 @@ class ActiveInputRepository(private val db: AppDatabase) {
                 val exercise=JSONObject().put("entryId",id("$key:exercise")).put("name",name.ifBlank { "未命名动作" }).put("summarySets",spec("sets","count"))
                     .put("repsPerSet",if(values.has("repsMax"))JSONObject().put("kind","range").put("min",values.getInt("repsMin")).put("max",values.getInt("repsMax")).put("unit","count") else spec("repsMin","count"))
                     .put("loadKg",spec("loadKg","kg")).put("equipment",values.optString("equipment").takeIf { it.isNotBlank() }).put("sets",JSONArray())
-                if(db.recordDao().training(key)==null) db.recordDao().insertTraining(TrainingSession(key,submission.turn.dateContext,"strength",name.ifBlank { "训练补充" },null,
-                    if(values.length()>0)JSONArray().put(exercise).toString() else "[]",text.ifBlank { if(attachment!=null)"图片训练材料（未确认完成）" else null },origin.toString(),1,now,now))
+                if(db.recordDao().training(key)==null) {
+                    db.recordDao().insertTraining(TrainingSession(key,submission.turn.dateContext,"strength",name.ifBlank { "训练补充" },null,
+                        if(values.length()>0)JSONArray().put(exercise).toString() else "[]",text.ifBlank { if(attachment!=null)"图片训练材料（未确认完成）" else null },origin.toString(),1,now,now))
+                    ExternalRepository(db).linkTrainingToCurrentPlan(key)
+                }
                 created.add(aid); learnHabit(name,if(values.length()>0)"controls" else if(attachment!=null)"image" else "text",p.optJSONArray("fields")?.texts().orEmpty(),key,day)
             } else if (kind=="measurement" && values.has("value")) {
                 val metric=values.optString("metric","weight")

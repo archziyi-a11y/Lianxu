@@ -21,7 +21,7 @@ import java.util.zip.*
 class BackupRepository(private val context: Context, private val db: AppDatabase) {
     companion object {
         val tables = listOf("profiles","goal_phases","knowledge_notes","training_sessions","intake_entries","measurements","turns","boards","cards","drafts","attachments",
-            "input_bundles","tasks","board_snapshots","calculations","analyses","day_plans","nutrition_policies","mutation_receipts","entity_snapshots","agent_cache","meal_progress","rest_timers","archive_methods","archive_topics","archive_placements","archive_presentations","archive_jobs")
+            "input_bundles","tasks","board_snapshots","calculations","analyses","day_plans","nutrition_policies","mutation_receipts","entity_snapshots","agent_cache","meal_progress","rest_timers","archive_methods","archive_topics","archive_placements","archive_presentations","archive_jobs", "external_control", "external_plan_versions", "external_plan_state", "training_plan_links", "external_pending_inputs", "external_requirements")
         private fun hash(bytes: ByteArray)=MessageDigest.getInstance("SHA-256").digest(bytes).joinToString("") { "%02x".format(it.toInt() and 255) }
         private fun key(id: String)=hash(id.toByteArray())
     }
@@ -82,11 +82,12 @@ class BackupRepository(private val context: Context, private val db: AppDatabase
             }
             val manifest=JSONObject(requireNotNull(manifestBytes) { "备份缺少清单" }.toString(Charsets.UTF_8))
             val savedVersion=manifest.getInt("schemaVersion");val currentVersion=db.openHelper.readableDatabase.version
-            require(manifest.getString("format")=="lianxu-backup" && manifest.getInt("version")==1 && (savedVersion==currentVersion || savedVersion==5 && currentVersion==6)) { "备份版本不匹配" }
+            require(manifest.getString("format")=="lianxu-backup" && manifest.getInt("version")==1 && (savedVersion==currentVersion || savedVersion in 5..6 && currentVersion==7)) { "备份版本不匹配" }
             val bytes=requireNotNull(dataBytes) { "备份缺少记录" }; require(hash(bytes)==manifest.getString("dataSha256")) { "备份记录校验失败" }
             val data=JSONObject(bytes.toString(Charsets.UTF_8))
-            if(savedVersion==5 && currentVersion==6){
-                val added=setOf("archive_methods","archive_topics","archive_placements","archive_presentations","archive_jobs")
+            if(savedVersion in 5..6 && currentVersion==7){
+                val added=setOf("external_control", "external_plan_versions", "external_plan_state", "training_plan_links", "external_pending_inputs", "external_requirements") +
+                    if (savedVersion == 5) setOf("archive_methods","archive_topics","archive_placements","archive_presentations","archive_jobs") else emptySet()
                 require(data.keys().asSequence().toSet()==tables.toSet()-added){"旧版备份表不完整"}
                 added.forEach { data.put(it,JSONArray()) }
             }
@@ -115,6 +116,10 @@ class BackupRepository(private val context: Context, private val db: AppDatabase
                 check(db.collaborationDao().unfinishedTasks().isEmpty()) { "请先等待或取消正在处理的补充，再恢复备份" }
                 check(db.archiveDao().job()?.status!="running") { "请等待档案分析完成，再恢复备份" }
                 check(db.collaborationDao().timer()?.status!="running") { "请先结束计时，再恢复备份" }
+                val previousEpoch = db.externalDao().control()?.epoch ?: 0L
+                val savedControl = data.getJSONArray("external_control")
+                val savedEpoch = if (savedControl.length() == 0) 0L else savedControl.getJSONObject(0).getLong("epoch")
+                val nextEpoch = maxOf(previousEpoch, savedEpoch).also { check(it < Long.MAX_VALUE) } + 1
                 val sql=db.openHelper.writableDatabase
                 for(table in tables) {
                     val columns=sql.query("PRAGMA table_info(`$table`)").use { cursor -> buildSet { while(cursor.moveToNext())add(cursor.getString(cursor.getColumnIndexOrThrow("name"))) } }
@@ -138,16 +143,23 @@ class BackupRepository(private val context: Context, private val db: AppDatabase
                         sql.insert(table,SQLiteDatabase.CONFLICT_ABORT,values)
                     }
                 }
+                db.externalDao().putControl(com.example.lianxu.data.entity.ExternalControlEntity(mode = "builtin", agentId = null, epoch = nextEpoch, handoffAccepted = false))
+                db.externalDao().transferPending("builtin", null, nextEpoch)
             }
             success=true
         } finally { if(!success) { staged.values.forEach { it.delete() };directory.delete() } }
     }
     private fun validateGraph(data: JSONObject) {
         fun rows(table: String)=data.getJSONArray(table).let { a -> (0 until a.length()).map { a.getJSONObject(it) } }
-        fun ids(table: String)=rows(table).map { it.getString(if(table=="agent_cache")"taskId" else "id") }.also { require(it.distinct().size==it.size) { "备份编号重复" } }.toSet()
+        fun ids(table: String)=rows(table).map { it.getString(when(table) { "agent_cache" -> "taskId"; "training_plan_links" -> "trainingId"; else -> "id" }) }.also { require(it.distinct().size==it.size) { "备份编号重复" } }.toSet()
         val boards=ids("boards"); val turns=ids("turns");val inputs=ids("input_bundles"); val snapshots=ids("board_snapshots")
         val calculations=ids("calculations"); val analyses=ids("analyses"); val attachments=ids("attachments")
         tables.forEach(::ids)
+        val externalPlans = ids("external_plan_versions")
+        val trainingIds = ids("training_sessions")
+        rows("external_plan_state").forEach { require(it.getString("planId") in externalPlans) }
+        rows("training_plan_links").forEach { require(it.getString("trainingId") in trainingIds && it.getString("planId") in externalPlans) }
+        require(rows("external_control").all { it.getString("id") == "control" && it.getLong("epoch") >= 0 })
         rows("archive_methods").forEach { com.example.lianxu.archive.MethodRegistry.parse(it.getString("packageJson")) }
         val methodIds=ids("archive_methods")
         rows("archive_topics").forEach { require(it.getString("methodId") in methodIds && it.getString("calculationId") in calculations);require(it.isNull("analysisId") || it.getString("analysisId") in analyses) }

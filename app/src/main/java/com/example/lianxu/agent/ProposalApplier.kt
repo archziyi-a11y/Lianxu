@@ -210,7 +210,12 @@ class ProposalApplier(private val work: AgentWorkspace) {
         overlay.profileDao().getProfile()?.let { db.profileDao().insert(it) }
         overlay.goalPhaseDao().getGoalPhasesFlow().first().forEach { db.goalPhaseDao().insert(it) }
         overlay.measurementDao().all().forEach { db.measurementDao().insert(it) }
-        overlay.recordDao().allTrainings().forEach { if (db.recordDao().training(it.id) == null) db.recordDao().insertTraining(it) else db.recordDao().updateTraining(it) }
+        overlay.recordDao().allTrainings().forEach {
+            if (db.recordDao().training(it.id) == null) {
+                db.recordDao().insertTraining(it)
+                com.example.lianxu.data.repository.ExternalRepository(db).linkTrainingToCurrentPlan(it.id)
+            } else db.recordDao().updateTraining(it)
+        }
         overlay.recordDao().allIntakes().forEach { if (db.recordDao().intake(it.id) == null) db.recordDao().insertIntake(it) else db.recordDao().updateIntake(it) }
         overlay.recordDao().allKnowledge().forEach { db.recordDao().putKnowledge(it) }
         od.allCalculations().forEach { if (d.calculation(it.id) == null) d.putCalculation(it) }
