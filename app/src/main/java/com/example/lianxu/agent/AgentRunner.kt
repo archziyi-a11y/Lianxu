@@ -21,13 +21,15 @@ class AgentRunner(private val context: Context, private val db: AppDatabase, pri
     var requestCount = 0; private set
     var toolCount = 0; private set
     suspend fun run(initial: Submission): String = withContext(Dispatchers.IO) { withTimeout(180_000) {
+        val control = ExternalRepository(db).control()
+        check(control.mode == "builtin") { "当前由外部智能体处理" }
         var submission = initial
         var repairUsed = false
         repeat(2) { attempt ->
             AgentWorkspace.open(context, db, submission, catalog).use { work ->
                 try {
                     val tools = AgentTools(work)
-                    val applier = ProposalApplier(work)
+                    val applier = ProposalApplier(work, control.epoch)
                     if (client == null) {
                         ActiveInputRepository(work.overlay).consume(submission, offline = true)
                         val demo = JSONObject().put("contractVersion", "2").put("turnId", submission.turn.id).put("taskId", submission.task.id)

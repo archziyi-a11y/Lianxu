@@ -193,6 +193,11 @@ class TodayViewModel @JvmOverloads constructor(application: Application, databas
             try {
                 val frozen = writes.withLock { store.prepare(id) }
                 submission = frozen
+                if (com.example.lianxu.data.repository.ExternalRepository(db).control().mode == "external") {
+                    com.example.lianxu.data.repository.ExternalRepository(db).queueSubmission(frozen)
+                    if (boardId == id) _notice.value = "已保存，等待外部智能体处理"
+                    return@launch
+                }
                 val key = settings.apiKeyFlow.first()
                 val repository = requireNotNull(nutrition)
                 val runner = com.example.lianxu.agent.AgentRunner(getApplication(), db, repository.catalog,

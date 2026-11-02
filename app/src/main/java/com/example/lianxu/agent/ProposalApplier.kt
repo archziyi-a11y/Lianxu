@@ -13,7 +13,7 @@ import org.json.JSONObject
 
 class SourceConflict(message: String) : IllegalStateException(message)
 
-class ProposalApplier(private val work: AgentWorkspace) {
+class ProposalApplier(private val work: AgentWorkspace, private val builtinEpoch: Long? = null) {
     suspend fun finish(proposal: JSONObject): List<DashboardCard> = work.overlay.withTransaction {
         proposal.shape("contractVersion", "turnId", "taskId", "baseRefs", "operations", "blocks", "summary", "followUp", "stageId", "boardPatch")
         require(proposal.getString("contractVersion") == "2" && proposal.getString("turnId") == work.submission.turn.id && proposal.getString("taskId") == work.submission.task.id) { "INVALID_SHAPE: contract/turn/task" }
@@ -201,6 +201,8 @@ class ProposalApplier(private val work: AgentWorkspace) {
     }
     suspend fun commit(cards: List<DashboardCard>, proposal: JSONObject) = work.real.withTransaction {
         val db = work.real; val d = db.collaborationDao()
+        val control = com.example.lianxu.data.repository.ExternalRepository(db).control()
+        check(control.mode == "builtin" && (builtinEpoch == null || control.epoch == builtinEpoch)) { "处理方已切换，旧回复未应用" }
         if (d.receipt(work.submission.turn.submissionId, "apply-board") != null) return@withTransaction
         val latest = AgentWorkspace.capture(db, work.submission)
         for (key in listOf("profile", "goals", "measurements", "trainings", "intakes", "knowledge", "plans", "policies", "mealProgress"))
