@@ -13,6 +13,7 @@ import com.example.lianxu.data.api.*
 import com.example.lianxu.data.db.AppDatabase
 import com.example.lianxu.data.entity.*
 import com.example.lianxu.data.repository.*
+import com.example.lianxu.data.prefs.SettingsManager
 import com.example.lianxu.ui.screens.*
 import com.example.lianxu.ui.theme.LianxuTheme
 import kotlinx.coroutines.*
@@ -46,7 +47,17 @@ class EvidenceActivity : ComponentActivity() {
         db = Room.inMemoryDatabaseBuilder(this, AppDatabase::class.java).build()
         lifecycleScope.launch {
             if (!intent.getBooleanExtra("sparse", false)) seed()
-            if (intent.getBooleanExtra("external_layout", false)) seedExternal()
+            val bridgeSession = intent.getBooleanExtra("bridge_session", false)
+            if (intent.getBooleanExtra("external_layout", false) || bridgeSession) seedExternal()
+            if (bridgeSession) {
+                val credentials = JSONObject(File(filesDir, "bridge-session.json").readText())
+                val settings = SettingsManager(application)
+                settings.saveBridgeCredentials(credentials.getString("url"), credentials.getString("owner"), credentials.getString("agent"))
+                val sync = ExternalSync(db, settings, this@EvidenceActivity)
+                launch {
+                    ForegroundSyncLoop { sync.sync() }.run()
+                }
+            }
             val client = AgentClient { messages, _ ->
                 calls++
                 event("request", JSONObject().put("requests", calls))
@@ -72,7 +83,7 @@ class EvidenceActivity : ComponentActivity() {
             launch {
                 today.cards.filter { cards -> cards.isNotEmpty() }.first()
                 File(output, "ready.json").writeText(JSONObject().put("runId", runId)
-                    .put("isolated", true).put("transport", "offline-fixture")
+                    .put("isolated", true).put("transport", if (bridgeSession) "isolated-http-bridge" else "offline-fixture")
                     .put("clock", "android-real-time").toString())
                 event("ready")
             }
