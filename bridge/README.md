@@ -19,3 +19,5 @@
 官方参考：[Grok Bot 接入应用](https://docs.x.ai/grok-bot/computer-and-apps)、[Grok Bot 例程与 webhook](https://docs.x.ai/grok-bot/skills-routines-and-automations)。真实账号、实际付费和长期部署尚未配置，未完成平台联调。
 
 `describe_capabilities` 和 `read_handoff` 提供手机已注册的分析方法、档案主题及计算结果。手机档案运行时在事实变化后自动执行适用方法；数据不足时不会虚构结果。图表应引用快照中实际出现的 calculation ID 和结果路径。`submit_facts` 经手机校验并完成对应输入后，另行提交页面时请使用空 `inputIds`，避免重复完成同一输入。实际记组和用户决定会生成独立待处理事件，供接续和触发使用。
+
+待审阅的阿里云单用户部署模板和隔离样本操作说明见 [deploy/README.md](deploy/README.md)；尚未连接或部署至用户服务器。

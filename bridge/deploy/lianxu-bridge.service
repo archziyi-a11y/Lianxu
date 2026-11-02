@@ -1,0 +1,22 @@
+[Unit]
+Description=Lianxu single-user bridge (isolated sample)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=lianxu-bridge
+Group=lianxu-bridge
+WorkingDirectory=/opt/lianxu-bridge/current
+ExecStart=/opt/lianxu-bridge/current/.venv/bin/python /opt/lianxu-bridge/current/deploy/launch.py /etc/lianxu-bridge/config.env
+Restart=on-failure
+RestartSec=5
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/lianxu-bridge
+
+[Install]
+WantedBy=multi-user.target
