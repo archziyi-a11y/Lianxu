@@ -34,6 +34,14 @@ class ArchiveViewModel @JvmOverloads constructor(application: Application, datab
     private val repository = AppRepository(db)
     private val archive=ArchiveRepository(application,db)
     val arrangements=db.recordDao().watchArrangements().stateIn(viewModelScope,SharingStarted.WhileSubscribed(5000),emptyList())
+    val externalRequirements = db.externalDao().watchRequirements().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    val externalPlans = db.externalDao().watchPlans().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    val currentExternalPlan = db.externalDao().watchCurrentPlan().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
+    fun resolveExternalDecision(requirement: ExternalRequirementEntity, accepted: Boolean) = work {
+        ExternalRepository(db).resolveDecision(requirement, accepted)
+        ExternalSyncWorker.now(getApplication())
+        _message.value = if (accepted) "决定已保存；如需变更目标，请在资料中更新" else "已拒绝该建议"
+    }
     fun saveFollowUp(text:String,old:KnowledgeNote?=null,status:String="current",done:()->Unit={})=work {
         ActiveInputRepository(db).arrange(text,old,status);_message.value=if(status=="cancelled")"已取消主动跟进，历史进展保留" else "跟进安排已保存";done()
     }
@@ -44,6 +52,7 @@ class ArchiveViewModel @JvmOverloads constructor(application: Application, datab
     fun clearMessage(){_message.value=null}
     fun selectScope(scope:String){selectedScope.value=scope}
     fun place(key:String,placement:String)=work { archive.placement(key,placement) }
+    fun toggleArchiveCard(id:String)=work { archive.toggleCollapsed(id) }
     fun importMethod(raw:String,onSaved:()->Unit={})=work { archive.methods.importPackage(raw);archive.refresh();_message.value="方法已导入，将按适用条件运行";onSaved() }
     fun copyMethodPrompt(onReady:(String)->Unit)=work { onReady(archive.methods.authoringPrompt());_message.value="制作提示词已复制" }
     fun enableMethod(id:String,enabled:Boolean)=work {

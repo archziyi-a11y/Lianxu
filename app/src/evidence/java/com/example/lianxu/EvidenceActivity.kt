@@ -46,6 +46,7 @@ class EvidenceActivity : ComponentActivity() {
         db = Room.inMemoryDatabaseBuilder(this, AppDatabase::class.java).build()
         lifecycleScope.launch {
             if (!intent.getBooleanExtra("sparse", false)) seed()
+            if (intent.getBooleanExtra("external_layout", false)) seedExternal()
             val client = AgentClient { messages, _ ->
                 calls++
                 event("request", JSONObject().put("requests", calls))
@@ -111,6 +112,31 @@ class EvidenceActivity : ComponentActivity() {
                 "隔离样本：三组卧推，每组八次", "isolated-workflow", 1, i.toLong(), i.toLong()))
         ActiveInputRepository(db).arrange("关于上次训练，今天恢复得怎么样？")
         ArchiveRepository(this, db).also { it.methods.installBuiltins(); it.refresh(date) }
+    }
+
+    /** Synthetic data only; exercises the production component and archive validators. */
+    private suspend fun seedExternal() {
+        val board=DayLifecycle(db).ensureCurrent()
+        NutritionBoardRepository.create(this,db).refresh(board.id)
+        val archive=ArchiveRepository(this,db);archive.refresh()
+        val topic=db.archiveDao().topics().first { it.methodId=="builtin.weight-series" && it.scopeKey=="accumulated" && it.state=="current" }
+        val external=ExternalRepository(db);val control=external.beginHandoff("隔离样本智能体");external.acceptHandoff("隔离样本智能体",control.epoch)
+        val now=System.currentTimeMillis()
+        external.publishPlan("隔离样本智能体",control.epoch,ExternalPlanVersionEntity("sample-plan","隔离样本：按近期反馈安排训练","示例理由",now,now,"隔离样本智能体"),true,now)
+        val cardId="${board.id}:external:main"
+        val actions=JSONArray().put(JSONObject().put("kind","record_set").put("label","记下这一组").put("planId","sample-plan"))
+            .put(JSONObject().put("kind","start_timer").put("label","休息 90 秒").put("seconds",90))
+        val components=JSONArray().put(JSONObject().put("type","text").put("text","隔离样本：先完成当前动作，再记录实际感受。"))
+            .put(JSONObject().put("type","input").put("kind","training").put("fields",JSONArray().put("name").put("repsMin").put("loadKg")).put("suggestedName","卧推").put("actions",actions))
+            .put(JSONObject().put("type","metric").put("calculationId",topic.calculationId).put("path","latest").put("label","最近体重").put("unit","kg"))
+        val card=JSONObject().put("id",cardId).put("title","当前动作").put("span",6).put("group","训练主项").put("emphasis","high").put("collapsed",false).put("components",components)
+        external.applyTextProposal("隔离样本智能体",control.epoch,"sample-layout",JSONObject().put("boardId",board.id).put("boardRevision",db.collaborationDao().board(board.id)!!.revision)
+            .put("cards",JSONArray().put(card)).put("order",JSONArray().put(cardId)).put("inputIds",JSONArray()))
+        val blocks=JSONArray().put(JSONObject().put("topicKey",topic.id).put("type","metric").put("path","latest").put("label","最近体重"))
+            .put(JSONObject().put("topicKey",topic.id).put("type","text").put("text","隔离样本：基于已记录体重展示变化。"))
+        external.applyArchiveProposal(this,"隔离样本智能体",control.epoch,"sample-archive",JSONObject().put("type","archive").put("inputIds",JSONArray())
+            .put("cards",JSONArray().put(JSONObject().put("title","身体变化").put("span",6).put("group","长期趋势").put("emphasis","high").put("blocks",blocks))))
+        external.submitRequirement(ExternalRequirementEntity("sample-need","sample-group-timer","隔离样本：分组计时","现有控件未提供分组提示","先使用普通计时","完成每组后显示休息倒计时",1,now))
     }
 
     override fun onDestroy() {

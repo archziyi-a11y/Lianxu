@@ -241,6 +241,7 @@ class ProposalApplier(private val work: AgentWorkspace, private val builtinEpoch
             com.example.lianxu.data.repository.ActiveInputRepository(db).learnHabit(if(imageInput)"" else exercises.firstOrNull()?.optString("name").orEmpty(),if(imageInput)"image" else "text",emptyList(),source,work.date)
         }
         BoardStore(db).complete(work.submission, cards)
+        com.example.lianxu.data.repository.ExternalRepository(db).completeBuiltinPending(work.submission.turn.submissionId, control.epoch)
     }
     companion object {
         internal fun canonical(value: Any?): String = when (value) {

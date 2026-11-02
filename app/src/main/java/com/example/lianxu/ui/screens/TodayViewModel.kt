@@ -36,6 +36,7 @@ class TodayViewModel @JvmOverloads constructor(application: Application, databas
     private val store = BoardStore(db)
     private val attachments = AttachmentStore(application, db)
     private val writes = Mutex()
+    private val builtinHandoff = Mutex()
     private val projection = Mutex()
     private var projectedBoard: String? = null
     private var projectedRevision = -1
@@ -54,10 +55,14 @@ class TodayViewModel @JvmOverloads constructor(application: Application, databas
     val isPlanning = _isPlanning.asStateFlow()
     private val _notice = MutableStateFlow<String?>(null)
     val notice = _notice.asStateFlow()
+    private val _externalStatus = MutableStateFlow("正在检查连接")
+    val externalStatus = _externalStatus.asStateFlow()
     private val _isImporting = MutableStateFlow(false)
     val isImporting = _isImporting.asStateFlow()
     private val _demoMode = MutableStateFlow(true)
     val demoMode = _demoMode.asStateFlow()
+    private val _externalMode = MutableStateFlow(false)
+    val externalMode = _externalMode.asStateFlow()
     private val _profileSummary = MutableStateFlow("尚未补充身体资料")
     val profileSummary = _profileSummary.asStateFlow()
     private val tasks = mutableMapOf<String, kotlinx.coroutines.Job>()
@@ -69,10 +74,16 @@ class TodayViewModel @JvmOverloads constructor(application: Application, databas
 
     init {
         viewModelScope.launch {
+            val control = com.example.lianxu.data.repository.ExternalRepository(db).control()
+            _externalStatus.value = if (control.mode == "external") "外部智能体 · ${if (control.handoffAccepted) "已接手" else "等待接手"}" else "内置助手"
+            if (settings.bridgeCredentials.first() != null) com.example.lianxu.data.repository.ExternalSyncWorker.schedule(getApplication())
+        }
+        viewModelScope.launch {
             try {
                 store.recoverInterrupted()
                 val repository = NutritionBoardRepository.create(application, db)
                 nutrition = repository
+                resumeBuiltinPending()
                 com.example.lianxu.data.repository.DayLifecycle(db).watch().collectLatest { current ->
                     boardId = current.id
                     _boardDate.value = JSONObject(current.dateContext).getString("date")
@@ -106,7 +117,7 @@ class TodayViewModel @JvmOverloads constructor(application: Application, databas
             }
         }
         viewModelScope.launch {
-            try { settings.apiKeyFlow.collect { _demoMode.value = it.isNullOrBlank() } }
+            try { combine(settings.apiKeyFlow, db.externalDao().watchControl()) { key, control -> key to (control?.mode == "external") }.collect { (key, external) -> _externalMode.value = external; _demoMode.value = !external && key.isNullOrBlank() } }
             catch (error: CancellationException) { throw error }
             catch (error: Exception) { _notice.value = "无法读取密钥，请在设置中重新保存" }
         }
@@ -128,13 +139,21 @@ class TodayViewModel @JvmOverloads constructor(application: Application, databas
     private fun edit(transform: (List<DashboardCard>) -> List<DashboardCard>) {
         val id = boardId ?: return
         viewModelScope.launch {
-            try { writes.withLock { store.edit(id, transform) } }
+            try {
+                val ready = writes.withLock {
+                    store.edit(id, transform)
+                    val draft = db.collaborationDao().draft(id)
+                    draft != null && store.decode(draft.cardsJson).none { it.isAnnotationMode || com.example.lianxu.data.repository.ActiveInputRepository.hasInput(it) }
+                }
+                if (ready && db.externalDao().pendingInputs().any { it.ownerMode == "builtin" }) resumeBuiltinPending()
+            }
             catch (error: CancellationException) { throw error }
             catch (error: Exception) { _notice.value = "保存补充失败，请重试：${error.message}" }
         }
     }
     fun toggleAnnotationMode(cardId: String) = edit { cards -> cards.map {
         if (it.id == cardId) it.copy(isAnnotationMode = !it.isAnnotationMode) else it } }
+    fun toggleCardCollapsed(cardId: String) = edit { cards -> cards.map { if (it.id == cardId) it.copy(collapsed = !it.collapsed) else it } }
     fun updateAnnotationText(cardId: String, text: String) = edit { cards -> cards.map {
         if (it.id == cardId) it.copy(annotationText = text, isAnnotationMode = true) else it } }
     fun selectAssistantChoice(cardId: String, componentId: String, key: String) = edit { cards -> cards.map { card ->
@@ -179,8 +198,77 @@ class TodayViewModel @JvmOverloads constructor(application: Application, databas
     }
     fun saveApiKey(key: String) {
         viewModelScope.launch {
-            try { settings.saveApiKey(key); com.example.lianxu.archive.ArchiveRuntime.resume(getApplication()); _notice.value = "设置已保存" }
+            try { settings.saveApiKey(key); com.example.lianxu.archive.ArchiveRuntime.resume(getApplication()); _notice.value = "设置已保存"; resumeBuiltinPending() }
             catch (error: Exception) { _notice.value = "密钥保存失败，请重试" }
+        }
+    }
+    fun connectExternal(url: String, ownerToken: String, agentToken: String, agentName: String) {
+        viewModelScope.launch {
+            try {
+                require(agentName.isNotBlank()) { "请填写智能体名称" }
+                settings.saveBridgeCredentials(url, ownerToken, agentToken)
+                com.example.lianxu.data.repository.ExternalRepository(db).beginHandoff(agentName.trim())
+                _externalStatus.value = "外部智能体 · 正在同步"
+                com.example.lianxu.data.repository.ExternalSyncWorker.schedule(getApplication())
+                com.example.lianxu.data.repository.ExternalSync(db, settings, getApplication()).sync()
+                _externalStatus.value = "外部智能体 · 等待接手"
+            } catch (error: Exception) {
+                _externalStatus.value = "连接尚未同步：${error.message ?: "请重试"}"
+            }
+        }
+    }
+    fun syncExternal() {
+        viewModelScope.launch {
+            try {
+                com.example.lianxu.data.repository.ExternalSync(db, settings, getApplication()).sync()
+                val control = com.example.lianxu.data.repository.ExternalRepository(db).control()
+                _externalStatus.value = if (control.mode == "builtin") "内置助手 · 已同步" else "外部智能体 · ${if (control.handoffAccepted) "已接手" else "等待接手"}"
+                if (control.mode == "builtin") resumeBuiltinPending()
+            } catch (error: Exception) {
+                val control = com.example.lianxu.data.repository.ExternalRepository(db).control()
+                _externalStatus.value = if (control.mode == "builtin") "已切回内置助手，远端撤权尚未同步" else "同步未完成：${error.message ?: "请重试"}"
+            }
+        }
+    }
+    fun useBuiltin() {
+        viewModelScope.launch {
+            com.example.lianxu.data.repository.ExternalRepository(db).switchToBuiltin()
+            resumeBuiltinPending()
+            if (settings.bridgeCredentials.first() == null) {
+                _externalStatus.value = "内置助手"
+                return@launch
+            }
+            _externalStatus.value = "内置助手 · 正在撤销外部连接"
+            com.example.lianxu.data.repository.ExternalSyncWorker.schedule(getApplication())
+            syncExternal()
+        }
+    }
+    private fun resumeBuiltinPending() {
+        viewModelScope.launch {
+            builtinHandoff.withLock {
+                val repository = nutrition ?: return@withLock
+                val external = com.example.lianxu.data.repository.ExternalRepository(db)
+                if (external.control().mode != "builtin") return@withLock
+                val pending = external.pending().filter { it.ownerMode == "builtin" }
+                if (pending.isEmpty()) return@withLock
+                val key = settings.apiKeyFlow.first()
+                val client = testClient ?: key?.takeIf { it.isNotBlank() }?.let { com.example.lianxu.agent.DeepSeekAgentClient(it) }
+                if (client == null) { _notice.value = "有待处理输入，连接内置助手后继续"; return@withLock }
+                for (item in pending) {
+                    if (external.control().mode != "builtin") break
+                    val submission = external.prepareBuiltinPending(item.id) ?: continue
+                    try {
+                        _notice.value = "正在接续待处理输入"
+                        com.example.lianxu.agent.AgentRunner(getApplication(), db, repository.catalog, client).run(submission)
+                        _notice.value = "待处理输入已接续"
+                    } catch (error: CancellationException) { throw error }
+                    catch (error: Exception) {
+                        store.fail(submission, error.message ?: "输入接续失败")
+                        _notice.value = "输入仍待处理：${error.message ?: "请重试"}"
+                        break
+                    }
+                }
+            }
         }
     }
     fun submitAnnotations(localOnly:Boolean=false) {
@@ -195,6 +283,7 @@ class TodayViewModel @JvmOverloads constructor(application: Application, databas
                 submission = frozen
                 if (com.example.lianxu.data.repository.ExternalRepository(db).control().mode == "external") {
                     com.example.lianxu.data.repository.ExternalRepository(db).queueSubmission(frozen)
+                    com.example.lianxu.data.repository.ExternalSyncWorker.now(getApplication())
                     if (boardId == id) _notice.value = "已保存，等待外部智能体处理"
                     return@launch
                 }
@@ -249,7 +338,14 @@ class TodayViewModel @JvmOverloads constructor(application: Application, databas
         val repository = nutrition ?: return
         viewModelScope.launch {
             try {
-                if (action.kind == "open_source") {
+                if (action.kind == "record_set") {
+                    writes.withLock { com.example.lianxu.data.repository.ExternalRepository(db).recordSet(id, action) }
+                    com.example.lianxu.data.repository.ExternalSyncWorker.now(getApplication())
+                    _notice.value = "已记下这一组"
+                } else if (action.kind == "start_timer") {
+                    com.example.lianxu.timer.RestTimerRepository(getApplication(), db).start(requireNotNull(action.value).toInt())
+                    _notice.value = "休息计时已开始"
+                } else if (action.kind == "open_source") {
                     if (action.targetRef.type == "calculation") {
                         val calc = db.collaborationDao().calculation(action.targetRef.id) ?: return@launch
                         val snapshot = JSONObject(calc.inputSnapshot)

@@ -10,6 +10,7 @@ import json
 import os
 import sqlite3
 import threading
+import base64
 from pathlib import Path
 
 class Bridge:
@@ -17,6 +18,8 @@ class Bridge:
         self.db = sqlite3.connect(path, check_same_thread=False, isolation_level=None)
         self.db.row_factory = sqlite3.Row
         self.lock = threading.RLock()
+        self.image_requests = {}
+        self.image_data = {}
         self.db.executescript('''
         PRAGMA journal_mode=WAL;
         CREATE TABLE IF NOT EXISTS control (id INTEGER PRIMARY KEY CHECK(id=1), epoch INTEGER NOT NULL, mode TEXT NOT NULL, agent TEXT, token_hash TEXT, accepted INTEGER NOT NULL);
@@ -25,6 +28,7 @@ class Bridge:
         CREATE TABLE IF NOT EXISTS inputs (id TEXT PRIMARY KEY, body TEXT NOT NULL, epoch INTEGER NOT NULL, status TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS proposals (id TEXT PRIMARY KEY, epoch INTEGER NOT NULL, base_revision INTEGER NOT NULL, body TEXT NOT NULL, status TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS used_tokens (hash TEXT PRIMARY KEY);
+        CREATE TABLE IF NOT EXISTS webhook_receipts (input_id TEXT PRIMARY KEY);
         ''')
     @staticmethod
     def digest(token):
@@ -43,6 +47,8 @@ class Bridge:
             self.db.execute('UPDATE control SET epoch=?,mode=?,agent=?,token_hash=?,accepted=0 WHERE id=1', (epoch,mode,agent,self.digest(token) if token else None))
             self.db.execute("UPDATE inputs SET epoch=? WHERE status='pending'", (epoch,))
             self.db.execute("UPDATE proposals SET status='revoked' WHERE status='pending'")
+            self.image_requests.clear()
+            self.image_data.clear()
     def authenticate(self, token):
         with self.lock:
             row = self.db.execute('SELECT * FROM control WHERE id=1').fetchone()
@@ -87,6 +93,10 @@ class Bridge:
             old = self.db.execute('SELECT body FROM inputs WHERE id=?', (id,)).fetchone()
             if old and old['body'] != encoded: raise ValueError('input conflict')
             if not old: self.db.execute("INSERT INTO inputs VALUES (?,?,?,'pending')", (id,encoded,epoch))
+    def webhook_sent(self, id):
+        with self.lock: return self.db.execute('SELECT 1 FROM webhook_receipts WHERE input_id=?', (id,)).fetchone() is not None
+    def mark_webhook_sent(self, id):
+        with self.lock, self.db: self.db.execute('INSERT OR IGNORE INTO webhook_receipts VALUES (?)', (id,))
     def pending(self, epoch):
         with self.lock:
             self._writer(epoch, False)
@@ -108,8 +118,43 @@ class Bridge:
             control = self.db.execute('SELECT * FROM control WHERE id=1').fetchone()
             if control['epoch'] != epoch or control['mode'] != 'external': raise ValueError('stale epoch')
             return [dict(r) for r in self.db.execute("SELECT * FROM proposals WHERE status='pending' AND epoch=? ORDER BY rowid", (epoch,))]
+    def proposal_status(self, epoch, id):
+        with self.lock:
+            self._writer(epoch)
+            row = self.db.execute('SELECT status FROM proposals WHERE id=? AND epoch=?', (id, epoch)).fetchone()
+            if not row: raise ValueError('unknown proposal')
+            return row['status']
+    def request_image(self, epoch, id):
+        with self.lock:
+            self._writer(epoch)
+            allowed = False
+            for row in self.db.execute("SELECT body FROM inputs WHERE status='pending' AND epoch=?", (epoch,)):
+                for annotation in json.loads(row['body']).get('annotations', []):
+                    allowed = allowed or any(p.get('type') == 'image' and p.get('attachmentId') == id for p in annotation.get('inputParts', []))
+            if not allowed: raise ValueError('image is not referenced by pending input')
+            self.image_requests[id] = epoch
+            return 'ready' if id in self.image_data else 'requested'
+    def requested_images(self, epoch):
+        with self.lock:
+            control = self.db.execute('SELECT * FROM control WHERE id=1').fetchone()
+            if control['mode'] != 'external' or control['epoch'] != epoch: raise ValueError('stale epoch')
+            return [id for id, owner in self.image_requests.items() if owner == epoch and id not in self.image_data]
+    def upload_image(self, epoch, id, mime, sha256, encoded):
+        with self.lock:
+            if self.image_requests.get(id) != epoch: raise ValueError('image was not requested')
+            if not mime.startswith('image/'): raise ValueError('invalid mime')
+            raw = base64.b64decode(encoded, validate=True)
+            if not raw or len(raw) > 25 * 1024 * 1024 or self.digest_bytes(raw) != sha256: raise ValueError('image integrity check failed')
+            self.image_data[id] = (mime, encoded)
+    @staticmethod
+    def digest_bytes(value): return hashlib.sha256(value).hexdigest()
+    def read_image(self, epoch, id):
+        with self.lock:
+            self._writer(epoch)
+            if self.image_requests.get(id) != epoch or id not in self.image_data: raise ValueError('image is not ready')
+            return self.image_data[id]
     def acknowledge(self, epoch, id, status):
-        if status not in ('applied','rejected'): raise ValueError('invalid status')
+        if status not in ('applied','rejected','decision'): raise ValueError('invalid status')
         with self.lock, self.db:
             self.db.execute('BEGIN IMMEDIATE')
             row = self.db.execute('SELECT * FROM proposals WHERE id=?', (id,)).fetchone()

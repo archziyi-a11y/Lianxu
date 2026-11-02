@@ -1,6 +1,7 @@
 import os
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 from starlette.testclient import TestClient
 
@@ -17,6 +18,18 @@ class HttpTests(unittest.TestCase):
             self.assertEqual(401,c.post('/phone/switch',json={}).status_code)
             self.assertEqual(200,c.post('/phone/switch',headers=owner,json={'epoch':1,'mode':'external','agent':'agent','agentToken':'a'*40}).status_code)
             self.assertEqual(200,c.post('/phone/snapshot',headers=owner,json={'epoch':1,'body':{'records':[]}}).status_code)
+            class Response:
+                status = 200
+                def __enter__(self): return self
+                def __exit__(self, *args): pass
+            server.webhook_url='https://example.invalid/hook'; server.webhook_token='fixture'
+            with patch('server.urllib.request.build_opener') as factory:
+                send=factory.return_value.open; send.return_value=Response()
+                payload={'epoch':1,'id':'fixture-input','body':{'text':'fixture'}}
+                self.assertEqual(200,c.post('/phone/enqueue',headers=owner,json=payload).status_code)
+                self.assertEqual(200,c.post('/phone/enqueue',headers=owner,json=payload).status_code)
+                self.assertEqual(1,send.call_count)
+            server.webhook_url='';server.webhook_token=''
             self.assertEqual(401,c.post('/mcp/',json={}).status_code)
             headers = dict(agent, **{'Content-Type':'application/json'})
             init={'jsonrpc':'2.0','id':1,'method':'initialize','params':{'protocolVersion':'2025-06-18','capabilities':{},'clientInfo':{'name':'test','version':'1'}}}

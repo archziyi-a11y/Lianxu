@@ -23,6 +23,8 @@ class ArchiveComposer(private val repo:ArchiveRepository,private val client:Agen
   tool("run_registered_method","Read already evaluated results of an enabled method; ineligible methods return empty.",mapOf("methodId" to string),listOf("methodId")),
   tool("publish_archive","Publish selective sourced cards. All numeric values must bind metric path. text is an explanation, trend uses computed chart. Never change placements or facts.",mapOf("cards" to mapOf("type" to "array","items" to card)),listOf("cards")))
  suspend fun run():Boolean=withContext(Dispatchers.IO){withTimeout(180_000){
+  val control=com.example.lianxu.data.repository.ExternalRepository(repo.db).control()
+  check(control.mode=="builtin") { "当前由外部智能体编排档案" }
   val db=repo.db;val dao=db.archiveDao();val basis=repo.refresh();val job=requireNotNull(dao.job())
   if(job.completedFingerprint==basis)return@withTimeout false
   val topics=dao.topics().filter { it.state=="current" };if(topics.isEmpty())return@withTimeout false
@@ -58,7 +60,7 @@ class ArchiveComposer(private val repo:ArchiveRepository,private val client:Agen
       "read_result"->{args.fields("topicKey");val topic=available.single { it.id==args.getString("topicKey") };result(topic).put("guide",methods[topic.methodId]?.guide)}
       "run_registered_method"->{args.fields("methodId");val id=args.getString("methodId");require(id in methods);JSONObject().put("items",JSONArray(available.filter { it.methodId==id }.map { result(it) }))}
       "publish_archive"->{
-       publish(args,basis,factBasis);return@withTimeout true
+       publish(args,basis,factBasis,control.epoch);return@withTimeout true
       }
       else->error("未知档案工具")
      };JSONObject().put("ok",true).put("data",data)
@@ -70,13 +72,17 @@ class ArchiveComposer(private val repo:ArchiveRepository,private val client:Agen
    }
   };error("档案助手达到请求上限")
  } }
- suspend fun publish(args:JSONObject,basis:String,factBasis:String?=null)=repo.db.withTransaction {
+ suspend fun publish(args:JSONObject,basis:String,factBasis:String?=null,builtinEpoch:Long?=null,externalEpoch:Long?=null)=repo.db.withTransaction {
   args.fields("cards");val raw=args.getJSONArray("cards");require(raw.length() in 1..8){"档案卡片须为1至8张"}
-  val db=repo.db;val dao=db.archiveDao();check(factBasis==null || repo.factFingerprint()==factBasis){"档案来源已变化"};check(dao.job()?.desiredFingerprint==basis){"档案依据已更新，稍后重新整理"}
+  val db=repo.db;val control=com.example.lianxu.data.repository.ExternalRepository(db).control()
+  check(if (externalEpoch == null) control.mode=="builtin" && (builtinEpoch==null || control.epoch==builtinEpoch) else control.mode=="external" && control.handoffAccepted && control.epoch==externalEpoch){"处理方已切换，旧档案回复未应用"}
+  val dao=db.archiveDao();check(factBasis==null || repo.factFingerprint()==factBasis){"档案来源已变化"};check(dao.job()?.desiredFingerprint==basis){"档案依据已更新，稍后重新整理"}
   val all=dao.topics();val topics=all.filter { it.state=="current" }.associateBy { it.id };val prefs=dao.placements().associateBy { it.id }
   val cards=mutableListOf<ArchiveDisplay>();val seen=mutableSetOf<String>();val now=System.currentTimeMillis()
   for((index,c) in raw.rows().withIndex()){
-   c.fields("title","span","blocks");val title=c.getString("title");require(title.length in 1..80)
+   c.fields("title","span","blocks","group","emphasis","collapsed");val title=c.getString("title");require(title.length in 1..80)
+   val group=c.optString("group").takeIf { it.isNotBlank() };require(group==null || group.length<=60)
+   val emphasis=c.optString("emphasis","normal");require(emphasis in listOf("high","normal","low"))
    val span=when(c.getInt("span")){2->CardSpan.SMALL;3->CardSpan.MEDIUM;6->CardSpan.LARGE;else->error("span无效")}
    val rawBlocks=c.getJSONArray("blocks").rows();require(rawBlocks.size in 1..12)
    val keys=rawBlocks.map { it.getString("topicKey") }.distinct();require(keys.all { it in topics && archivePlacement(topics.getValue(it),all,prefs.values.toList()) !in listOf("archive","priority") }){"主题不存在或已归档／优先展示"}
@@ -94,7 +100,9 @@ class ArchiveComposer(private val repo:ArchiveRepository,private val client:Agen
      else->error("不支持的档案组件")
     }
    }
-   cards.add(ArchiveDisplay(keys,DashboardCard("archive-ai:${fingerprint(keys.joinToString())}",title,span=span,blocks=blocks,managedBy="assistant")))
+   val id="archive-ai:${fingerprint(keys.joinToString())}"
+   val previous=dao.presentation()?.let { repo.decode(it.cardsJson).firstOrNull { old -> old.card.id==id } }
+   cards.add(ArchiveDisplay(keys,DashboardCard(id,title,span=span,blocks=blocks,managedBy=if(externalEpoch==null)"assistant" else "external",groupTitle=group,emphasis=emphasis,collapsed=previous?.card?.collapsed ?: c.optBoolean("collapsed",false))))
   }
   val old=dao.presentation();dao.putPresentation(ArchivePresentationEntity(revision=(old?.revision ?: 0)+1,cardsJson=repo.encode(cards),inputFingerprint=basis,updatedAt=now))
   val job=requireNotNull(dao.job());dao.putJob(job.copy(completedFingerprint=basis,status="completed",lastError=null,updatedAt=now))

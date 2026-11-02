@@ -38,7 +38,7 @@ import java.time.format.DateTimeFormatter
  LaunchedEffect(initialSection){if(initialSection!="首页"){page=initialSection;onSectionConsumed()}}
  if(page=="安排"){ArrangementScreen(viewModel){page="首页"};return}
  if(page=="设置" && todayModel!=null)SettingsPanel(todayModel){page="首页"}
- val management=page in listOf("记录","阶段","历日","资料","备份")
+ val management=page in listOf("记录","阶段","历日","资料","计划","需求","备份")
  if(management){ArchiveManagementScreen(modifier,viewModel,onRetry,onShowToday,initialSection=page,onBack={page="首页"});return}
  if(importMethod)AlertDialog(onDismissRequest={if(!busy)importMethod=false},title={Text("导入分析方法")},text={Column(verticalArrangement=Arrangement.spacedBy(8.dp)){
   Text("粘贴与聊天助手制作的方法包文本")
@@ -91,10 +91,13 @@ import java.time.format.DateTimeFormatter
     if(displays.isEmpty() && category==null)item(span={GridItemSpan(6)}){Column(verticalArrangement=Arrangement.spacedBy(8.dp)){Text("从已有记录开始，逐渐看见变化。",style=MaterialTheme.typography.bodyLarge);Button(onClick=onShowToday){Text("记录今天 →")};TextButton(onClick={page="资料"}){Text("完善资料与目标",color=MaterialTheme.colorScheme.onSurfaceVariant)}}}
     itemsIndexed(displays,key={_,display->display.card.id},span={index,display->GridItemSpan(if(wideCards || index==0)6 else display.card.span.span)}){index,display->
      val lead=index==0
-     Card(modifier=Modifier.animateItem().fillMaxWidth().combinedClickable(onClick={detail=display},onLongClick={options=display},onLongClickLabel="展示选项"),colors=CardDefaults.cardColors(containerColor=MaterialTheme.colorScheme.surface),border=BorderStroke(1.dp,if(lead)MaterialTheme.colorScheme.primary.copy(alpha=.45f) else MaterialTheme.colorScheme.outlineVariant)){
+     Card(modifier=Modifier.animateItem().fillMaxWidth().combinedClickable(onClick={detail=display},onLongClick={options=display},onLongClickLabel="展示选项"),colors=CardDefaults.cardColors(containerColor=if(display.card.emphasis=="high")MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface),border=BorderStroke(1.dp,if(lead)MaterialTheme.colorScheme.primary.copy(alpha=.45f) else MaterialTheme.colorScheme.outlineVariant)){
       Column(Modifier.padding(if(lead)20.dp else 16.dp),verticalArrangement=Arrangement.spacedBy(12.dp)){
        Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween){Text(if(display.priority)"优先展示" else "",style=MaterialTheme.typography.labelSmall,color=MaterialTheme.colorScheme.primary);Text("查看依据 ↗",style=MaterialTheme.typography.labelSmall,color=MaterialTheme.colorScheme.onSurfaceVariant)}
+       display.card.groupTitle?.let { Text(it,style=MaterialTheme.typography.labelSmall,color=MaterialTheme.colorScheme.primary) }
        Text(display.card.title,style=if(lead)MaterialTheme.typography.headlineSmall else MaterialTheme.typography.titleMedium)
+       if(display.card.managedBy=="external")TextButton(onClick={viewModel.toggleArchiveCard(display.card.id)}) { Text(if(display.card.collapsed)"展开" else "收起") }
+       if(!display.card.collapsed) {
        val blocks=state.resolved[display.card.id].orEmpty()
        val metrics=blocks.filter { it.type=="metric" }
        if(metrics.size>1) {
@@ -104,13 +107,14 @@ import java.time.format.DateTimeFormatter
         metrics.drop(1).chunked(if(wideCards || (!lead && display.card.span.span<6))1 else 2).forEach { row->Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(16.dp)){row.forEach { metric->Column(Modifier.weight(1f)){Text(metric.label,style=MaterialTheme.typography.labelSmall,color=MaterialTheme.colorScheme.onSurfaceVariant);Text(metric.text,style=MaterialTheme.typography.titleLarge)} }} }
        }
        blocks.filterNot { (metrics.size>1 && it.type=="metric") || (it.type=="text" && (it.text.isBlank() || blocks.any { chart->chart.type=="trend" && chart.text==it.text })) }.forEach { block->ComponentView(block,!lead && display.card.span.span==2,{_,_->},{}) }
+       }
       }
      }
     }
     if(category==null)item(span={GridItemSpan(6)}){Column(verticalArrangement=Arrangement.spacedBy(8.dp)){
      HorizontalDivider();Text("长期资料",style=MaterialTheme.typography.titleSmall)
      FlowRow(horizontalArrangement=Arrangement.spacedBy(8.dp)){MethodRegistry.categories.forEach { name->TextButton(onClick={category=name}){Text(name,color=MaterialTheme.colorScheme.onSurfaceVariant)}}}
-     FlowRow(horizontalArrangement=Arrangement.spacedBy(8.dp)){listOf("分析历史" to "阶段","历日方案" to "历日","分析方法" to "方法","备份恢复" to "备份","连接与显示" to "设置").forEach { (label,target)->TextButton(onClick={page=target}){Text(label,color=MaterialTheme.colorScheme.onSurfaceVariant)}}}
+     FlowRow(horizontalArrangement=Arrangement.spacedBy(8.dp)){listOf("分析历史" to "阶段","历日方案" to "历日","训练计划" to "计划","扩展需求" to "需求","分析方法" to "方法","备份恢复" to "备份","连接与显示" to "设置").forEach { (label,target)->TextButton(onClick={page=target}){Text(label,color=MaterialTheme.colorScheme.onSurfaceVariant)}}}
     }}
    }
    item(span={GridItemSpan(6)}){Spacer(Modifier.height(24.dp))}

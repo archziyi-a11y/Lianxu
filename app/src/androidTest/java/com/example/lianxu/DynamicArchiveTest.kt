@@ -146,7 +146,7 @@ class DynamicArchiveTest {
  @Test fun previousSchemaFiveBackupCanRestoreIntoSix()=runBlocking { withRepo { repo->
   weight(repo.db,"w",date);val output=ByteArrayOutputStream();BackupRepository(context,repo.db).export(output)
   val entries=linkedMapOf<String,ByteArray>();java.util.zip.ZipInputStream(ByteArrayInputStream(output.toByteArray())).use { zip->while(true){val e=zip.nextEntry ?: break;entries[e.name]=zip.readBytes()} }
-  val data=JSONObject(entries.getValue("data.json").toString(Charsets.UTF_8));for(key in listOf("archive_methods","archive_topics","archive_placements","archive_presentations","archive_jobs"))data.remove(key)
+  val data=JSONObject(entries.getValue("data.json").toString(Charsets.UTF_8));for(key in listOf("archive_methods","archive_topics","archive_placements","archive_presentations","archive_jobs","external_control","external_plan_versions","external_plan_state","training_plan_links","external_pending_inputs","external_requirements"))data.remove(key)
   val manifest=JSONObject(entries.getValue("manifest.json").toString(Charsets.UTF_8)).put("schemaVersion",5).put("dataSha256",fingerprint(data.toString()))
   entries["manifest.json"]=manifest.toString().toByteArray();entries["data.json"]=data.toString().toByteArray()
   val legacy=ByteArrayOutputStream();java.util.zip.ZipOutputStream(legacy).use { zip->entries.forEach { (name,bytes)->zip.putNextEntry(java.util.zip.ZipEntry(name));zip.write(bytes);zip.closeEntry() } }

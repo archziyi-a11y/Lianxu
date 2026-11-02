@@ -1,5 +1,7 @@
 import tempfile
 import unittest
+import base64
+import hashlib
 from pathlib import Path
 from store import Bridge
 
@@ -36,5 +38,16 @@ class BridgeTests(unittest.TestCase):
         with self.assertRaises(ValueError): b.propose(1,'p',1,{})
         b.switch(2,'builtin')
         with self.assertRaises(PermissionError): b.propose(1,'p',2,{})
+    def test_images_are_on_demand_and_cleared_at_handoff(self):
+        b=self.b; b.switch(1,'external','agent',self.token); b.snapshot(1,{'v':1}); b.accept(1,1)
+        b.enqueue('s',{'annotations':[{'inputParts':[{'type':'image','attachmentId':'photo'}]}]},1)
+        with self.assertRaises(ValueError): b.request_image(1,'other')
+        self.assertEqual('requested',b.request_image(1,'photo'))
+        self.assertEqual(['photo'],b.requested_images(1))
+        raw=b'fixture image'; encoded=base64.b64encode(raw).decode()
+        b.upload_image(1,'photo','image/jpeg',hashlib.sha256(raw).hexdigest(),encoded)
+        self.assertEqual(('image/jpeg',encoded),b.read_image(1,'photo'))
+        b.switch(2,'external','next','b'*40)
+        self.assertEqual({},b.image_data)
 
 if __name__ == '__main__': unittest.main()

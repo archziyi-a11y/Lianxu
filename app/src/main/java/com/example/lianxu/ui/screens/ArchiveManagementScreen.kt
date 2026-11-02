@@ -24,6 +24,9 @@ fun ArchiveManagementScreen(modifier: Modifier=Modifier,viewModel: ArchiveViewMo
     val uiState by viewModel.uiState.collectAsState()
     val records by viewModel.records.collectAsState()
     val assessments by viewModel.assessments.collectAsState()
+    val externalRequirements by viewModel.externalRequirements.collectAsState()
+    val externalPlans by viewModel.externalPlans.collectAsState()
+    val currentExternalPlan by viewModel.currentExternalPlan.collectAsState()
     val days by viewModel.days.collectAsState()
     val message by viewModel.message.collectAsState()
     val busy by viewModel.busy.collectAsState()
@@ -46,12 +49,35 @@ fun ArchiveManagementScreen(modifier: Modifier=Modifier,viewModel: ArchiveViewMo
     })
     Scaffold(topBar={TopAppBar(title={Text(if(section=="阶段")"分析历史" else section)},navigationIcon={TextButton(onClick=onBack){Text("返回")}})}) { padding ->
         LazyColumn(modifier.fillMaxSize().padding(padding),contentPadding=PaddingValues(16.dp),verticalArrangement=Arrangement.spacedBy(12.dp)) {
-            item { FlowRow(horizontalArrangement=Arrangement.spacedBy(8.dp)) { listOf("记录","阶段","历日","资料","备份").forEach { label ->
+            item { FlowRow(horizontalArrangement=Arrangement.spacedBy(8.dp)) { listOf("记录","阶段","历日","资料","计划","需求","备份").forEach { label ->
                 FilterChip(selected=section==label,onClick={section=label},label={Text(label)})
             } } }
             message?.let { item { Text(it,style=MaterialTheme.typography.bodyMedium) } }
             if(canUndo)item { TextButton(onClick=viewModel::undo,enabled=!busy) { Text("撤销上次修改") } }
             when(section) {
+                "计划" -> {
+                    if (externalPlans.isEmpty()) item { Text("外部智能体发布的计划版本会保存在这里。") }
+                    items(externalPlans, key={it.id}) { plan -> Card(Modifier.fillMaxWidth()) { Column(Modifier.padding(16.dp), verticalArrangement=Arrangement.spacedBy(8.dp)) {
+                        if (currentExternalPlan?.planId == plan.id) Text("当前执行版本", style=MaterialTheme.typography.labelLarge)
+                        Text(runCatching { org.json.JSONObject(plan.content).getString("plan") }.getOrDefault(plan.content), style=MaterialTheme.typography.bodyMedium)
+                        Text("调整理由：${plan.reason}")
+                        Text("生效时间：${java.time.Instant.ofEpochMilli(plan.effectiveAt).atZone(java.time.ZoneId.systemDefault()).toLocalDateTime()}", style=MaterialTheme.typography.labelSmall)
+                    } } }
+                }
+                "需求" -> {
+                    if (externalRequirements.isEmpty()) item { Text("智能体提出的能力需求会保存在这里。") }
+                    items(externalRequirements, key={it.id}) { need -> Card(Modifier.fillMaxWidth()) { Column(Modifier.padding(16.dp), verticalArrangement=Arrangement.spacedBy(8.dp)) {
+                        Text(need.scenario, style=MaterialTheme.typography.titleSmall)
+                        Text("当前不足：${need.limitation}")
+                        if (need.workaround.isNotBlank()) Text("临时方式：${need.workaround}")
+                        Text("期望：${need.expectedInteraction}")
+                        if (need.mergeKey.startsWith("decision:")) Row {
+                            TextButton(onClick={viewModel.resolveExternalDecision(need, true)}) { Text("同意建议") }
+                            TextButton(onClick={viewModel.resolveExternalDecision(need, false)}) { Text("拒绝") }
+                        }
+                        if (need.occurrences > 1) Text("已合并 ${need.occurrences} 次", style=MaterialTheme.typography.labelSmall)
+                    } } }
+                }
                 "资料" -> item { Column(verticalArrangement=Arrangement.spacedBy(16.dp)) { ProfileForm(viewModel,uiState) } }
                 "记录" -> {
                     item { OutlinedButton(onClick=onShowToday,modifier=Modifier.fillMaxWidth()){Text("添加今天的信息 → 今日")} }

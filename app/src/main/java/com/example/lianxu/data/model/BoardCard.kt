@@ -23,7 +23,10 @@ data class DashboardCard(
     val managedBy: String = "local",
     val inputValues: Map<String, String> = emptyMap(),
     val followUpId: String? = null,
-    val invitationId: String? = null
+    val invitationId: String? = null,
+    val groupTitle: String? = null,
+    val emphasis: String = "normal",
+    val collapsed: Boolean = false
 )
 
 @JsonClass(generateAdapter = true)

@@ -27,6 +27,7 @@ object ArchiveRuntime {
  }
  fun resume(context:Context){scope.launch { runCatching { val repo=ArchiveRepository(context,AppDatabase.getDatabase(context));repo.methods.installBuiltins();repo.refresh();enqueueIfNeeded(context,repo) } }}
  suspend fun enqueueIfNeeded(context:Context,repo:ArchiveRepository){
+  if(com.example.lianxu.data.repository.ExternalRepository(repo.db).control().mode!="builtin")return
   val job=repo.db.archiveDao().job() ?: return
   if(job.status=="empty" || job.completedFingerprint==job.desiredFingerprint || SettingsManager(context).apiKeyFlow.first().isNullOrBlank())return
   WorkManager.getInstance(context).enqueueUniqueWork("archive-refresh",ExistingWorkPolicy.KEEP,OneTimeWorkRequestBuilder<ArchiveWorker>().setInitialDelay(15,TimeUnit.SECONDS).setBackoffCriteria(BackoffPolicy.EXPONENTIAL,30,TimeUnit.SECONDS).setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()).build())
@@ -36,6 +37,7 @@ class ArchiveWorker(context:Context,params:WorkerParameters):CoroutineWorker(con
  override suspend fun doWork():Result {
   val db=AppDatabase.getDatabase(applicationContext);val repo=ArchiveRepository(applicationContext,db)
   return try {
+   if(com.example.lianxu.data.repository.ExternalRepository(db).control().mode!="builtin")return Result.success()
    repo.methods.installBuiltins();repo.refresh()
    val key=SettingsManager(applicationContext).apiKeyFlow.first()?.takeIf { it.isNotBlank() } ?: return Result.success()
    val job=db.archiveDao().job() ?: return Result.success()

@@ -65,6 +65,12 @@ class ArchiveRepository(val context:Context,val db:AppDatabase){
   db.archiveDao().placements().filter { pref->pref.id!=topicKey && all.any { it.id==pref.id && it.methodId==topic.methodId && it.subjectKey==topic.subjectKey } }.forEach { db.archiveDao().putPlacement(it.copy(placement="auto",updatedAt=now)) }
   db.archiveDao().putPlacement(ArchivePlacementEntity(topicKey,placement,now,now))
  }
+ suspend fun toggleCollapsed(cardId:String)=db.withTransaction {
+  val presentation=requireNotNull(db.archiveDao().presentation())
+  val cards=decode(presentation.cardsJson)
+  require(cards.any { it.card.id==cardId && it.card.managedBy=="external" })
+  db.archiveDao().putPresentation(presentation.copy(revision=presentation.revision+1, cardsJson=encode(cards.map { if(it.card.id==cardId)it.copy(card=it.card.copy(collapsed=!it.card.collapsed)) else it }), updatedAt=System.currentTimeMillis()))
+ }
  suspend fun cards(scope:String?,category:String?=null,all:Boolean=false):List<ArchiveDisplay>{
   val dao=db.archiveDao();val allTopics=dao.topics();val currentTopics=allTopics.filter { it.state=="current" };val topics=currentTopics.filter { (scope==null || it.scopeKey==scope) && (category==null || it.category==category) }
   val preferences=dao.placements().associateBy { it.id }

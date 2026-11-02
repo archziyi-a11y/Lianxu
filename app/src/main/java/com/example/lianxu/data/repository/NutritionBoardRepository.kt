@@ -196,7 +196,7 @@ class NutritionBoardRepository(private val db: AppDatabase, val catalog: FoodCat
             cards.add(DashboardCard(id = "$boardId:training-summary", title = "训练摘要", span = CardSpan.LARGE,
                 blocks = listOf(BoardComponent("training-summary", "text", ComponentContent(contentRef = ContentRef(EntityRef("analysis", aid), "summaryText"))))))
         }
-        publish(board, cards, preserveComposition)
+        if (ExternalRepository(db).control().mode == "builtin") publish(board, cards, preserveComposition)
         target
     } }
 

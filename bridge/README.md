@@ -1,5 +1,19 @@
-# 本地桥接开发验证
+# 练序外部智能体桥接（开发与联调）
 
-该服务仍在开发，当前仅用于本机隔离联调。它监听 127.0.0.1:8765，使用 Streamable HTTP MCP；不要将明文 HTTP 直接开放到公网。
+这是单用户桥接服务，使用本机 SQLite 和 MCP Streamable HTTP，默认只监听 `127.0.0.1:8765`。训练记录由手机主动同步到所配置的服务；原图只在智能体请求该待处理输入的图片后传送，缓存在服务进程内存中，并在切换处理方时清除。SQLite 内的文字、历史和页面快照没有应用层加密，部署位置和备份策略需由使用者选择。
 
-在隔离环境安装 `requirements.txt` 后，为进程设置至少 32 字符的 `LIANXU_OWNER_TOKEN`，可设置 `LIANXU_BRIDGE_DB` 指向专用 SQLite 文件，运行 `python server.py`。不要把令牌或真实用户数据写入仓库。`python -m unittest discover -s bridge -p "test_*.py"` 运行服务测试。手机与模拟器的测试连接、密钥管理和公网授权部署仍须完成，不能把本服务测试等同于真实 Grok 联调。
+## 本地运行
+
+安装 Python 依赖：`python -m pip install -r bridge/requirements.txt`。设置不少于 32 字符且随机生成的 `LIANXU_OWNER_TOKEN`，可选设置 `LIANXU_BRIDGE_DB`，在 `bridge` 目录运行 `python server.py`。手机设置中的“手机连接密钥”须与服务的 owner token 相同；“智能体连接密钥”是另一条随机密钥，由手机在切换时登记。每次更换智能体必须使用从未使用过的新智能体密钥。不要将令牌写入仓库、聊天或截图。
+
+本机隔离测试：`python -m unittest discover -s bridge -p "test_*.py"`。Android 模拟器可通过 `adb reverse tcp:8765 tcp:8765` 和 debug 包的 `http://127.0.0.1:8765` 联通。普通发布包仅允许 HTTPS；切勿把明文 HTTP 直接暴露到公网。实际手机与远端智能体需要用户选定可长期运行的 HTTPS 服务和可信访问方式，代理必须将上游 Host 设置为服务认可的 localhost 地址。服务不提供 OAuth 授权服务器，Grok Bot 的自定义 MCP 界面能否使用当前 Bearer 方式尚未通过真实账号验证。
+
+## Grok Bot 接续
+
+用户在 Grok Bot 中为 Bot 配置自定义 MCP，服务路径为 `/mcp/`，并以智能体密钥完成其支持的认证；账户权限、界面及 Bearer 可用性需实际检查。Bot 先调用 `read_handoff` 阅读目标、计划、近期实绩、约束和待处理输入，再用该快照版本调用 `accept_handoff`。之后可读取待处理项并提交今日、档案、计划或能力需求提议；返回 `pending` 只说明服务已收件，`read_proposal_status` 才能看到手机是否应用、拒绝或转交用户决定。仅向已授权服务同步；不要将真实库用于无授权的演示环境。
+
+可在 Grok Bot 自己的界面建立定时 routine，使 Bot 到时读取最新资料。若用户建立 webhook routine，可将其 HTTPS 地址和 Bearer key 分别设置为 `LIANXU_GROK_WEBHOOK_URL`、`LIANXU_GROK_WEBHOOK_TOKEN` 后重启服务。桥接仅发送输入标识与事件类型，不发送训练原文；同一处理代际中的重复发送有收据去重，异常重试在极端崩溃时仍可能重复触发，提议和记录须按原 submission 幂等。HTTP 200 仅表示平台启动运行，不表示任务完成。未配置 webhook 时需依赖 Bot 的定时 routine 或手动接续。
+
+手机外部模式在联网时后台重试；普通页面更新不通知，声明需要用户决定的目标或约束变更会在系统通知获准时提醒。切回内置模式立即停止手机侧外部写入；若手机离线，远端撤权要等连接恢复，平台原有 routine 也需用户在平台管理。目标 ID 与修订和数据来源在手机校验；自由文字约束依赖智能体阅读并遵守，不能视为已由程序完全证明。
+
+官方参考：[Grok Bot 接入应用](https://docs.x.ai/grok-bot/computer-and-apps)、[Grok Bot 例程与 webhook](https://docs.x.ai/grok-bot/skills-routines-and-automations)。真实账号、实际付费和长期部署尚未配置，未完成平台联调。

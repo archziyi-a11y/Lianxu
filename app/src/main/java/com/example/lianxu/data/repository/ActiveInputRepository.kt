@@ -67,6 +67,24 @@ class ActiveInputRepository(private val db: AppDatabase) {
         if(old!=null && old.text!=text.trim())origin.remove("options")
         db.recordDao().putKnowledge(KnowledgeNote(key, (old?.revision ?: 0) + 1, "follow_up", text.trim(), origin.toString(),
             old?.effectiveFrom ?: LocalDate.now(java.time.ZoneId.of(db.profileDao().getProfile()?.preferredZoneId ?: java.time.ZoneId.systemDefault().id)).toString(), null, status, old?.supersedesId, old?.createdAt ?: now, now))
+        if (status == "cancelled") {
+            val dao = db.collaborationDao(); val store = BoardStore(db)
+            for (board in dao.allBoards()) {
+                val saved = dao.cards(board.id).map { DomainJson.decode<DashboardCard>(it.data) }
+                val draft = dao.draft(board.id) ?: continue
+                val current = store.decode(draft.cardsJson)
+                if (saved.none { it.followUpId == key } && current.none { it.followUpId == key }) continue
+                val kept = saved.filterNot { it.followUpId == key }
+                val next = current.mapNotNull { card ->
+                    if (card.followUpId != key) card else if (hasInput(card) || card.isAnnotationMode)
+                        card.copy(title="已取消跟进 · 保留你的补充", value="", blocks=card.blocks.filter { it.type == "input" })
+                    else null
+                }
+                dao.removeCards(board.id); dao.putCards(kept.map { Card(it.id, board.id, DomainJson.encode(it)) })
+                dao.putBoard(board.copy(revision=board.revision+1, updatedAt=now))
+                dao.putDraft(draft.copy(revision=draft.revision+1, cardsJson=store.encode(next), updatedAt=now))
+            }
+        }
         key
     }
 

@@ -46,11 +46,13 @@ interface CollaborationDao {
     @Query("SELECT * FROM tasks WHERE boardId = :boardId AND draftRevision = :revision ORDER BY createdAt DESC LIMIT 1")
     suspend fun taskForDraft(boardId: String, revision: Int): TaskEntity?
     @Query("SELECT * FROM tasks WHERE status IN ('queued','running','staged','applying')") suspend fun unfinishedTasks(): List<TaskEntity>
+    @Query("SELECT * FROM tasks WHERE status IN ('queued','running','staged','applying','failed','conflict') ORDER BY createdAt") suspend fun outstandingTasks(): List<TaskEntity>
     @Insert(onConflict = OnConflictStrategy.ABORT) suspend fun putSnapshot(value: BoardSnapshotEntity)
     @Query("SELECT * FROM board_snapshots WHERE id = :id") suspend fun snapshot(id: String): BoardSnapshotEntity?
     @Insert(onConflict = OnConflictStrategy.ABORT) suspend fun putReceipt(value: MutationReceiptEntity)
     @Query("SELECT * FROM mutation_receipts WHERE submissionId = :submissionId AND operationId = :operationId")
     suspend fun receipt(submissionId: String, operationId: String): MutationReceiptEntity?
+    @Query("DELETE FROM mutation_receipts WHERE submissionId = :submissionId AND operationId = :operationId") suspend fun removeReceipt(submissionId: String, operationId: String)
     @Insert(onConflict = OnConflictStrategy.ABORT) suspend fun putCalculation(value: CalculationEntity)
     @Query("SELECT * FROM calculations WHERE id = :id") suspend fun calculation(id: String): CalculationEntity?
     @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun putAnalysis(value: AnalysisEntity)

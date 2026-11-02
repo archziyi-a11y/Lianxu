@@ -100,7 +100,7 @@ fun TodayScreen(modifier:Modifier=Modifier,viewModel:TodayViewModel=viewModel(),
      items(cards,key={it.id},span={GridItemSpan(if(wideCards)6 else it.span.span)}) { card->
       DashboardCardItem(card=card,resolved=resolved[card.id].orEmpty(),onLongPress={viewModel.toggleAnnotationMode(card.id)},onTap={},onSwipeUp={imageCard=card.id;picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))},
        onAction={a,v->viewModel.performAction(a,v)},onChoice={id,key->viewModel.selectAssistantChoice(card.id,id,key)},onText={viewModel.updateAnnotationText(card.id,it)},onInput={k,v->viewModel.updateInput(card.id,k,v)},onClear={viewModel.clearInput(card.id)},onRemoveImage={viewModel.removeImage(card.id)},onManage=onManage,
-       onSkip={card.invitationId?.let { viewModel.skipQuestion(card.id,it) }},modifier=Modifier.animateItem())
+       onSkip={card.invitationId?.let { viewModel.skipQuestion(card.id,it) }},onCollapse={viewModel.toggleCardCollapsed(card.id)},modifier=Modifier.animateItem())
      }
      item(span={GridItemSpan(6)}) { OutlinedButton(onClick={add=true},shape=RoundedCornerShape(2.dp),modifier=Modifier.fillMaxWidth().heightIn(min=48.dp)) { Icon(Icons.Default.Add,null);Text("新建组件",Modifier.padding(start=8.dp)) } }
      item(span={GridItemSpan(6)}) { Text(if(local)"离线记录可用 · 设置中连接 AI" else "不必填满。文字、图片和控件可以一起发送。",Modifier.padding(vertical=6.dp),style=MaterialTheme.typography.bodySmall,color=MaterialTheme.colorScheme.onSurfaceVariant) }
@@ -119,24 +119,46 @@ fun TodayScreen(modifier:Modifier=Modifier,viewModel:TodayViewModel=viewModel(),
    Button(onClick={focus.clearFocus();viewModel.submitAnnotations()},enabled=!importing,shape=RoundedCornerShape(2.dp),colors=ButtonDefaults.buttonColors(containerColor=Signal,contentColor=Ink),modifier=Modifier.fillMaxWidth().heightIn(min=54.dp)) {
     Text(if(importing)"正在保存图片" else if(local)"保存本轮 · $count 张" else "发送本轮 · $count 张",Modifier.weight(1f));Icon(Icons.Default.North,contentDescription="统一发送")
    }
-   if(!local && !keyboardOpen)TextButton(onClick={focus.clearFocus();viewModel.submitAnnotations(localOnly=true)},modifier=Modifier.align(Alignment.CenterHorizontally)){Text("仅保存在本机",style=MaterialTheme.typography.labelMedium)}
+   val externalMode by viewModel.externalMode.collectAsState()
+   if(!local && !keyboardOpen && !externalMode)TextButton(onClick={focus.clearFocus();viewModel.submitAnnotations(localOnly=true)},modifier=Modifier.align(Alignment.CenterHorizontally)){Text("仅保存在本机",style=MaterialTheme.typography.labelMedium)}
   }
  }
 }
 
 @Composable internal fun SettingsPanel(viewModel:TodayViewModel,onClose:()->Unit) {
  var key by remember { mutableStateOf("") };LaunchedEffect(Unit){viewModel.getApiKey { key=it.orEmpty() }}
- AlertDialog(onDismissRequest=onClose,title={Text("连接与显示")},text={Column(verticalArrangement=Arrangement.spacedBy(12.dp)) {
-  Text("连接后，AI 综合本轮内容组织回复。密钥仅保存在设备中。")
+ var url by remember { mutableStateOf("") }; var owner by remember { mutableStateOf("") }
+ var agentToken by remember { mutableStateOf("") }; var agentName by remember { mutableStateOf("Grok Bot") }
+ var configure by remember { mutableStateOf(false) }
+ val externalStatus by viewModel.externalStatus.collectAsState()
+ val notificationPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { }
+ AlertDialog(onDismissRequest=onClose,title={Text("连接与显示")},text={Column(Modifier.verticalScroll(rememberScrollState()),verticalArrangement=Arrangement.spacedBy(12.dp)) {
+  Text("当前：$externalStatus")
+  Row(horizontalArrangement=Arrangement.spacedBy(8.dp)) {
+   OutlinedButton(onClick={configure=!configure}) { Text(if(configure) "收起连接" else "连接外部智能体") }
+   TextButton(onClick=viewModel::syncExternal) { Text("同步") }
+  }
+  if(configure) {
+   Text("连接后会同步训练记录、计划和页面状态。断线时输入保留在本机。")
+   OutlinedTextField(url,{url=it},label={Text("同步服务地址")},singleLine=true)
+   OutlinedTextField(agentName,{agentName=it},label={Text("智能体名称")},singleLine=true)
+   OutlinedTextField(owner,{owner=it},label={Text("手机连接密钥")},visualTransformation=PasswordVisualTransformation(),singleLine=true)
+   OutlinedTextField(agentToken,{agentToken=it},label={Text("智能体连接密钥")},visualTransformation=PasswordVisualTransformation(),singleLine=true)
+   Button(onClick={viewModel.connectExternal(url,owner,agentToken,agentName)}) { Text("连接并同步") }
+  }
+  OutlinedButton(onClick=viewModel::useBuiltin) { Text("切回内置助手") }
+  if (android.os.Build.VERSION.SDK_INT >= 33) TextButton(onClick={ notificationPermission.launch(android.Manifest.permission.POST_NOTIFICATIONS) }) { Text("启用需要决定时的提醒") }
+  HorizontalDivider()
   OutlinedTextField(key,{key=it},label={Text("DeepSeek 密钥")},visualTransformation=PasswordVisualTransformation(),singleLine=true)
+  TextButton(onClick={viewModel.saveApiKey(key)}) { Text("保存 DeepSeek 密钥") }
   Text("明暗与减少动态效果跟随 Android 系统设置。",style=MaterialTheme.typography.bodySmall)
- }},confirmButton={TextButton(onClick={viewModel.saveApiKey(key);onClose()}){Text("保存")}},dismissButton={TextButton(onClick=onClose){Text("取消")}})
+ }},confirmButton={TextButton(onClick=onClose){Text("关闭")}})
 }
 
 @OptIn(ExperimentalFoundationApi::class,ExperimentalLayoutApi::class)
 @Composable
 fun DashboardCardItem(card:DashboardCard,onLongPress:()->Unit,onTap:()->Unit,onSwipeUp:()->Unit,resolved:List<ResolvedComponent> = emptyList(),onAction:(CardAction,String?)->Unit={_,_->},onChoice:(String,String)->Unit={_,_->},modifier:Modifier=Modifier,
- onText:(String)->Unit={},onInput:(String,String)->Unit={_,_->},onClear:()->Unit={},onRemoveImage:()->Unit={},onManage:()->Unit={},onSkip:()->Unit={}) {
+ onText:(String)->Unit={},onInput:(String,String)->Unit={_,_->},onClear:()->Unit={},onRemoveImage:()->Unit={},onManage:()->Unit={},onSkip:()->Unit={},onCollapse:()->Unit={}) {
  var editor by rememberSaveable(card.id) { mutableStateOf(false) };var photo by rememberSaveable(card.id) { mutableStateOf(false) }
  val haptic=LocalHapticFeedback.current;val focus=LocalFocusManager.current;val keyboard=LocalSoftwareKeyboardController.current;val requester=remember { FocusRequester() }
  val textState=rememberTextFieldState(card.annotationText.orEmpty())
@@ -149,24 +171,30 @@ fun DashboardCardItem(card:DashboardCard,onLongPress:()->Unit,onTap:()->Unit,onS
  val active=card.isAnnotationMode;val pending=ActiveInputRepository.hasInput(card)
  LaunchedEffect(active) { if(!active){editor=false;photo=false} }
  val metricPanel=card.id.endsWith(":target:energyKcal")
- val color by animateColorAsState(if(active || metricPanel)MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface,label="card-state")
+ val color by animateColorAsState(if(active || metricPanel || card.emphasis == "high")MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface,label="card-state")
  val border=if(pending || active)MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant
  val field=card.blocks.firstOrNull { it.type=="input" }?.content
  fun activate(){haptic.performHapticFeedback(HapticFeedbackType.LongPress);onLongPress()}
  Surface(modifier.testTag("card:${card.id}").fillMaxWidth().heightIn(min=116.dp).combinedClickable(onClick={if(active){editor=true;photo=false;onTap()}},onLongClick={activate()},onLongClickLabel="激活卡片补充"),color=color,shape=CutCornerShape(topEnd=12.dp),border=BorderStroke(if(active)2.dp else 1.dp,border)) {
   Column(Modifier.padding(14.dp),verticalArrangement=Arrangement.spacedBy(8.dp)) {
    Row(Modifier.fillMaxWidth().background(if(field!=null)Ink else Color.Transparent).padding(if(field!=null)10.dp else 0.dp),verticalAlignment=Alignment.CenterVertically) {
-    Column(Modifier.weight(1f)) { if(pending)Text("待发送",style=MaterialTheme.typography.labelSmall,color=if(field!=null)Signal else MaterialTheme.colorScheme.primary);Text(card.title,style=MaterialTheme.typography.titleSmall,color=if(field!=null)Color(0xFFF1F3E9) else MaterialTheme.colorScheme.onSurface) }
+    Column(Modifier.weight(1f)) { card.groupTitle?.let { Text(it,style=MaterialTheme.typography.labelSmall,color=if(field!=null)Signal else MaterialTheme.colorScheme.primary) }; if(pending)Text("待发送",style=MaterialTheme.typography.labelSmall,color=if(field!=null)Signal else MaterialTheme.colorScheme.primary);Text(card.title,style=MaterialTheme.typography.titleSmall,color=if(field!=null)Color(0xFFF1F3E9) else MaterialTheme.colorScheme.onSurface) }
+    if (card.managedBy == "external" && !active && !pending) TextButton(onClick=onCollapse,colors=ButtonDefaults.textButtonColors(contentColor=if(field!=null)Signal else MaterialTheme.colorScheme.primary)) { Text(if(card.collapsed) "展开" else "收起") }
     if(active)IconButton(onClick={focus.clearFocus();onLongPress()},modifier=Modifier.size(48.dp)){Icon(Icons.Default.Close,"收起补充",tint=if(field!=null)Signal else MaterialTheme.colorScheme.onSurface)}
    }
+   if(!card.collapsed || active || pending) {
    if(card.value.isNotBlank())Text(card.value,style=MaterialTheme.typography.bodyMedium,color=MaterialTheme.colorScheme.onSurfaceVariant)
    if(active && !editor && !photo)Box(Modifier.fillMaxWidth().heightIn(min=72.dp).pointerInput(card.id) {
     var distance=0f
     detectVerticalDragGestures(onDragStart={distance=0f},onDragEnd={if(distance < -48.dp.toPx()){photo=true;haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)}},onVerticalDrag={change,amount->distance+=amount;change.consume()})
    }.clickable { editor=true;onTap() }.padding(vertical=12.dp)) { Text("点按写文字\n上划添加图片 ↑",style=MaterialTheme.typography.bodyLarge) }
    if(!active || !editor) {
-    resolved.filter { it.type!="input" }.forEach { block->ComponentView(block,resolved.count { it.type=="metric" }==1,onAction){onChoice(block.id,it)} }
-    if(field!=null && field.inputFields.isNotEmpty())key(inputEpoch){InputControls(field,card.inputValues,onInput)}
+    resolved.forEach { block ->
+     if (block.type == "input") {
+      if(field!=null && field.inputFields.isNotEmpty())key(inputEpoch){InputControls(field,card.inputValues,onInput)}
+      card.blocks.firstOrNull { it.componentId == block.id }?.actions.orEmpty().forEach { action -> OutlinedButton(onClick={onAction(action,null); if(action.kind=="record_set")inputEpoch++}) { Text(action.label) } }
+     } else ComponentView(block,resolved.count { it.type=="metric" }==1,onAction){onChoice(block.id,it)}
+    }
    }
    if(editor && active) {
     OutlinedTextField(state=textState,label={Text("补充 · ${card.title}")},placeholder={Text("描述今天的新情况…")},modifier=Modifier.fillMaxWidth().focusRequester(requester).bringIntoViewRequester(bringIntoView),lineLimits=TextFieldLineLimits.MultiLine(minHeightInLines=2,maxHeightInLines=4),trailingIcon={IconButton(onClick={editor=false;focus.clearFocus();keyboard?.hide()}){Icon(Icons.Default.Check,"收好这张 · 继续补充")}})
@@ -185,6 +213,7 @@ fun DashboardCardItem(card:DashboardCard,onLongPress:()->Unit,onTap:()->Unit,onS
    }
    if(card.followUpId!=null)TextButton(onClick=onManage){Text("在档案管理跟进 ↗")}
    if(card.invitationId!=null)TextButton(onClick=onSkip){Text("暂不补充")}
+   }
   }
  }
 }
