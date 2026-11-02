@@ -10,6 +10,11 @@ import com.example.lianxu.data.repository.BackupRepository
 import com.example.lianxu.data.repository.AppRepository
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.security.MessageDigest
+import java.util.zip.ZipInputStream
+import java.util.zip.ZipOutputStream
+import java.util.zip.ZipEntry
+import org.json.JSONObject
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 import org.junit.Test
@@ -17,6 +22,29 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class ExternalRepositoryTest {
+    @Test fun restoresVersionSixLogicalBackup() = runBlocking {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val source = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
+        val target = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
+        try {
+            AppRepository(source).recordTraining(TrainingSession("old", "{}", "strength", "training", null, "[]", null, "user", 1, 1, 1))
+            val original = ByteArrayOutputStream().also { BackupRepository(context, source).export(it) }.toByteArray()
+            val entries = mutableMapOf<String, ByteArray>()
+            ZipInputStream(ByteArrayInputStream(original)).use { zip ->
+                while (true) { val entry = zip.nextEntry ?: break; entries[entry.name] = zip.readBytes() }
+            }
+            val data = JSONObject(entries.getValue("data.json").toString(Charsets.UTF_8))
+            listOf("external_control", "external_plan_versions", "external_plan_state", "training_plan_links", "external_pending_inputs", "external_requirements").forEach { data.remove(it) }
+            val payload = data.toString().toByteArray()
+            val hash = MessageDigest.getInstance("SHA-256").digest(payload).joinToString("") { "%02x".format(it.toInt() and 255) }
+            val manifest = JSONObject(entries.getValue("manifest.json").toString(Charsets.UTF_8)).put("schemaVersion", 6).put("dataSha256", hash)
+            entries["data.json"] = payload; entries["manifest.json"] = manifest.toString().toByteArray()
+            val oldBackup = ByteArrayOutputStream().also { out -> ZipOutputStream(out).use { zip -> entries.forEach { (name, bytes) -> zip.putNextEntry(ZipEntry(name)); zip.write(bytes); zip.closeEntry() } } }.toByteArray()
+            BackupRepository(context, target).restore(ByteArrayInputStream(oldBackup))
+            assertNotNull(target.recordDao().training("old"))
+            assertEquals("builtin", ExternalRepository(target).control().mode)
+        } finally { source.close(); target.close() }
+    }
     @Test fun backupPreservesPlanLinksButRevokesRestoredConnection() = runBlocking {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         val source = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
@@ -26,6 +54,8 @@ class ExternalRepositoryTest {
             val c = repo.beginHandoff("a"); repo.acceptHandoff("a", c.epoch)
             repo.publishPlan("a", c.epoch, ExternalPlanVersionEntity("plan", "body", "reason", 1, 1, "a"), true, 2)
             AppRepository(source).recordTraining(TrainingSession("t", "{}", "strength", "training", null, "[]", null, "user", 1, 1, 1))
+            assertNull(source.externalDao().trainingLink("t"))
+            repo.linkTrainingToPlan("t", "plan")
             repo.enqueue("i", "s", "input", 1)
             val bytes = ByteArrayOutputStream().also { BackupRepository(context, source).export(it) }.toByteArray()
             val targetRepo = ExternalRepository(target)

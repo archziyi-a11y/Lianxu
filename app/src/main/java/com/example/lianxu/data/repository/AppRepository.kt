@@ -85,7 +85,6 @@ class AppRepository(private val db: AppDatabase) {
     suspend fun recordTraining(value: TrainingSession) = db.withTransaction {
         require(!value.title.isBlank() || !value.rawSummary.isNullOrBlank() || value.exercises != "[]")
         db.recordDao().insertTraining(value)
-        ExternalRepository(db).linkTrainingToCurrentPlan(value.id)
         invalidateDerived(db)
     }
     suspend fun recordIntake(value: IntakeEntry) = db.withTransaction {

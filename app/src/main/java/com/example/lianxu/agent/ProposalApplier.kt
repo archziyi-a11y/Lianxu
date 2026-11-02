@@ -213,7 +213,6 @@ class ProposalApplier(private val work: AgentWorkspace) {
         overlay.recordDao().allTrainings().forEach {
             if (db.recordDao().training(it.id) == null) {
                 db.recordDao().insertTraining(it)
-                com.example.lianxu.data.repository.ExternalRepository(db).linkTrainingToCurrentPlan(it.id)
             } else db.recordDao().updateTraining(it)
         }
         overlay.recordDao().allIntakes().forEach { if (db.recordDao().intake(it.id) == null) db.recordDao().insertIntake(it) else db.recordDao().updateIntake(it) }

@@ -69,13 +69,13 @@ class ExternalRepository(private val db: AppDatabase) {
     }
     suspend fun plans() = dao.plans()
     suspend fun currentPlan() = dao.currentPlan()?.let { dao.plan(it.planId) }
-    /** Call in the same transaction that inserts the training record. */
-    suspend fun linkTrainingToCurrentPlan(trainingId: String) = db.withTransaction {
+    /** Only link a version explicitly identified as the one executed; unknown stays unlinked. */
+    suspend fun linkTrainingToPlan(trainingId: String, planId: String) = db.withTransaction {
         requireNotNull(db.recordDao().training(trainingId))
-        val current = dao.currentPlan() ?: return@withTransaction
+        requireNotNull(dao.plan(planId))
         val old = dao.trainingLink(trainingId)
-        if (old == null) dao.insertTrainingLink(TrainingPlanLinkEntity(trainingId, current.planId))
-        else check(old.planId == current.planId) { "TRAINING_ALREADY_LINKED" }
+        if (old == null) dao.insertTrainingLink(TrainingPlanLinkEntity(trainingId, planId))
+        else check(old.planId == planId) { "TRAINING_ALREADY_LINKED" }
     }
     suspend fun submitRequirement(value: ExternalRequirementEntity) = db.withTransaction {
         require(value.mergeKey.isNotBlank() && value.scenario.isNotBlank() && value.limitation.isNotBlank() && value.expectedInteraction.isNotBlank())

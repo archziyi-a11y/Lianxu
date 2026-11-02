@@ -162,7 +162,6 @@ class ActiveInputRepository(private val db: AppDatabase) {
                 if(db.recordDao().training(key)==null) {
                     db.recordDao().insertTraining(TrainingSession(key,submission.turn.dateContext,"strength",name.ifBlank { "训练补充" },null,
                         if(values.length()>0)JSONArray().put(exercise).toString() else "[]",text.ifBlank { if(attachment!=null)"图片训练材料（未确认完成）" else null },origin.toString(),1,now,now))
-                    ExternalRepository(db).linkTrainingToCurrentPlan(key)
                 }
                 created.add(aid); learnHabit(name,if(values.length()>0)"controls" else if(attachment!=null)"image" else "text",p.optJSONArray("fields")?.texts().orEmpty(),key,day)
             } else if (kind=="measurement" && values.has("value")) {
