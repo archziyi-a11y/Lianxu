@@ -24,13 +24,14 @@ import com.example.lianxu.data.entity.*
         Board::class,
         Card::class, DraftEntity::class, AttachmentEntity::class, InputBundleEntity::class,
         TaskEntity::class, BoardSnapshotEntity::class, CalculationEntity::class,
-        AnalysisEntity::class, DayPlanEntity::class, NutritionPolicyEntity::class, MutationReceiptEntity::class, EntitySnapshotEntity::class, AgentCacheEntity::class, MealProgressEntity::class, RestTimerEntity::class, ArchiveMethodEntity::class, ArchiveTopicEntity::class, ArchivePlacementEntity::class, ArchivePresentationEntity::class, ArchiveJobEntity::class
+        AnalysisEntity::class, DayPlanEntity::class, NutritionPolicyEntity::class, MutationReceiptEntity::class, EntitySnapshotEntity::class, AgentCacheEntity::class, MealProgressEntity::class, RestTimerEntity::class, ArchiveMethodEntity::class, ArchiveTopicEntity::class, ArchivePlacementEntity::class, ArchivePresentationEntity::class, ArchiveJobEntity::class, ExternalControlEntity::class, ExternalPlanVersionEntity::class, ExternalPlanStateEntity::class, TrainingPlanLinkEntity::class, ExternalPendingInputEntity::class, ExternalRequirementEntity::class
     ],
-    version = 6,
-    autoMigrations = [AutoMigration(from = 1, to = 2), AutoMigration(from = 2, to = 3), AutoMigration(from = 3, to = 4), AutoMigration(from = 4, to = 5), AutoMigration(from = 5, to = 6)],
+    version = 7,
+    autoMigrations = [AutoMigration(from = 1, to = 2), AutoMigration(from = 2, to = 3), AutoMigration(from = 3, to = 4), AutoMigration(from = 4, to = 5), AutoMigration(from = 5, to = 6), AutoMigration(from = 6, to = 7)],
     exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {
+    abstract fun externalDao(): com.example.lianxu.data.dao.ExternalDao
     abstract fun archiveDao(): com.example.lianxu.data.dao.ArchiveDao
     abstract fun collaborationDao(): CollaborationDao
     abstract fun recordDao(): RecordDao

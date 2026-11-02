@@ -50,7 +50,7 @@ class PersistenceTest {
         val db = open(name)
         try {
             assertEquals(70f, db.measurementDao().getLatestMeasurement("weight")!!.value)
-            assertEquals(6, db.openHelper.writableDatabase.version)
+            assertEquals(7, db.openHelper.writableDatabase.version)
             assertNotNull(BoardStore(db).open(seed()))
         } finally { db.close(); context.deleteDatabase(name) }
     }
