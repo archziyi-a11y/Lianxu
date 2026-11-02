@@ -158,9 +158,14 @@ class NutritionBoardTest {
             service.refresh(id)
             val card = BoardStore(db).watchCards(id).first().single { it.title == "已记录与目标差额" }
             val rendered = ComponentResolver(db).resolve(card)
-            assertTrue(rendered.filter { it.label.startsWith("已核算") }.all { it.text == "尚未核算" })
+            val recorded = rendered.filter { it.label.startsWith("已核算") }
+            assertTrue(recorded.isNotEmpty())
+            assertTrue(recorded.all { it.text == "尚未核算" })
+            val remaining = rendered.filter { it.label.startsWith("目标减已知") }
+            assertTrue(remaining.isNotEmpty())
+            assertTrue(remaining.all { it.text.contains("按已知量") })
             val guide = BoardStore(db).watchCards(id).first().first { it.title == "今日参考" }
-            assertTrue(ComponentResolver(db).readable(guide).contains("缺项保留"))
+            assertTrue(ComponentResolver(db).readable(guide).contains("当前显示已记录摄入小计"))
         } finally { db.close(); context.deleteDatabase(name) }
     }
 }
