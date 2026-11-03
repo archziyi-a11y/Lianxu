@@ -213,13 +213,14 @@ class TodayViewModel @JvmOverloads constructor(application: Application, databas
     fun connectExternal(url: String, ownerToken: String, agentToken: String, agentName: String) {
         viewModelScope.launch {
             try {
-                require(agentName.isNotBlank()) { "请填写智能体名称" }
-                settings.saveBridgeCredentials(url, ownerToken, agentToken)
-                com.example.lianxu.data.repository.ExternalRepository(db).beginHandoff(agentName.trim())
+                val attempt = com.example.lianxu.data.repository.ExternalConnectionCoordinator(db, settings)
+                    .configure(url, ownerToken, agentToken, agentName)
                 _externalStatus.value = "外部智能体 · 正在同步"
+                com.example.lianxu.data.repository.ExternalSync(db, settings, getApplication()).sync(attempt)
                 com.example.lianxu.data.repository.ExternalSyncWorker.schedule(getApplication())
-                com.example.lianxu.data.repository.ExternalSync(db, settings, getApplication()).sync()
-                _externalStatus.value = "外部智能体 · 等待接手"
+                val control = com.example.lianxu.data.repository.ExternalRepository(db).control()
+                _externalStatus.value = "外部智能体 · ${if (control.handoffAccepted) "已接手" else "等待接手"}"
+            } catch (error: CancellationException) { throw error
             } catch (error: Exception) {
                 _externalStatus.value = "连接尚未同步：${error.message ?: "请重试"}"
             }
@@ -240,7 +241,9 @@ class TodayViewModel @JvmOverloads constructor(application: Application, databas
     }
     fun useBuiltin() {
         viewModelScope.launch {
-            com.example.lianxu.data.repository.ExternalRepository(db).switchToBuiltin()
+            com.example.lianxu.data.repository.ExternalSync.withConnectionLock {
+                com.example.lianxu.data.repository.ExternalRepository(db).switchToBuiltin()
+            }
             resumeBuiltinPending()
             if (settings.bridgeCredentials.first() == null) {
                 _externalStatus.value = "内置助手"

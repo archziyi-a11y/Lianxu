@@ -31,7 +31,11 @@ import kotlinx.coroutines.sync.withLock
 
 /** Synchronizes only after explicit configuration. Never logs tokens or personal payloads. */
 class ExternalSync(private val db: AppDatabase, private val settings: SettingsManager, private val context: Context? = null) {
-    companion object { private val syncLock = Mutex(); val syncStatus = kotlinx.coroutines.flow.MutableStateFlow<Boolean?>(null) }
+    companion object {
+        private val syncLock = Mutex()
+        val syncStatus = kotlinx.coroutines.flow.MutableStateFlow<Boolean?>(null)
+        suspend fun <T> withConnectionLock(block: suspend () -> T): T = syncLock.withLock { block() }
+    }
     private val http = OkHttpClient.Builder().connectTimeout(15, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS).build()
     private val repo = ExternalRepository(db)
     private fun notifyDecision(id: String) {
@@ -97,12 +101,16 @@ class ExternalSync(private val db: AppDatabase, private val settings: SettingsMa
             .put("archiveTopics", JSONArray(db.archiveDao().topics().map(::json)))
             .put("archivePlacements", JSONArray(db.archiveDao().placements().map(::json)))
     }
-    suspend fun sync(): Int = try { syncLock.withLock { withContext(Dispatchers.IO) {
+    suspend fun sync(attempt: ConnectionAttempt? = null): Int = try { syncLock.withLock { withContext(Dispatchers.IO) {
         val credentials = requireNotNull(settings.bridgeCredentials.first()) { "请先设置外部连接" }
         val control = repo.control()
+        if (attempt != null) check(control.mode == "external" && control.epoch == attempt.epoch &&
+            control.agentId == attempt.agentName && credentials.url == attempt.url &&
+            ConnectionAttempt.fingerprint(credentials.agentToken) == attempt.agentFingerprint &&
+            ConnectionAttempt.fingerprint(credentials.ownerToken) == attempt.ownerFingerprint) { "连接已更改，请重新同步" }
         call(credentials, "switch", JSONObject().put("epoch", control.epoch).put("mode", control.mode)
             .put("agent", control.agentId).put("agentToken", if (control.mode == "external") credentials.agentToken else JSONObject.NULL)
-            .put("completedIds", JSONArray(db.externalDao().completedInputs().map { it.id })))
+            .put("completedIds", JSONArray(db.externalDao().completedInputs().map { it.id })).put("resumeActive", attempt?.resumeActive == true))
         if (control.mode != "external") { syncStatus.value = true; return@withContext 0 }
         val body = snapshot()
         check(repo.control() == control) { "处理方已切换，请重新同步" }

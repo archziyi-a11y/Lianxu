@@ -76,12 +76,16 @@ class SettingsManager(context: Context, private val store: DataStore<Preferences
         val agent = values[bridgeAgent]
         if (url == null || owner == null || agent == null) null else BridgeCredentials(url, decrypt(owner), decrypt(agent))
     }
-    suspend fun saveBridgeCredentials(url: String, ownerToken: String, agentToken: String) = withContext(Dispatchers.IO) {
-        require(ownerToken.length >= 32 && agentToken.length >= 32 && ownerToken != agentToken)
+    fun normalizeBridgeUrl(url: String): String {
         val parsed = url.trim().toHttpUrlOrNull() ?: error("服务地址无效")
         require(parsed.isHttps || debuggable && parsed.host in listOf("10.0.2.2", "127.0.0.1") && parsed.scheme == "http") { "请使用 HTTPS 服务地址" }
+        return parsed.toString().trimEnd('/')
+    }
+    suspend fun saveBridgeCredentials(url: String, ownerToken: String, agentToken: String) = withContext(Dispatchers.IO) {
+        require(ownerToken.length >= 32 && agentToken.length >= 32 && ownerToken != agentToken)
+        val normalized = normalizeBridgeUrl(url)
         store.edit { values ->
-            values[bridgeUrl] = parsed.toString().trimEnd('/')
+            values[bridgeUrl] = normalized
             values[bridgeOwner] = encrypt(ownerToken)
             values[bridgeAgent] = encrypt(agentToken)
         }
