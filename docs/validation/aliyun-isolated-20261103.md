@@ -19,3 +19,7 @@
 自动策略拒绝了“读取新服务器令牌并通过 adb 写入 Evidence 私有文件、随后启动 Activity”的组合命令；该命令未执行，未换壳或拆分绕过。故当前 Evidence 仍处旧会话，新服务器的手机收发、Grok MCP 接手和回写尚待用户人工连接及独立验收。
 
 回滚前检查配置及数据：先验证备份与当前 Caddyfile 没有其他人后续修改；在不替换 bind mount inode 的前提下将备份内容恢复到原文件，向现有 Caddy 容器发送 SIGUSR1，再复查销售路由。仅停用 `lianxu-gateway.socket`、对应 service 及 `lianxu-bridge.service`；不删除新数据库、凭据、旧业务或现有容器。恢复真实业务路由/后续变更必须以实际现场状态为准。
+
+## 手机连接复核（2026-11-03，恢复后）
+
+用户在 Evidence 正常界面点击“连接并同步”后，根代理经 SSH 以 SQLite 只读连接独立核查：control 为 epoch 2、external、Grok Bot、accepted=0；snapshot revision=1，包含 1 个看板、6 条训练、11 条测量、2 个训练计划及 14 个注册方法。pending inputs 与 proposals 均为空。由此确认隔离手机样本已经同步到阿里云；尚未验证 Grok 对新服务的读取、接手或回写，托管 connector 是否能连接仍待实测。没有读取或输出令牌。旧临时会话待新服务 Grok 回写验证完成后关闭。
