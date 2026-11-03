@@ -23,3 +23,21 @@
 ## 手机连接复核（2026-11-03，恢复后）
 
 用户在 Evidence 正常界面点击“连接并同步”后，根代理经 SSH 以 SQLite 只读连接独立核查：control 为 epoch 2、external、Grok Bot、accepted=0；snapshot revision=1，包含 1 个看板、6 条训练、11 条测量、2 个训练计划及 14 个注册方法。pending inputs 与 proposals 均为空。由此确认隔离手机样本已经同步到阿里云；尚未验证 Grok 对新服务的读取、接手或回写，托管 connector 是否能连接仍待实测。没有读取或输出令牌。旧临时会话待新服务 Grok 回写验证完成后关闭。
+
+## 409 冲突与服务端修复（2026-11-03）
+
+用户截图及 Grok 报告表明首份快照到达不等于持续同步成功。根代理只读核查时，服务器 epoch 2 / accepted=1 / snapshot revision 1，手机 epoch 7 / handoffAccepted=0；两条 `aliyun-verify` 提案仍 pending。根因代码路径是“连接并同步”每次调用 beginHandoff 推进本地 epoch，服务器原有令牌复用保护拒绝同令牌升代。Grok box 直连的读取、接手和提交已经发生；托管 connector 仍 failed_to_load/tools=0。
+
+服务端修复提交 `7ed7b90`：仅 owner 认证的显式 resumeActive 请求可续接仍有效的同一智能体及令牌，前移 epoch 并保留当前代 pending、accepted、图片请求和 webhook 收据；默认切换仍拒绝已用令牌。新令牌尚未到达服务器时，重试可按正常新交接处理。已完成历史输入的丢失 ack 可幂等确认，历史 epoch 不改；未完成旧代输入不能通过此路径确认。根代理独立运行本地和服务器 Python 测试，分别 8/8 通过。
+
+部署前创建一致备份 `/var/lib/lianxu-bridge/backups/pre-resume-7ed7b90.sqlite3` 并通过完整性检查。新代码位于 `/opt/lianxu-bridge/releases/7ed7b90`，复用 c00e46e 的已安装虚拟环境（依赖未变化），current 已切换，仅重启 lianxu-bridge 服务。公网 health 为无认证 401、owner 认证 200。未改 Caddy、密钥或直接改业务数据库。手机修复包及真实提案应用结果待下文验收。
+
+### 真实恢复验收
+
+客户端修复提交 `6bb4499`，随后 `a4aeef5` 将正常“同步”按钮接入已保存连接的显式重试，避免重填密钥。后台 Worker 保持严格同步。最终 Evidence APK SHA-256：`8258876c109c71ffae57545067951601b72683c59b279cb9ec1688ce0bfde2fe`，根代理独立核查本地哈希，Terra 核查安装哈希一致。完整离线构建通过；最终仪器测试 2/2，通过记录见 `aliyun-recovery-20261103/instrumentation.log`，包含并发重试不升代、旧身份/旧令牌拒绝、通过已保存连接恢复 epoch 2→7 并应用提议。
+
+根代理实际点击设置上方“同步”，没有重填或注入令牌。独立 SSH 只读核查：远端 epoch 7 / external / accepted=1；`aliyun-verify-30fb4ed4-b986-45a9-aebf-553ed4665d5f` 为 applied，重发的 `aliyun-verify-92181284-fd51-48c3-8c8f-12227163a7ad` 为 rejected（第一条应用后页面依据已变化）。snapshot revision 2、boardRevision 4、18 张卡；包含 `external:aliyun-verify` / 阿里云接入验证。模拟器设置显示“已接手”，实际滑动到今日底部看到了该卡；证据见 `aliyun-recovery-20261103/connected.png` 和 `applied-card.png`。
+
+这证明本轮 Grok box → 阿里云 → 手机页面 → 回执闭环通过，不证明托管 connector 可用或全部智能体方案已验收。托管 connector 仍按用户报告为 Network error/tools=0，定时主动接续等另待验证。旧 cloudflared 已无运行进程，原本地 bridge PID 14684 经身份及端口核实后停止，18765 已无本地监听；旧样本及配置保留。
+
+诊断中生成的本地临时样本数据库副本位于 `C:/Users/郭子仪/AppData/Local/Temp/lianxu-control-154ryj9w`；清理操作被自动策略拒绝（只返回 blocked by policy，无详细理由），未绕过，副本未清除。
