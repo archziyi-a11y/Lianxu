@@ -16,6 +16,16 @@ class ConnectionAttempt(val epoch: Long, val agentName: String, val url: String,
 
 /** Serializes connection changes against workers and identifies a deliberate same-writer retry. */
 class ExternalConnectionCoordinator(private val db: AppDatabase, private val settings: SettingsManager) {
+    /** Explicit user sync may retry only the current saved external connection. */
+    suspend fun prepareRetry(): ConnectionAttempt? = ExternalSync.withConnectionLock {
+        val current = ExternalRepository(db).control()
+        if (current.mode != "external") return@withConnectionLock null
+        val credentials = requireNotNull(settings.bridgeCredentials.first()) { "请先设置外部连接" }
+        val name = requireNotNull(current.agentId) { "当前智能体信息不完整" }
+        ConnectionAttempt(current.epoch, name, credentials.url, ConnectionAttempt.fingerprint(credentials.agentToken),
+            ConnectionAttempt.fingerprint(credentials.ownerToken), true)
+    }
+
     suspend fun configure(url: String, ownerToken: String, agentToken: String, agentName: String): ConnectionAttempt =
         ExternalSync.withConnectionLock {
             val name = agentName.trim()

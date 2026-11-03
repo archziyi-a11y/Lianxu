@@ -65,8 +65,9 @@ class ExternalRecoveryIntegrationTest {
             repeat(5) { repo.beginHandoff("Grok Bot") }
             assertEquals(7L, repo.control().epoch); assertEquals(2L, initial.epoch)
             try { sync.sync(); fail("strict switch must reject token reuse") } catch (_: IllegalStateException) { }
-            val attempt = ExternalConnectionCoordinator(db, settings).configure("http://127.0.0.1:8765", "o".repeat(40), "a".repeat(40), "Grok Bot")
+            val attempt = requireNotNull(ExternalConnectionCoordinator(db, settings).prepareRetry())
             assertTrue(attempt.resumeActive); assertEquals(7L, attempt.epoch)
+            assertEquals(7L, repo.control().epoch)
             sync.sync(attempt)
             assertTrue(repo.control().handoffAccepted)
             assertNotNull(db.collaborationDao().receipt("external:recovery-proposal", "apply"))

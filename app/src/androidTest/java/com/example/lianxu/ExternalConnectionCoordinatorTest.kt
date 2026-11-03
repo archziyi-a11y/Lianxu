@@ -48,6 +48,7 @@ class ExternalConnectionCoordinatorTest {
             settings.saveBridgeCredentials("http://127.0.0.1:8765", "o".repeat(40), "a".repeat(40))
             try { coordinator.configure("http://127.0.0.1:8765", "o".repeat(40), "a".repeat(40), "different"); fail("same token different agent") } catch (_: IllegalArgumentException) { }
             ExternalSync.withConnectionLock { repo.switchToBuiltin() }
+            assertNull(coordinator.prepareRetry())
             try { ExternalSync(db, settings, context).sync(retry); fail("stale retry") } catch (_: IllegalStateException) { }
             try { coordinator.configure("http://127.0.0.1:8765", "o".repeat(40), "a".repeat(40), "Grok Bot"); fail("revoked token") } catch (_: IllegalArgumentException) { }
             assertFalse(coordinator.configure("http://127.0.0.1:8765", "o".repeat(40), "b".repeat(40), "new agent").resumeActive)

@@ -229,10 +229,12 @@ class TodayViewModel @JvmOverloads constructor(application: Application, databas
     fun syncExternal() {
         viewModelScope.launch {
             try {
-                com.example.lianxu.data.repository.ExternalSync(db, settings, getApplication()).sync()
+                val attempt = com.example.lianxu.data.repository.ExternalConnectionCoordinator(db, settings).prepareRetry()
+                com.example.lianxu.data.repository.ExternalSync(db, settings, getApplication()).sync(attempt)
                 val control = com.example.lianxu.data.repository.ExternalRepository(db).control()
                 _externalStatus.value = if (control.mode == "builtin") "内置助手 · 已同步" else "外部智能体 · ${if (control.handoffAccepted) "已接手" else "等待接手"}"
                 if (control.mode == "builtin") resumeBuiltinPending()
+            } catch (error: CancellationException) { throw error
             } catch (error: Exception) {
                 val control = com.example.lianxu.data.repository.ExternalRepository(db).control()
                 _externalStatus.value = if (control.mode == "builtin") "已切回内置助手，远端撤权尚未同步" else "同步未完成：${error.message ?: "请重试"}"
