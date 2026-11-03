@@ -6,7 +6,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.room.Room
+import androidx.room.withTransaction
 import com.example.lianxu.agent.AgentClient
 import com.example.lianxu.archive.ArchiveRepository
 import com.example.lianxu.data.api.*
@@ -23,11 +26,12 @@ import org.json.JSONObject
 import java.io.File
 import java.time.LocalDate
 
-/** Separate APK/data sandbox, in-memory facts, offline transport, real Android frame clock. */
+/** Separate APK sandbox: persistent synthetic bridge sessions and in-memory offline fixtures. */
 class EvidenceActivity : ComponentActivity() {
     private lateinit var db: AppDatabase
     private lateinit var output: File
     private var calls = 0
+    private var bridgeSession = false
     private lateinit var runId: String
 
     private fun event(name: String, data: JSONObject = JSONObject()) {
@@ -40,23 +44,31 @@ class EvidenceActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         runId = intent.getStringExtra("runId") ?: error("runId required")
         require(runId.matches(Regex("[a-zA-Z0-9_-]{1,80}")))
+        bridgeSession = intent.getBooleanExtra("bridge_session", false)
         output = File(filesDir, "evidence/$runId")
-        require(!output.exists()) { "Evidence run must be unique" }
-        output.mkdirs()
+        require(bridgeSession || !output.exists()) { "Evidence run must be unique" }
+        require(output.isDirectory || output.mkdirs()) { "Cannot create evidence output directory" }
         enableEdgeToEdge()
-        db = Room.inMemoryDatabaseBuilder(this, AppDatabase::class.java).build()
+        db = if (bridgeSession) AppDatabase.getDatabase(applicationContext)
+            else Room.inMemoryDatabaseBuilder(this, AppDatabase::class.java).build()
         lifecycleScope.launch {
-            if (!intent.getBooleanExtra("sparse", false)) seed()
-            val bridgeSession = intent.getBooleanExtra("bridge_session", false)
-            if (intent.getBooleanExtra("external_layout", false) || bridgeSession) seedExternal()
             if (bridgeSession) {
-                val credentials = JSONObject(File(filesDir, "bridge-session.json").readText())
+                db.withTransaction {
+                    if (sampleDatabaseEmpty()) {
+                        seed()
+                        seedExternal()
+                    }
+                }
                 val settings = SettingsManager(application)
-                settings.saveBridgeCredentials(credentials.getString("url"), credentials.getString("owner"), credentials.getString("agent"))
                 val sync = ExternalSync(db, settings, this@EvidenceActivity)
                 launch {
-                    ForegroundSyncLoop { sync.sync() }.run()
+                    repeatOnLifecycle(Lifecycle.State.STARTED) {
+                        ForegroundSyncLoop { if (settings.bridgeCredentials.first() != null) sync.sync() }.run()
+                    }
                 }
+            } else {
+                if (!intent.getBooleanExtra("sparse", false)) seed()
+                if (intent.getBooleanExtra("external_layout", false)) seedExternal()
             }
             val client = AgentClient { messages, _ ->
                 calls++
@@ -84,6 +96,7 @@ class EvidenceActivity : ComponentActivity() {
                 today.cards.filter { cards -> cards.isNotEmpty() }.first()
                 File(output, "ready.json").writeText(JSONObject().put("runId", runId)
                     .put("isolated", true).put("transport", if (bridgeSession) "isolated-http-bridge" else "offline-fixture")
+                    .put("storage", if (bridgeSession) "persistent-sample" else "in-memory")
                     .put("clock", "android-real-time").toString())
                 event("ready")
             }
@@ -109,6 +122,19 @@ class EvidenceActivity : ComponentActivity() {
                         check(tmp.renameTo(File(output, "state.json")))
                     }
             }
+        }
+    }
+
+    /** Never add fixtures to a pre-existing database with any application rows. */
+    private fun sampleDatabaseEmpty(): Boolean {
+        val sqlite = db.openHelper.readableDatabase
+        val names = mutableListOf<String>()
+        sqlite.query("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name NOT IN ('room_master_table','android_metadata')").use { cursor ->
+            while (cursor.moveToNext()) names.add(cursor.getString(0))
+        }
+        return names.all { name ->
+            val escaped = name.replace("\"", "\"\"")
+            sqlite.query("SELECT 1 FROM \"$escaped\" LIMIT 1").use { !it.moveToFirst() }
         }
     }
 
@@ -156,6 +182,6 @@ class EvidenceActivity : ComponentActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (::db.isInitialized) db.close()
+        if (::db.isInitialized && !bridgeSession) db.close()
     }
 }
