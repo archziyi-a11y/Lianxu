@@ -129,7 +129,7 @@ async def phone(request):
         if int(request.headers.get('content-length', '0')) > limit: return JSONResponse({'error':'too large'}, status_code=413)
         if len(await request.body()) > limit: return JSONResponse({'error':'too large'}, status_code=413)
         data = await request.json()
-        if action == 'switch': bridge.switch(data['epoch'], data['mode'], data.get('agent'), data.get('agentToken'), data.get('completedIds', []))
+        if action == 'switch': bridge.switch(data['epoch'], data['mode'], data.get('agent'), data.get('agentToken'), data.get('completedIds', []), data.get('resumeActive', False))
         elif action == 'control':
             with bridge.lock:
                 row = bridge.db.execute('SELECT epoch,mode,agent,accepted FROM control WHERE id=1').fetchone()

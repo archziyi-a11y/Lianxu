@@ -33,27 +33,48 @@ class Bridge:
     @staticmethod
     def digest(token):
         return hashlib.sha256(token.encode()).hexdigest()
-    def switch(self, epoch, mode, agent=None, token=None, completed_ids=None):
+    def switch(self, epoch, mode, agent=None, token=None, completed_ids=None, resume_active=False):
+        if not isinstance(resume_active, bool): raise ValueError('invalid resume flag')
         if mode not in ('builtin', 'external') or mode == 'external' and (not agent or not token or len(token) < 32):
             raise ValueError('invalid control')
-        with self.lock, self.db:
-            self.db.execute('BEGIN IMMEDIATE')
-            current = self.db.execute('SELECT * FROM control WHERE id=1').fetchone()
-            digest = self.digest(token) if token else None
-            if not isinstance(completed_ids or [], list) or not all(isinstance(i, str) for i in completed_ids or []): raise ValueError('invalid completed ids')
-            def reconcile():
-                for id in completed_ids or []: self.db.execute("UPDATE inputs SET status='completed' WHERE id=?", (id,))
-            if epoch == current['epoch'] and mode == current['mode'] and agent == current['agent'] and digest == current['token_hash']:
-                reconcile(); return
-            if epoch <= current['epoch']: raise ValueError('stale epoch')
-            if digest and self.db.execute('SELECT 1 FROM used_tokens WHERE hash=?', (digest,)).fetchone(): raise ValueError('token already used')
-            if digest: self.db.execute('INSERT INTO used_tokens VALUES (?)', (digest,))
-            reconcile()
-            self.db.execute('UPDATE control SET epoch=?,mode=?,agent=?,token_hash=?,accepted=0 WHERE id=1', (epoch,mode,agent,self.digest(token) if token else None))
-            self.db.execute("UPDATE inputs SET epoch=? WHERE status='pending'", (epoch,))
-            self.db.execute("UPDATE proposals SET status='revoked' WHERE status='pending'")
-            self.image_requests.clear()
-            self.image_data.clear()
+        with self.lock:
+            continued = False
+            changed = False
+            previous_epoch = None
+            with self.db:
+                self.db.execute('BEGIN IMMEDIATE')
+                current = self.db.execute('SELECT * FROM control WHERE id=1').fetchone()
+                digest = self.digest(token) if token else None
+                if not isinstance(completed_ids or [], list) or not all(isinstance(i, str) for i in completed_ids or []): raise ValueError('invalid completed ids')
+                def reconcile():
+                    for id in completed_ids or []: self.db.execute("UPDATE inputs SET status='completed' WHERE id=?", (id,))
+                if epoch == current['epoch'] and mode == current['mode'] and agent == current['agent'] and digest == current['token_hash']:
+                    reconcile(); return
+                if epoch <= current['epoch']: raise ValueError('stale epoch')
+                continued = (resume_active and mode == 'external' and current['mode'] == 'external' and agent == current['agent']
+                             and digest is not None and current['token_hash'] is not None and hmac.compare_digest(digest, current['token_hash']))
+                if continued:
+                    previous_epoch = current['epoch']
+                    reconcile()
+                    self.db.execute('UPDATE control SET epoch=? WHERE id=1', (epoch,))
+                    self.db.execute("UPDATE inputs SET epoch=? WHERE status='pending' AND epoch=?", (epoch, previous_epoch))
+                    self.db.execute("UPDATE proposals SET epoch=? WHERE status='pending' AND epoch=?", (epoch, previous_epoch))
+                    old_prefix = f'{previous_epoch}:'
+                    self.db.execute('INSERT OR IGNORE INTO webhook_receipts SELECT ? || substr(input_id, ?) FROM webhook_receipts WHERE substr(input_id, 1, ?) = ?',
+                                    (f'{epoch}:', len(old_prefix) + 1, len(old_prefix), old_prefix))
+                else:
+                    if digest and self.db.execute('SELECT 1 FROM used_tokens WHERE hash=?', (digest,)).fetchone(): raise ValueError('token already used')
+                    if digest: self.db.execute('INSERT INTO used_tokens VALUES (?)', (digest,))
+                    reconcile()
+                    self.db.execute('UPDATE control SET epoch=?,mode=?,agent=?,token_hash=?,accepted=0 WHERE id=1', (epoch,mode,agent,digest))
+                    self.db.execute("UPDATE inputs SET epoch=? WHERE status='pending'", (epoch,))
+                    self.db.execute("UPDATE proposals SET status='revoked' WHERE status='pending'")
+                    changed = True
+            if continued:
+                self.image_requests = {id: epoch if owner == previous_epoch else owner for id, owner in self.image_requests.items()}
+            elif changed:
+                self.image_requests.clear()
+                self.image_data.clear()
     def authenticate(self, token):
         with self.lock:
             row = self.db.execute('SELECT * FROM control WHERE id=1').fetchone()
@@ -173,6 +194,8 @@ class Bridge:
                 if not isinstance(input_ids, list) or not all(isinstance(i, str) for i in input_ids): raise ValueError('invalid inputIds')
                 for input_id in input_ids:
                     pending = self.db.execute('SELECT * FROM inputs WHERE id=?', (input_id,)).fetchone()
-                    if not pending or pending['epoch'] != epoch: raise ValueError('unknown input')
-                    self.db.execute("UPDATE inputs SET status='completed' WHERE id=?", (input_id,))
+                    if not pending or (pending['epoch'] != epoch and not (pending['status'] == 'completed' and pending['epoch'] < epoch)):
+                        raise ValueError('unknown input')
+                    if pending['status'] == 'pending':
+                        self.db.execute("UPDATE inputs SET status='completed' WHERE id=?", (input_id,))
             self.db.execute('UPDATE proposals SET status=? WHERE id=?', (status,id))

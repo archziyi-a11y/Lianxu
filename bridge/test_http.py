@@ -41,7 +41,12 @@ class HttpTests(unittest.TestCase):
             response=c.post('/mcp/',headers=headers,json=call)
             self.assertEqual(200,response.status_code,response.text)
             self.assertFalse(response.json()['result'].get('isError',False),response.text)
-            self.assertEqual(200,c.post('/phone/switch',headers=owner,json={'epoch':2,'mode':'builtin'}).status_code)
+            resume={'epoch':2,'mode':'external','agent':'agent','agentToken':'a'*40,'resumeActive':True}
+            self.assertEqual(401,c.post('/phone/switch',json=resume).status_code)
+            self.assertEqual(409,c.post('/phone/switch',headers=owner,json={k:v for k,v in resume.items() if k!='resumeActive'}).status_code)
+            self.assertEqual(200,c.post('/phone/switch',headers=owner,json=resume).status_code)
+            self.assertEqual(200,c.post('/phone/switch',headers=owner,json={'epoch':3,'mode':'builtin'}).status_code)
+            self.assertEqual(409,c.post('/phone/switch',headers=owner,json=dict(resume,epoch=4)).status_code)
             self.assertEqual(401,c.post('/mcp/',headers=headers,json=call).status_code)
 
 def tearDownModule():
