@@ -1,0 +1,12 @@
+[Unit]
+Description=Lianxu personal phone Docker gateway socket
+Requires=docker.service
+After=docker.service sys-subsystem-net-devices-br\x2d65d9fe5ab4ea.device
+BindsTo=sys-subsystem-net-devices-br\x2d65d9fe5ab4ea.device
+
+[Socket]
+ListenStream=172.19.0.1:18768
+BindToDevice=br-65d9fe5ab4ea
+
+[Install]
+WantedBy=sockets.target

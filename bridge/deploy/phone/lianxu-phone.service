@@ -1,0 +1,22 @@
+[Unit]
+Description=Lianxu personal phone bridge
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=lianxu-phone
+Group=lianxu-phone
+WorkingDirectory=/opt/lianxu-bridge/releases/7ed7b90
+ExecStart=/opt/lianxu-bridge/releases/7ed7b90/.venv/bin/python /opt/lianxu-bridge/releases/7ed7b90/deploy/launch.py /etc/lianxu-phone/config.env
+Restart=on-failure
+RestartSec=5
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/lianxu-phone
+
+[Install]
+WantedBy=multi-user.target

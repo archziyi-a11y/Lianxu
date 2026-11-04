@@ -1,0 +1,13 @@
+[Unit]
+Description=Lianxu personal phone gateway to loopback
+Requires=lianxu-phone.service
+After=lianxu-phone.service
+
+[Service]
+User=lianxu-phone
+Group=lianxu-phone
+ExecStart=/lib/systemd/systemd-socket-proxyd 127.0.0.1:18767
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
